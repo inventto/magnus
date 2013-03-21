@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  aluno_id: 1
+  objetivo: MyString
+  data_matricula: 2013-03-20
+  data_inicio: 2013-03-20
+  data_fim: 2013-03-20
+  numero_de_aulas_previstas: 1
+
+two:
+  aluno_id: 1
+  objetivo: MyString
+  data_matricula: 2013-03-20
+  data_inicio: 2013-03-20
+  data_fim: 2013-03-20
+  numero_de_aulas_previstas: 1

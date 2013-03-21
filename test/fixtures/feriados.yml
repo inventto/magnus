@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  descricao: MyString
+  feriado_fixo: false
+  repeticao_anual: false
+  dia: 1
+  mes: 1
+  ano: 1
+
+two:
+  descricao: MyString
+  feriado_fixo: false
+  repeticao_anual: false
+  dia: 1
+  mes: 1
+  ano: 1

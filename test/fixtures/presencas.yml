@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  aluno_id: 1
+  data: 2013-03-20
+  horario: MyString
+  presenca: false
+
+two:
+  aluno_id: 1
+  data: 2013-03-20
+  horario: MyString
+  presenca: false

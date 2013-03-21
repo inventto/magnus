@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  descricao: MyString
+  presenca_id: 1
+
+two:
+  descricao: MyString
+  presenca_id: 1

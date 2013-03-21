@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  ddd: MyString
+  numero: MyString
+  tipo_telefone_id: 1
+  descricao: MyString
+  ramal: MyString
+  aluno_id: 1
+
+two:
+  ddd: MyString
+  numero: MyString
+  tipo_telefone_id: 1
+  descricao: MyString
+  ramal: MyString
+  aluno_id: 1
