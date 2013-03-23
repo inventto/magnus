@@ -4,4 +4,12 @@ class Endereco < ActiveRecord::Base
   belongs_to :logradouro
   belongs_to :bairro
   belongs_to :cidade
+
+  def label
+    descricao = ""
+    if logradouro
+      descricao << logradouro.nome
+    end
+    descricao << "-" << numero
+  end
 end

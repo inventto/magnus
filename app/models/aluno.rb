@@ -9,4 +9,6 @@ class Aluno < ActiveRecord::Base
   def label
     nome
   end
+
+  SEX = %w(M F)
 end

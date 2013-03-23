@@ -1,17 +1,13 @@
 ControleDePresencaMagnus::Application.routes.draw do
   resources :logradouros do as_routes end
-
   resources :bairros do as_routes end
-
   resources :estados do as_routes end
-
   resources :cidades do as_routes end
-
   resources :presencas do as_routes end
-
   resources :matriculas do as_routes end
-
   resources :alunos do as_routes end
+  resources :enderecos do as_routes end
+  resources :telefones do as_routes end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

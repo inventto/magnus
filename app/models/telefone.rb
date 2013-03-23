@@ -5,6 +5,6 @@ class Telefone < ActiveRecord::Base
   belongs_to :aluno
 
   def label
-    nome
+    numero
   end
 end
