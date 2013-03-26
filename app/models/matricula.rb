@@ -3,4 +3,10 @@ class Matricula < ActiveRecord::Base
 
   belongs_to :aluno
   has_many :horario_de_aula
+
+  validates_presence_of :aluno
+
+  def label
+    aluno.nome
+  end
 end

@@ -14,3 +14,5 @@
 //= require jquery_ujs
 //= require_tree .
 //= require active_scaffold
+//= require jquery.ui.datepicker
+//= require jquery.ui.datepicker-pt-BR

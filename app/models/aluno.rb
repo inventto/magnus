@@ -1,3 +1,4 @@
+#coding: utf-8
 class Aluno < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :telefones, :endereco
 
@@ -11,4 +12,7 @@ class Aluno < ActiveRecord::Base
   end
 
   SEX = %w(M F)
+
+  validates_format_of :email, :with => /^([[^õüãáéíóúç]^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Inválido!'
+
 end
