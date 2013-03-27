@@ -3,5 +3,5 @@ class Presenca < ActiveRecord::Base
 
   belongs_to :aluno
 
-  has_one :justificativa_de_falta
+  has_one :justificativa_de_falta, :dependent => :destroy
 end

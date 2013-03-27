@@ -5,6 +5,9 @@ class Telefone < ActiveRecord::Base
   belongs_to :aluno
 
   def label
-    numero
+    desc = ""
+    desc = "(" << ddd << ") "
+    desc << numero[0..3] << " -  " << numero[4..8]
+    desc
   end
 end

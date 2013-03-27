@@ -1,4 +1,6 @@
 ControleDePresencaMagnus::Application.routes.draw do
+  resources :feriados do as_routes end
+
   resources :logradouros do as_routes end
   resources :bairros do as_routes end
   resources :estados do as_routes end

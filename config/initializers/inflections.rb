@@ -10,7 +10,6 @@ ActiveSupport::Inflector.inflections do |inflect|
    inflect.irregular 'tipo_telefone', 'tipos_telefone'
    inflect.irregular 'horario_de_aula', 'horarios_de_aula'
    inflect.irregular 'justificativa_de_falta', 'justificativas_de_falta'
-   inflect.irregular 'endereco_controller', 'enderecos_controller'
 end
 #
 # These inflection rules are supported but not enabled by default:

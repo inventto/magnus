@@ -1,6 +1,6 @@
 class LoadMunicipios < ActiveRecord::Migration
   def self.up
-    municipios = File.open("municipios_parana.txt")
+    municipios = File.open("db/migrate/municipios_parana.txt")
     municipios.lines.each do |municipio|
       Cidade.create(:nome => municipio, :estado_id => 20)# Todas as cidades são do Paraná
     end

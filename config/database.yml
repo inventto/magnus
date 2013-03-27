@@ -17,7 +17,7 @@ development:
   encoding: unicode
   database: controle_de_presenca_magnus_development
   pool: 5
-  username: lucas
+  username: edson
   password:
 
   # Connect on a TCP socket. Omitted by default since the client uses a

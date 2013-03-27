@@ -9,7 +9,7 @@ class HorarioDeAula < ActiveRecord::Base
   def label
     desc = ""
     desc = choice_day_of_week(dia_da_semana)
-    desc << " - " << horario << "horas"
+    desc << " - " << horario << " h"
     desc
   end
 
