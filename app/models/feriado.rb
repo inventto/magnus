@@ -5,4 +5,7 @@ class Feriado < ActiveRecord::Base
   validates :mes, :numericality => true, :length => {:maximum => 2}
   validates :dia, :numericality => true, :length => {:maximum => 2}
 
+  def label
+  descricao
+  end
 end
