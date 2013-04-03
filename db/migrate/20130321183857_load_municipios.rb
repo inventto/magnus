@@ -1,3 +1,4 @@
+#coding: utf-8
 class LoadMunicipios < ActiveRecord::Migration
   def self.up
     municipios = File.open("db/migrate/municipios_parana.txt")
