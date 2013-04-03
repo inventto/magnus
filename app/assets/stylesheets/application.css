@@ -12,3 +12,43 @@
  *= require_tree .
  *= require active_scaffold
  */
+body{
+  margin: 0;
+}
+#top{
+  height: 100px;
+  background: black;
+  border: 2px solid black;
+}
+#top .menu{
+  z-index: 2;
+  padding-top: 10px;
+  height: 30px;
+  width: 250px;
+  margin: 73px auto;
+}
+.menu ul {
+  margin: 0 auto;
+  width: 900px;
+  list-style: none;
+}
+.menu ul li {
+  float: left;
+  margin: 0 5px;
+}
+.menu ul li a {
+      font-size: 16px;
+      text-decoration: none;
+      display: block;
+      color: white;
+      padding: 1px 10px;
+      -moz-border-radius: 10px;
+      -webkit-border-radius:10px;
+      border-radius:10px;
+  }
+.menu li a.selected,
+.menu li a:hover {
+     color: #000;
+     background: #fff;
+
+}
