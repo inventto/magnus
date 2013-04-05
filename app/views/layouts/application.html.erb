@@ -2,22 +2,28 @@
 <html>
   <head>
     <title>ControleDePresencaMagnus</title>
+
     <%= stylesheet_link_tag    "application", :media => "all" %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
-</head>
-<body>
-  <div id="top">
-    <div class="menu">
-      <ul>
-        <li><a href="/alunos">Home</a></li>
-        <li><a href="/matriculas">Cadastros</a></li>
-        <li><a href="#">Sobre</a></li>
-      </ul>
+  </head>
+  <body>
+    <div id="top">
+      <div id="logo">
+        <img src="assets/logo.png"/></img>
+      </div>
+      <div class="menu">
+        <ul>
+          <li><a href="/alunos">Alunos</a></li>
+          <li><a href="/matriculas">Matriculas</a></li>
+          <li><a href="/presencas">Presenças</a></li>
+          <li><a href="/logradouros">Logradouros</a></li>
+          <li><a href="/feriados">Feriados</a></li>
+        </ul>
+      </div>
     </div>
-  </div>
-  <div id="content">
-    <%= yield %>
-  </div>
-</body>
+    <div id="content">
+      <%= yield %>
+    </div>
+  </body>
 </html>

@@ -1,6 +1,6 @@
 ControleDePresencaMagnus::Application.routes.draw do
-  resources :feriados do as_routes end
 
+  resources :feriados do as_routes end
   resources :logradouros do as_routes end
   resources :bairros do as_routes end
   resources :estados do as_routes end
@@ -13,6 +13,8 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :justificativas_de_falta do as_routes end
   resources :horarios_de_aula do as_routes end
   resources :tipos_telefone do as_routes end
+#  resources :agenda_do_dia do as_routes end
+  match "/agenda_do_dia", to: "agenda_do_dia#agenda"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

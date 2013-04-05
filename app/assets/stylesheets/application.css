@@ -17,19 +17,15 @@ body{
 }
 #top{
   height: 100px;
-  background: black;
+  background: #2F4F4F;
   border: 2px solid black;
 }
 #top .menu{
-  z-index: 2;
-  padding-top: 10px;
-  height: 30px;
-  width: 250px;
-  margin: 73px auto;
+  width: 573px;
+  margin: 0 auto;
 }
 .menu ul {
   margin: 0 auto;
-  width: 900px;
   list-style: none;
 }
 .menu ul li {
@@ -50,5 +46,25 @@ body{
 .menu li a:hover {
      color: #000;
      background: #fff;
-
+}
+#agenda{
+  width:300px;
+  background: #BEBEBE;
+  margin-left: 560px;
+}
+i{
+ display:block;
+ clear:both
+}
+#agenda #titulo_agenda {
+  text-align: center;
+  font-size: 16px;
+}
+#sem_horas{
+  text-align: center;
+  font-size: 12px;
+}
+#logo{
+  width: 150px;
+  height: 75px;
 }

@@ -1,0 +1,15 @@
+<div id="agenda">
+  <strong><div id="titulo_agenda">Agenda do Dia</div></strong>
+  <div id="horarios">
+    <% if @agenda_do_dia.blank? %>
+    <div id="sem_horas">Nenhum Horário Cadastrado para Hoje</div>
+    <% else %>
+      <ul>
+        <% @agenda_do_dia.each do |agenda|%>
+          <li><%= agenda.horario %>h</li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
+<i></i>
