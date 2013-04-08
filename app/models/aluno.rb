@@ -10,6 +10,7 @@ class Aluno < ActiveRecord::Base
 
   validates_format_of :email, :with => /^([[^õüãáéíóúç]^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Inválido!'
   validates :cpf, :presence => true, :numericality => true, :length => { :is => 11 }
+  validates :cpf, :cpf => true
 
   SEX = %w(M F)
 
