@@ -8,5 +8,6 @@ class AlunosController < ApplicationController
     conf.columns[:data_nascimento].options[:format] = :default
     conf.columns[:sexo].form_ui = :select
     conf.columns[:sexo].options = {:options => Aluno::SEX.map(&:to_sym)}
+    conf.columns[:endereco].allow_add_existing = false
   end
 end

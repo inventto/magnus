@@ -3,6 +3,7 @@ class HorarioDeAula < ActiveRecord::Base
   attr_accessible :dia_da_semana, :horario, :matricula_id
 
   belongs_to :matricula
+  validates_presence_of :horario
 
   DIAS = {:"Domingo"=> "0", :"Segunda" => "1", :"Terça" => "2", :"Quarta" => "3", :"Quinta" => "4", :"Sexta" => "5", :"Sábado" => "6"}
 

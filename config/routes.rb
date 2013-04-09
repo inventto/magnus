@@ -13,9 +13,8 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :justificativas_de_falta do as_routes end
   resources :horarios_de_aula do as_routes end
   resources :tipos_telefone do as_routes end
-#  resources :agenda_do_dia do as_routes end
-  match "/agenda_do_dia", to: "agenda_do_dia#agenda"
 
+  match "/agenda_do_dia", to: "agenda_do_dia#agenda"
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -65,7 +64,7 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  root :to => 'agenda_do_dia#agenda'
 
   # See how all your routes lay out with "rake routes"
 

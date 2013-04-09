@@ -50,8 +50,10 @@ body{
 }
 #agenda{
   width:300px;
-  background: #BEBEBE;
-  margin-left: 560px;
+  background: rgba(237, 247, 247, 0.5);
+  margin:5px 560px;
+  border: 2px solid rgb(95, 201, 221);
+  border-radius: 30px 30px 30px 30px;
 }
 i{
  display:block;
