@@ -17,12 +17,13 @@ body{
 }
 #top{
   height: 100px;
-  background: #2F4F4F;
-  border: 2px solid black;
+  /*background: #2F4F4F;*/
+  background: rgb(237, 247, 247);
+  border: 2px solid rgb(95, 201, 221);
 }
 #top .menu{
   width: 573px;
-  margin: 0 auto;
+  margin: 77px auto;
 }
 .menu ul {
   margin: 0 auto;
@@ -36,7 +37,7 @@ body{
       font-size: 16px;
       text-decoration: none;
       display: block;
-      color: white;
+      color: black;
       padding: 1px 10px;
       -moz-border-radius: 10px;
       -webkit-border-radius:10px;
@@ -65,6 +66,7 @@ i{
   font-size: 12px;
 }
 #logo{
-  width: 150px;
-  height: 75px;
+  width: 294px;
+  float: left;
+  padding: 12px;
 }
