@@ -9,6 +9,9 @@
   </head>
   <body>
     <div id="top">
+      <% if user_signed_in? %>
+        <strong><div id="login">Usuário:</strong><%= current_user.email %>, <%= link_to 'Sign out', destroy_user_session_path, :method => :delete %></div>
+      <% end %>
       <div id="logo">
         <img src="/assets/logo.png"/></img>
       </div>

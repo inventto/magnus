@@ -34,30 +34,30 @@ body{
   margin: 0 5px;
 }
 .menu ul li a {
-      font-size: 16px;
-      text-decoration: none;
-      display: block;
-      color: black;
-      padding: 1px 10px;
-      -moz-border-radius: 10px;
-      -webkit-border-radius:10px;
-      border-radius:10px;
-  }
+  font-size: 16px;
+  text-decoration: none;
+  display: block;
+  color: black;
+  padding: 1px 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius:10px;
+  border-radius:10px;
+}
 .menu li a.selected,
 .menu li a:hover {
-     color: #000;
-     background: #fff;
+  color: #000;
+  background: #fff;
 }
 #agenda{
   width:300px;
   background: rgba(237, 247, 247, 0.5);
-  margin:5px 560px;
+  margin:5px auto;
   border: 2px solid rgb(95, 201, 221);
   border-radius: 30px 30px 30px 30px;
 }
 i{
- display:block;
- clear:both
+  display:block;
+  clear:both
 }
 #agenda #titulo_agenda {
   text-align: center;
@@ -71,4 +71,17 @@ i{
   width: 294px;
   float: left;
   padding: 12px;
+}
+#login{
+  float: right;
+}
+#login a:visited{
+  color: black;
+  background: white;
+}
+#login a{
+  padding: 1px 5px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius:10px;
+  border-radius:10px;
 }
