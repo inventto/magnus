@@ -6,6 +6,19 @@
     <%= stylesheet_link_tag    "application", :media => "all" %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
+    <script type="text/javascript">
+      $(document).ajaxComplete(function(){
+          $(".cpf-input").mask("999.999.999-99");
+          $(".data_nascimento-input").mask("99/99/9999");
+          $(".data_matricula-input").mask("99/99/9999");
+          $(".data_inicio-input").mask("99/99/9999");
+          $(".data_fim-input").mask("99/99/9999");
+          $(".data-input").mask("99/99/9999");
+          $(".horario-input").mask("99:99");
+          $(".cep-input").mask("99.999-999");
+          $(".horario-input").mask("99:99");
+       });
+    </script>
   </head>
   <body>
     <div id="top">
