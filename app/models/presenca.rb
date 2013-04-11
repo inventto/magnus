@@ -1,5 +1,5 @@
 class Presenca < ActiveRecord::Base
-  attr_accessible :aluno_id, :data, :horario, :justificativa_de_falta
+  attr_accessible :aluno_id, :data, :horario, :justificativa_de_falta, :presenca
 
   belongs_to :aluno
 

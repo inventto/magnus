@@ -85,3 +85,7 @@ i{
   -webkit-border-radius:10px;
   border-radius:10px;
 }
+#message{
+  text-align: center;
+  margin: 20px;
+}
