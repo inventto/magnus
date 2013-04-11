@@ -28,15 +28,17 @@
       <div id="logo">
         <img src="/assets/logo.png"/></img>
       </div>
-      <div class="menu">
-        <ul>
-          <li><a href="/alunos">Alunos</a></li>
-          <li><a href="/matriculas">Matrículas</a></li>
-          <li><a href="/presencas">Presenças</a></li>
-          <li><a href="/logradouros">Logradouros</a></li>
-          <li><a href="/feriados">Feriados</a></li>
-        </ul>
-      </div>
+      <% if user_signed_in? %>
+        <div class="menu">
+          <ul>
+            <li><a href="/alunos">Alunos</a></li>
+            <li><a href="/matriculas">Matrículas</a></li>
+            <li><a href="/presencas">Presenças</a></li>
+            <li><a href="/logradouros">Logradouros</a></li>
+            <li><a href="/feriados">Feriados</a></li>
+          </ul>
+        </div>
+      <% end %>
     </div>
     <div id="content">
       <%= yield %>

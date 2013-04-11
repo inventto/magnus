@@ -17,6 +17,49 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
+  def registrar_presenca
+    Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => true)
+  end
+
+  def esta_de_aniversario_essa_semana?
+    dia = self.data_nascimento.day
+    mes = self.data_nascimento.month
+    data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
+    aniversario = Time.mktime(Time.now().year(), mes, dia)
+    ((Time.now() - 4.day)..(Time.now() + 4.day)).cover?(aniversario)
+  end
+
+  def esta_adiantado?
+    @horario = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => self.id).where(:dia_da_semana => Date.today.wday)[0]
+    @hora_da_aula = Time.parse(@horario[:horario])
+    @hora_registrada = Time.now
+    @hora_registrada < @hora_da_aula - 3.minutes
+  end
+
+  def quantos_min_adiantado
+    dif = @hora_da_aula - @hora_registrada
+    min = dif / 60
+    seg = dif % 60
+    if seg.round < 10
+      seg = "0" << seg.round.to_s
+    else
+      seg = seg.round.to_s
+    end
+    min.round.to_s
+  end
+
+  def esta_atrasado?
+    @hora_registrada > @hora_da_aula + 5.minutes
+  end
+
+  def primeira_aula?
+    @horario.matricula.data_inicio == Date.today
+  end
+
+  def aula_de_reposicao?
+
+  end
+
   def label
     nome
   end

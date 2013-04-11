@@ -21,6 +21,9 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :tipos_telefone do as_routes end
 
   match "/agenda_do_dia", to: "agenda_do_dia#agenda"
+  match "/registro_presenca", to: "registro_presenca#index"
+  post "registro_presenca/registrar"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
