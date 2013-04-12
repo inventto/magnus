@@ -23,7 +23,7 @@
   <body>
     <div id="top">
       <% if user_signed_in? %>
-        <strong><div id="login">Usuário:</strong><%= current_user.email %>, <%= link_to 'Sign out', destroy_user_session_path, :method => :delete %></div>
+        <strong><div id="login">Usuário: </strong><%= current_user.email %>, <%= link_to 'Sair', destroy_user_session_path, :method => :delete %></div>
       <% end %>
       <div id="logo">
         <img src="/assets/logo.png"/></img>
@@ -31,6 +31,7 @@
       <% if user_signed_in? %>
         <div class="menu">
           <ul>
+            <li><a href="/">Agenda do Dia</a></li>
             <li><a href="/alunos">Alunos</a></li>
             <li><a href="/matriculas">Matrículas</a></li>
             <li><a href="/presencas">Presenças</a></li>

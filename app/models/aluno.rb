@@ -22,17 +22,26 @@ class Aluno < ActiveRecord::Base
   end
 
   def esta_de_aniversario_essa_semana?
-    dia = self.data_nascimento.day
-    mes = self.data_nascimento.month
-    data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
-    aniversario = Time.mktime(Time.now().year(), mes, dia)
-    ((Time.now() - 4.day)..(Time.now() + 4.day)).cover?(aniversario)
+    if self.data_nascimento
+      dia = self.data_nascimento.day
+      mes = self.data_nascimento.month
+      data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
+      aniversario = Time.mktime(Time.now().year(), mes, dia)
+      ((Time.now() - 4.day)..(Time.now() + 4.day)).cover?(aniversario)
+    end
+  end
+
+  def aula_de_reposicao?
+    @horario = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => self.id).where(:dia_da_semana => Date.today.wday)[0]
+    if @horario.nil?
+      return true
+    end
+    @hora_da_aula = Time.parse(@horario[:horario])
+    @hora_registrada = Time.now
+    false
   end
 
   def esta_adiantado?
-    @horario = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => self.id).where(:dia_da_semana => Date.today.wday)[0]
-    @hora_da_aula = Time.parse(@horario[:horario])
-    @hora_registrada = Time.now
     @hora_registrada < @hora_da_aula - 3.minutes
   end
 
@@ -54,10 +63,6 @@ class Aluno < ActiveRecord::Base
 
   def primeira_aula?
     @horario.matricula.data_inicio == Date.today
-  end
-
-  def aula_de_reposicao?
-
   end
 
   def label

@@ -1,5 +1,5 @@
 # Additional translations at https://github.com/plataformatec/devise/wiki/I18n
-
+#coding: utf-8
 en:
   devise:
     confirmations:
@@ -7,9 +7,9 @@ en:
       send_instructions: "You will receive an email with instructions about how to confirm your account in a few minutes."
       send_paranoid_instructions: "If your email address exists in our database, you will receive an email with instructions about how to confirm your account in a few minutes."
     failure:
-      already_authenticated: "You are already signed in."
+      already_authenticated: "Você já está logado."
       inactive: "Your account was not activated yet."
-      invalid: "Invalid email or password."
+      invalid: "Email ou Senha Inválido!"
       invalid_token: "Invalid authentication token."
       locked: "Your account is locked."
       not_found_in_database: "Invalid email or password."

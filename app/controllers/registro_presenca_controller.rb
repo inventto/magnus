@@ -1,18 +1,30 @@
 #coding: utf-8
 class RegistroPresencaController < ApplicationController
-  skip_before_filter :authenticate_user!#, :only => [:index, :registrar]
+  skip_before_filter :authenticate_user!
 
   def index
   end
 
   def registrar
-    aluno = Aluno.find params[:id]
+    begin
+      aluno = Aluno.find params[:id]
+    rescue
+      flash[:error] = "Código do Aluno Inválido!"
+      redirect_to "/registro_presenca"
+      return
+    end
+
     if not aluno.registrar_presenca
-      flash[:notice] = "erro!"
+      flash[:error] = "Erro ao Registrar Presença!"
+      redirect_to "/registro_presenca"
       return
     end
 
     notice = []
+    if aluno.aula_de_reposicao?
+      flash[:notice] = "Hoje não é seu dia normal de aula!"
+      return
+    end
     if aluno.esta_de_aniversario_essa_semana?
       notice << "Feliz Aniversário!"
     end
@@ -26,9 +38,7 @@ class RegistroPresencaController < ApplicationController
     if aluno.primeira_aula?
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-    #if aluno.aula_de_reposicao?
-     # notice << "Hoje não é seu dia normal de aula!"
-    #end
-    flash[:notice] = notice.join("<br/>").html_safe
+    flash[:notice] = notice.join("<br/><br/>").html_safe
+    @aluno = aluno
   end
 end

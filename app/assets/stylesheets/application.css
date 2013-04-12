@@ -17,13 +17,13 @@ body{
 }
 #top{
   height: 100px;
-  /*background: #2F4F4F;*/
   background: rgb(237, 247, 247);
   border: 2px solid rgb(95, 201, 221);
+  margin-bottom: 15px;
 }
 #top .menu{
-  width: 573px;
   margin: 77px auto;
+  width: 679px;
 }
 .menu ul {
   margin: 0 auto;
@@ -49,11 +49,16 @@ body{
   background: #fff;
 }
 #agenda{
-  width:300px;
+  width:400px;
   background: rgba(237, 247, 247, 0.5);
   margin:5px auto;
   border: 2px solid rgb(95, 201, 221);
   border-radius: 30px 30px 30px 30px;
+  padding: 10px;
+}
+#horarios ul li {
+  font-size: 16px;
+  padding: 3px;
 }
 i{
   display:block;
@@ -61,7 +66,7 @@ i{
 }
 #agenda #titulo_agenda {
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
 }
 #sem_horas{
   text-align: center;
@@ -88,4 +93,42 @@ i{
 #message{
   text-align: center;
   margin: 20px;
+  font-size: 20px;
+}
+#foto_aluno {
+  max-height: 128px;
+  max-width: 128px;
+}
+#aluno {
+  text-align: center;
+  margin: 20px;
+  font-size: 20px;
+}
+#content-info {
+  width: 700px;
+  background: rgba(237, 247, 247, 0.5);
+  margin: 5px auto;
+  border: 2px solid rgb(95, 201, 221);
+  border-radius: 30px 30px 30px 30px;
+}
+#content-image {
+  width: 700px;
+  margin: 0 auto;
+  border-bottom: 1px solid rgb(95, 201, 221);
+}
+.id {
+  font-weight: bold;
+  font-size: 24px;
+}
+.error_message {
+  font-weight: bold;
+  color: red;
+}
+.registro_presenca, #sign_in, #forgot_pass, #sign_up {
+  width: 250px;
+  background: rgba(237, 247, 247, 0.5);
+  margin: 5px auto;
+  border: 2px solid rgb(95, 201, 221);
+  border-radius: 30px 30px 30px 30px;
+  padding: 15px;
 }

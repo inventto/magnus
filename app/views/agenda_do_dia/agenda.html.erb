@@ -6,7 +6,7 @@
     <% else %>
       <ul>
         <% @agenda_do_dia.each do |agenda|%>
-          <li><%= agenda.horario %>h</li>
+          <li><%= agenda.horario %>h - <%= agenda.matricula.aluno.nome %> <%= "- " + presenca(agenda.matricula.aluno.id) rescue "" %></li>
         <% end %>
       </ul>
     <% end %>
