@@ -23,7 +23,7 @@ body{
 }
 #top .menu{
   margin: 77px auto;
-  width: 722px;
+  white-space: nowrap;
 }
 .menu ul {
   margin: 0 auto;
