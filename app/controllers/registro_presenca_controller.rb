@@ -7,9 +7,9 @@ class RegistroPresencaController < ApplicationController
 
   def registrar
     begin
-      @aluno = Aluno.find params[:id]
+      @aluno = Aluno.joins(:matricula).find params[:id]
     rescue
-      flash[:error] = "Código do aluno Inválido!"
+      flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
       redirect_to "/registro_presenca"
       return
     end
