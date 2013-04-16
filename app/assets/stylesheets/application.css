@@ -91,18 +91,18 @@ i{
   border-radius:10px;
 }
 #message{
-  text-align: center;
-  margin: 20px;
-  font-size: 20px;
 }
 #foto_aluno {
   max-height: 128px;
   max-width: 128px;
+  margin-bottom: -20px;
 }
 #aluno {
   text-align: center;
   margin: 20px;
   font-size: 20px;
+  vertical-align: middle;
+  clear: both;
 }
 #content-info {
   width: 700px;
@@ -120,9 +120,17 @@ i{
   font-weight: bold;
   font-size: 24px;
 }
-.error_message {
-  font-weight: bold;
+.message-notice {
+  color: #00b050;
+}
+.message-error {
   color: red;
+}
+.message-error, .message-notice {
+  text-align: center;
+  margin: 20px;
+  font-size: 20px;
+  font-style: italic;
 }
 .registro_presenca, #sign_in, #forgot_pass, #sign_up {
   width: 250px;

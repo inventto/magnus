@@ -21,23 +21,30 @@ class RegistroPresencaController < ApplicationController
     end
 
     notice = []
+    error = []
     if @aluno.aula_de_reposicao?
       flash[:notice] = "Hoje não é seu dia normal de aula!"
       return
     end
-    if @aluno.esta_de_aniversario_essa_semana?
-      notice << "Feliz Aniversário!"
+    if @aluno.esta_de_aniversario_esse_mes?
+      notice << "Parabéns! Esse mês você está de aniversário."
+    elsif @aluno.esta_de_aniversario_essa_semana?
+      notice << "Parabéns! Essa semana você está de aniversário!"
     end
     if @aluno.esta_adiantado?
-      notice << "Aguarde... sua aula começa em aproximadamente " << @aluno.quantos_min_adiantado << " minutos! "
+      error << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
     elsif @aluno.esta_atrasado?
-      notice << "Atenção! Você está atrasado! Procure chegar mais cedo na próxima aula!"
+      error << ("Infelizmente está atrasado " << @aluno.minutos_atrasados << " minutos para seu treinamento, lembramos que o seu treino não será prorrogado. Procure não se atrasar novamente!")
     else
-      notice << "Bem Vindo à Magnus Personal...Você chegou no horário!"
+      notice << "Parabéns pela sua pontualidade!"
     end
     if @aluno.primeira_aula?
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
+    if @aluno.faltou_aula_passada_sem_justificativa?
+      error << "Você faltou aula passada e não justificou."
+    end
     flash[:notice] = notice.join("<br/><br/>").html_safe
+    flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
   end
 end

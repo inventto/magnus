@@ -21,6 +21,16 @@ class Aluno < ActiveRecord::Base
     Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => true)
   end
 
+  def esta_de_aniversario_esse_mes?
+    if self.data_nascimento
+      dia = self.data_nascimento.day
+      mes = self.data_nascimento.month
+      data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
+      aniversario = Time.mktime(Time.now().year(), mes, dia)
+      ((Time.now() - 30.day)..(Time.now() + 30.day)).cover?(aniversario)
+    end
+  end
+
   def esta_de_aniversario_essa_semana?
     if self.data_nascimento
       dia = self.data_nascimento.day
@@ -45,8 +55,8 @@ class Aluno < ActiveRecord::Base
     @hora_registrada < @hora_da_aula - 3.minutes
   end
 
-  def quantos_min_adiantado
-    dif = @hora_da_aula - @hora_registrada
+  def minutos_atrasados
+    dif = @hora_registrada - @hora_da_aula
     min = dif / 60
     seg = dif % 60
     if seg.round < 10
@@ -63,6 +73,15 @@ class Aluno < ActiveRecord::Base
 
   def primeira_aula?
     @horario.matricula.data_inicio == Date.today
+  end
+
+  def faltou_aula_passada_sem_justificativa?
+    presenca = Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:aluno_id => self.id).where("data <> current_date")
+    not presenca.last.presenca and presenca.last.justificativa_de_falta.nil?
+  end
+
+  def self.verifica_presenca
+    Presenca.create(:aluno_id => 4, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => false)
   end
 
   def label

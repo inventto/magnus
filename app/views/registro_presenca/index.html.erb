@@ -4,7 +4,7 @@
   });
 </script>
 <div class="registro_presenca">
-  <div class="error_message"><%= flash[:error] if flash[:error] %></div>
+  <div class="message-error"><%= flash[:error] if flash[:error] %></div>
   <%= form_tag('/registro_presenca/registrar', :method => "post") %>
   <p><strong>Código do Aluno</strong><%= text_field_tag "id" %></p>
   <%= submit_tag "Registrar" %>
