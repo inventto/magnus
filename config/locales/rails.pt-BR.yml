@@ -9,6 +9,9 @@ pt-BR:
         invalid: "Email ou Senha Inválidos!"
         already_authenticated: "Você já está logado."
         unauthenticated: "Usuário saiu com Sucesso!"
+    registrations:
+      user:
+        signed_up: "Cadastrado com Sucesso!"
   date:
     abbr_day_names:
     - Dom

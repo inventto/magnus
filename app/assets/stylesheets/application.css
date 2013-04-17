@@ -146,7 +146,7 @@ i{
 }
 #signin-invalid, #signed-in {
   text-align: center;
-  width: 12%;
+  width: 250px;
   margin: 0 auto;
   font-size: 111%;
   padding: 1%;
