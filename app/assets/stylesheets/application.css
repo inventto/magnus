@@ -144,3 +144,18 @@ i{
   width: 100px;
   margin: 0 auto;
 }
+#signin-invalid, #signed-in {
+  text-align: center;
+  width: 12%;
+  margin: 0 auto;
+  font-size: 111%;
+  padding: 1%;
+  border: 1px solid lightblue;
+  border-radius: 30px 30px 30px 30px;
+}
+#signin-invalid {
+  color: red;
+}
+#signed-in {
+  color: #00b050;
+}

@@ -1,4 +1,14 @@
 pt-BR:
+  devise:
+    sessions:
+      user:
+        signed_in: "Usuário autenticado com Sucesso!"
+    failure:
+      user:
+        not_found_in_database: "Email ou Senha Inválidos!"
+        invalid: "Email ou Senha Inválidos!"
+        already_authenticated: "Você já está logado."
+        unauthenticated: "Usuário saiu com Sucesso!"
   date:
     abbr_day_names:
     - Dom
