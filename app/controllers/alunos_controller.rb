@@ -9,5 +9,8 @@ class AlunosController < ApplicationController
     conf.columns[:sexo].form_ui = :select
     conf.columns[:sexo].options = {:options => Aluno::SEX.map(&:to_sym)}
     conf.columns[:endereco].allow_add_existing = false
+    conf.actions.swap :search, :field_search
+    conf.field_search.human_conditions = true
+    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento]
   end
 end

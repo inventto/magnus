@@ -9,4 +9,10 @@ module AlunosHelper
   def id_form_column(record, column)
     "<span class='id'>#{record.id}</span>"
   end
+
+  def telefones_column(record, column)
+    raw(record.telefones.collect do |telefone|
+      telefone.label
+    end.join "<br/>")
+  end
 end

@@ -10,5 +10,7 @@ class MatriculasController < ApplicationController
     conf.columns = [:aluno, :data_matricula, :data_inicio, :data_fim, :numero_de_aulas_previstas, :objetivo, :horario_de_aula]
     conf.columns[:horario_de_aula].show_blank_record = false
     conf.columns[:aluno].form_ui = :select
+    conf.actions.swap :search, :field_search
+    conf.field_search.human_conditions = true
   end
 end
