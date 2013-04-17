@@ -1,3 +1,11 @@
+<script type="text/javascript">
+  $(document).ready(function(){
+    setTimeout("voltarPagina()",10000);
+  });
+  function voltarPagina(){
+    window.location.href = "/registro_presenca";
+  }
+</script>
 <div id="content-info">
   <div id="content-image">
     <div id="aluno">
@@ -21,3 +29,4 @@
   <% flash[:error] = nil %>
   <% flash[:notice] = nil %>
 </div>
+<div id="novo-registro"><a href="/registro_presenca">Nova Presença</a></div>

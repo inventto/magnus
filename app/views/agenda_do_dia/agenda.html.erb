@@ -1,3 +1,10 @@
+<script type="text/javascript">
+   $('#signed-in').show('fade',1000);
+   setTimeout("$('#signed-in').hide('fade',1000);", 5000);
+</script>
+<% if flash[:notice] %>
+  <div id="signed-in"><%= flash[:notice] %></div>
+<% end %>
 <div id="agenda">
   <strong><div id="titulo_agenda">Agenda do Dia</div></strong>
   <div id="horarios">

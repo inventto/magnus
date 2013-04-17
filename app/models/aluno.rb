@@ -18,7 +18,9 @@ class Aluno < ActiveRecord::Base
   SEX = %w(M F)
 
   def registrar_presenca
-    Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => true)
+    if Presenca.where(:data => Date.today).find_by_aluno_id(self.id).nil?
+      Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => true)
+    end
   end
 
   def esta_de_aniversario_esse_mes?
