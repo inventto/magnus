@@ -1,7 +1,13 @@
 <script type="text/javascript">
   $(document).ready(function(){
     id.focus();
+    setInterval(marcarFalta, 300000);//a cada 5min = 300000
   });
+  function marcarFalta(){
+    $.ajax({
+      url: "registro_presenca/marcar_falta"
+    });
+  }
 </script>
 <div class="registro_presenca">
   <div class="message-error"><%= flash[:error] if flash[:error] %></div>

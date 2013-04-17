@@ -23,6 +23,7 @@ ControleDePresencaMagnus::Application.routes.draw do
   match "/agenda_do_dia", to: "agenda_do_dia#agenda"
   match "/registro_presenca", to: "registro_presenca#index"
   post "registro_presenca/registrar"
+  get "/registro_presenca/marcar_falta"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

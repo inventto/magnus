@@ -15,7 +15,7 @@ class RegistroPresencaController < ApplicationController
     end
 
     if not @aluno.registrar_presenca
-      flash[:error] = "Erro ao Registrar Presença!"
+      flash[:error] = "Aluno já possui Presença Registrada!"
       redirect_to "/registro_presenca"
       return
     end
@@ -46,5 +46,16 @@ class RegistroPresencaController < ApplicationController
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
+  end
+
+  def marcar_falta
+    horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => Time.now.wday).where("data_inicio <= current_date and data_fim >= current_date").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < (EXTRACT(HOUR FROM CURRENT_TIME) * 3600 + EXTRACT(MINUTE FROM CURRENT_TIME) * 60)")
+    horarios.each do |horario|
+      aluno_id = horario.matricula.aluno.id
+      if Presenca.where(:aluno_id => aluno_id).where(:data => Date.today).blank?
+        Presenca.create(:aluno_id => aluno_id, :data => Date.today, :horario => horario.horario, :presenca => false)
+      end
+    end
+    render :nothing => true
   end
 end
