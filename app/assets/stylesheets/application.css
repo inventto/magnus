@@ -90,19 +90,19 @@ i{
   -webkit-border-radius:10px;
   border-radius:10px;
 }
-#message{
-}
 #foto_aluno {
   max-height: 128px;
   max-width: 128px;
+  margin: 20px 0px -94px 20px;
   margin-bottom: -20px;
+  float: left;
 }
 #aluno {
   text-align: center;
   margin: 20px;
   font-size: 20px;
+  margin-left: 150px;
   vertical-align: middle;
-  clear: both;
 }
 #content-info {
   width: 700px;
@@ -131,6 +131,9 @@ i{
   margin: 20px;
   font-size: 20px;
   font-style: italic;
+}
+.message-notice {
+  margin-left: 150px;
 }
 .registro_presenca, #sign_in, #forgot_pass, #sign_up {
   width: 250px;
