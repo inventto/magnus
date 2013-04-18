@@ -18,8 +18,14 @@ class Aluno < ActiveRecord::Base
   SEX = %w(M F)
 
   def registrar_presenca
-    if Presenca.where(:data => Date.today).find_by_aluno_id(self.id).nil?
-      Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => true)
+    hora_atual = (Time.now + Time.zone.utc_offset).strftime("%H:%M")
+    presenca = Presenca.where(:data => Date.today).find_by_aluno_id(self.id)
+    if presenca.nil?
+      Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => hora_atual, :presenca => true)
+    elsif not presenca.presenca
+      presenca.presenca = true
+      presenca.horario = hora_atual
+      presenca.save
     end
   end
 
@@ -49,7 +55,7 @@ class Aluno < ActiveRecord::Base
       return true
     end
     @hora_da_aula = Time.parse(@horario[:horario])
-    @hora_registrada = Time.now
+    @hora_registrada = Time.now + Time.zone.utc_offset
     false
   end
 
