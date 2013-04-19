@@ -5,6 +5,18 @@ class RegistroPresencaController < ApplicationController
   def index
   end
 
+  def saudacao
+      @saudacao = ""
+      if (hora = Time.now.hour) < 12.hours
+        @saudacao << "Bom Dia "
+      elsif hora > 12.hours and hora < 18.hours
+        @saudacao << "Boa Tarde "
+      else
+        @saudacao << "Boa Noite "
+      end
+      @saudacao << @aluno.nome
+  end
+
   def registrar
     begin
       @aluno = Aluno.joins(:matricula).find params[:id]
@@ -19,30 +31,39 @@ class RegistroPresencaController < ApplicationController
       redirect_to "/registro_presenca"
       return
     end
-
+    saudacao
+    @mensagem_sonora = ""
     notice = []
     error = []
     if @aluno.aula_de_reposicao?
-      flash[:notice] = "Hoje não é seu dia normal de aula!"
+      @mensagem_sonora = "Hoje não é seu dia normal de aula!"
+      flash[:notice] = @mensagem_sonora
       return
     end
-    if @aluno.esta_de_aniversario_esse_mes?
-      notice << "Parabéns! Esse mês você está de aniversário."
-    elsif @aluno.esta_de_aniversario_essa_semana?
-      notice << "Parabéns! Essa semana você está de aniversário!"
+    if @aluno.esta_de_aniversario_essa_semana?
+      @mensagem_sonora << "Parabéns! Essa semana você está de aniversário!"
+      notice << @mensagem_sonora
+    elsif @aluno.esta_de_aniversario_esse_mes?
+      @mensagem_sonora << "Parabéns! Esse mês você está de aniversário."
+      notice << @mensagem_sonora
     end
     if @aluno.esta_adiantado?
-      error << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
+      @mensagem_sonora << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
+      error << @mensagem_sonora
     elsif @aluno.esta_atrasado?
-      error << ("Infelizmente está atrasado " << @aluno.minutos_atrasados << " minutos para seu treinamento, lembramos que o seu treino não será prorrogado. Procure não se atrasar novamente!")
+      @mensagem_sonora << ("Você está atrasado " << @aluno.minutos_atrasados << " minutos. Procure não se atrasar novamente!")
+      error << @mensagem_sonora
     else
-      notice << "Parabéns pela sua pontualidade!"
+      @mensagem_sonora << "Parabéns pela sua pontualidade!"
+      notice << @mensagem_sonora
     end
     if @aluno.primeira_aula?
-      notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
+      @mensagem_sonora << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
+      notice << @mensagem_sonora
     end
     if @aluno.faltou_aula_passada_sem_justificativa?
-      error << "Você faltou aula passada e não justificou."
+      @mensagem_sonora << "Você faltou aula passada e não justificou."
+      error << @mensagem_sonora
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
