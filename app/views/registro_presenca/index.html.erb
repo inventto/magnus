@@ -10,8 +10,9 @@
   }
 </script>
 <div class="registro_presenca">
-  <div class="message-error"><%= flash[:error] if flash[:error] %></div>
+  <div class="message-error"><%= error = flash[:error] if flash[:error] %></div>
   <%= form_tag('/registro_presenca/registrar', :method => "post") %>
   <p><strong>Código do Aluno</strong><%= text_field_tag "id" %></p>
   <%= submit_tag "Registrar" %>
 </div>
+<iframe src="http://translate.google.com/translate_tts?tl=pt&q=<%= error %>" width="0"></iframe>

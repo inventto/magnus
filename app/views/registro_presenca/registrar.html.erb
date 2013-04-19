@@ -13,20 +13,24 @@
     <% end %>
     <div id="aluno">
       <% if (hora = Time.now.hour) < 12.hours %>
-        Bom Dia
+        <%= mensagem = "Bom Dia" %>
       <% elsif hora > 12.hours and hora < 18.hours %>
-        Boa Tarde
+        <%= mensagem = "Boa Tarde" %>
       <% else %>
-        Boa Noite
+        <%= mensagem = "Boa Noite" %>
       <% end %>
       <%= @aluno.nome %>!
+      <% mensagem << @aluno.nome.split(" ")[0] << "." %>
       <br/>
       Hora de Chegada: <%= Time.now.strftime("%Hh%M") %>
   </div>
 </div>
 <div class="message-notice"><%= flash[:notice] if not flash[:notice].blank? %></div>
 <div class="message-error"><%= flash[:error] if not flash[:error].blank? %></div>
+<% mensagem << flash[:notice] if flash[:notice] %>
+<% mensagem << "  " << flash[:error] if flash[:error] %>
 <% flash[:error] = nil %>
 <% flash[:notice] = nil %>
 </div>
 <div id="novo-registro"><a href="/registro_presenca">Nova Presença</a></div>
+<iframe src="http://translate.google.com/translate_tts?tl=pt&q=<%= mensagem %>" width="0"></iframe>
