@@ -79,4 +79,9 @@ class RegistroPresencaController < ApplicationController
     end
     render :nothing => true
   end
+
+  def registro_android
+    registrar
+    render :text => [@saudacao, flash[:notice], flash[:error], @mensagem_sonora].join(";")
+  end
 end
