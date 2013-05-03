@@ -9,16 +9,16 @@ ControleDePresencaMagnus::Application.configure do
   config.action_controller.perform_caching = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_assets = true 
+  config.serve_static_assets = true
 
   # Compress JavaScripts and CSS
   config.assets.compress = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = true 
+  config.assets.compile = true
 
   # Generate digests for assets URLs
-  config.assets.digest = false 
+  config.assets.digest = false
   config.assets.manifest = Rails.root.join("public/assets")
 
   # Defaults to nil and saved in location specified by config.assets.prefix
@@ -51,7 +51,7 @@ ControleDePresencaMagnus::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
-
+  # config.action_mailer.default_url_options = { :host => "magnus.invent.to" } }
   # Enable threaded mode
   # config.threadsafe!
 
@@ -65,4 +65,20 @@ ControleDePresencaMagnus::Application.configure do
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
+
+  config.action_mailer.default_url_options = { :host => 'http://magnus.invent.to' }
+
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.smtp_settings = {
+    :enable_starttls_auto => true,
+    :address => "smtp.gmail.com",
+    :port => 587,
+    :tls                => true,
+    :domain             => 'gmail.com', #you can also use google.com
+    :authentication     => :plain,
+    :user_name => "edsontofolo@gmail.com",
+    :password => "caVaL31#O"
+  }
+
 end
