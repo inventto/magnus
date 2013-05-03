@@ -17,11 +17,18 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
-  def registrar_presenca
-    hora_atual = (Time.now + Time.zone.utc_offset).strftime("%H:%M")
-    presenca = Presenca.where(:data => Date.today).find_by_aluno_id(self.id)
+  def registrar_presenca time_millis
+    if time_millis.nil?
+      hora_atual = (Time.now + Time.zone.utc_offset).strftime("%H:%M")
+      data_atual = Date.today
+    else
+      data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
+      hora_atual = data_hora.strftime("%H:%M") 
+      data_atual = data_hora.to_date
+    end
+    presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if presenca.nil?
-      Presenca.create(:aluno_id => self.id, :data => Date.today, :horario => hora_atual, :presenca => true)
+      Presenca.create(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
     elsif not presenca.presenca
       presenca.presenca = true
       presenca.horario = hora_atual
@@ -85,7 +92,9 @@ class Aluno < ActiveRecord::Base
 
   def faltou_aula_passada_sem_justificativa?
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:aluno_id => self.id).where("data <> current_date")
-    not presenca.last.presenca and presenca.last.justificativa_de_falta.nil?
+    if not presenca.blank?
+      return (not presenca.last.presenca and presenca.last.justificativa_de_falta.nil?)
+    end
   end
 
   def self.verifica_presenca

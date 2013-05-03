@@ -26,7 +26,7 @@ class RegistroPresencaController < ApplicationController
       return
     end
 
-    if not @aluno.registrar_presenca
+    if not @aluno.registrar_presenca(nil)
       flash[:error] = "Aluno já possui Presença Registrada!"
       redirect_to "/registro_presenca"
       return
@@ -42,46 +42,110 @@ class RegistroPresencaController < ApplicationController
     end
     if @aluno.esta_de_aniversario_essa_semana?
       @mensagem_sonora << "Parabéns! Essa semana você está de aniversário!"
-      notice << @mensagem_sonora
+      notice << "Parabéns! Essa semana você está de aniversário!"
     elsif @aluno.esta_de_aniversario_esse_mes?
       @mensagem_sonora << "Parabéns! Esse mês você está de aniversário."
-      notice << @mensagem_sonora
+      notice << "Parabéns! Esse mês você está de aniversário."
     end
     if @aluno.esta_adiantado?
       @mensagem_sonora << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
-      error << @mensagem_sonora
+      error << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
     elsif @aluno.esta_atrasado?
       @mensagem_sonora << ("Você está atrasado " << @aluno.minutos_atrasados << " minutos. Procure não se atrasar novamente!")
-      error << @mensagem_sonora
+      error << ("Você está atrasado " << @aluno.minutos_atrasados << " minutos. Procure não se atrasar novamente!")
     else
       @mensagem_sonora << "Parabéns pela sua pontualidade!"
-      notice << @mensagem_sonora
+      notice << "Parabéns pela sua pontualidade!"
     end
     if @aluno.primeira_aula?
       @mensagem_sonora << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
-      notice << @mensagem_sonora
+      notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
     if @aluno.faltou_aula_passada_sem_justificativa?
       @mensagem_sonora << "Você faltou aula passada e não justificou."
-      error << @mensagem_sonora
+      error << "Você faltou aula passada e não justificou."
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
   end
 
   def marcar_falta
-    horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => Time.now.wday).where("data_inicio <= current_date and data_fim >= current_date").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < (EXTRACT(HOUR FROM CURRENT_TIME) * 3600 + EXTRACT(MINUTE FROM CURRENT_TIME) * 60)")
-    horarios.each do |horario|
-      aluno_id = horario.matricula.aluno.id
-      if Presenca.where(:aluno_id => aluno_id).where(:data => Date.today).blank?
-        Presenca.create(:aluno_id => aluno_id, :data => Date.today, :horario => horario.horario, :presenca => false)
+    if not hoje_eh_feriado?
+      horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => Time.now.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < (EXTRACT(HOUR FROM CURRENT_TIME) * 3600 + EXTRACT(MINUTE FROM CURRENT_TIME) * 60)")
+      horarios.each do |horario|
+        aluno_id = horario.matricula.aluno.id
+        if Presenca.where(:aluno_id => aluno_id).where(:data => Date.today).blank?
+          Presenca.create(:aluno_id => aluno_id, :data => Date.today, :horario => horario.horario, :presenca => false)
+        end
       end
     end
     render :nothing => true
   end
 
+  def hoje_eh_feriado?
+    current_date = Date.today
+    feriado = Feriado.where(:dia => current_date.day).where(:mes => current_date.month)
+
+    if not feriado.blank?
+      feriado = feriado[0]
+      if feriado.repeticao_anual or feriado.ano == current_date.year
+        return true
+      end      
+    end
+
+    false
+  end
+
   def registro_android
-    registrar
-    render :text => [@saudacao, flash[:notice], flash[:error], @mensagem_sonora].join(";")
+    begin
+      @aluno = Aluno.joins(:matricula).find params[:id]
+    rescue
+      flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
+      render :text => [flash[:error], "codigo_invalido"].join("|") and return
+    end
+
+    params[:time_millis] = nil if not params[:time_millis]
+    if not @aluno.registrar_presenca params[:time_millis]
+      flash[:error] = "Aluno já possui Presença Registrada!"
+      render :text => [flash[:error],"aluno_possui_presenca"].join("|") and return
+    end
+    saudacao
+    @mensagem_sonora = ""
+    notice = []
+    error = []
+    if @aluno.aula_de_reposicao?
+      @mensagem_sonora = "hoje_nao_e_dia_normal_de_aula|"	
+      flash[:notice] = @mensagem_sonora
+      render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
+    end
+    if @aluno.esta_de_aniversario_essa_semana?
+      @mensagem_sonora << "parabens_semana|"
+      notice << "Parabéns! Essa semana você está de aniversário!"
+    elsif @aluno.esta_de_aniversario_esse_mes?
+      @mensagem_sonora << "parabens_mes|"
+      notice << "Parabéns! Esse mês você está de aniversário."
+    end
+    if @aluno.esta_adiantado?
+      @mensagem_sonora << "aguarde_um_instante|" 
+      error << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
+    elsif @aluno.esta_atrasado?
+      @mensagem_sonora << "voce_esta_atrasado|" 
+      error << ("Você está atrasado " << @aluno.minutos_atrasados << " minutos. Procure não se atrasar novamente!")
+    else
+      @mensagem_sonora << "parabens_pontualidade|" 
+      notice << "Parabéns pela sua pontualidade!"
+    end
+    if @aluno.primeira_aula?
+      @mensagem_sonora << "bem_vindo|" 
+      notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
+    end
+    if @aluno.faltou_aula_passada_sem_justificativa?
+      @mensagem_sonora << "voce_faltou|" 
+      error << "Você faltou aula passada e não justificou."
+    end
+    flash[:notice] = notice.join("<br/><br/>").html_safe
+    flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
+
+    render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
   end
 end

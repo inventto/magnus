@@ -23,6 +23,7 @@ ControleDePresencaMagnus::Application.routes.draw do
   match "/registro_presenca", to: "registro_presenca#index"
   post "registro_presenca/registrar"
   post "registro_presenca/registro_android"
+  post "/registro_presenca/marcar_falta"
   get "/registro_presenca/marcar_falta"
 
   # The priority is based upon order of creation:

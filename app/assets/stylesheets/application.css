@@ -93,9 +93,8 @@ i{
 #foto_aluno {
   max-height: 128px;
   max-width: 128px;
-  margin: 20px 0px -94px 20px;
-  margin-bottom: -20px;
-  float: left;
+  margin: 20px 0px -79px 60px;
+  padding: 5px;
 }
 #aluno {
   text-align: center;
