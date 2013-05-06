@@ -35,10 +35,13 @@ class RegistroPresencaController < ApplicationController
     @mensagem_sonora = ""
     notice = []
     error = []
-    if @aluno.aula_de_reposicao?
+    if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "Hoje não é seu dia normal de aula!"
-      flash[:notice] = @mensagem_sonora
-      return
+      notice << "Hoje não é seu dia normal de aula!"
+    end
+    if @aluno.aula_de_reposicao?
+      @mensagem_sonora = "Hoje é sua Aula de Reposição!"
+      notice << "Hoje é sua Aula de Reposição!"
     end
     if @aluno.esta_de_aniversario_essa_semana?
       @mensagem_sonora << "Parabéns! Essa semana você está de aniversário!"
@@ -85,14 +88,12 @@ class RegistroPresencaController < ApplicationController
   def hoje_eh_feriado?
     current_date = Date.today
     feriado = Feriado.where(:dia => current_date.day).where(:mes => current_date.month)
-
     if not feriado.blank?
       feriado = feriado[0]
       if feriado.repeticao_anual or feriado.ano == current_date.year
         return true
-      end      
+      end
     end
-
     false
   end
 
@@ -107,16 +108,19 @@ class RegistroPresencaController < ApplicationController
     params[:time_millis] = nil if not params[:time_millis]
     if not @aluno.registrar_presenca params[:time_millis]
       flash[:error] = "Aluno já possui Presença Registrada!"
-      render :text => [flash[:error],"aluno_possui_presenca"].join("|") and return
+      render :text => [flash[:error], "aluno_possui_presenca"].join("|") and return
     end
     saudacao
     @mensagem_sonora = ""
     notice = []
     error = []
+    if @aluno.esta_fora_de_horario?
+      @mensagem_sonora = "fora_de_horario|"
+      notice << "Hoje não é seu dia normal de aula!"
+    end
     if @aluno.aula_de_reposicao?
-      @mensagem_sonora = "hoje_nao_e_dia_normal_de_aula|"	
-      flash[:notice] = @mensagem_sonora
-      render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
+      @mensagem_sonora = "aula_de_reposicao|"
+      notice << "Hoje é sua aula de reposição!"
     end
     if @aluno.esta_de_aniversario_essa_semana?
       @mensagem_sonora << "parabens_semana|"
@@ -126,21 +130,21 @@ class RegistroPresencaController < ApplicationController
       notice << "Parabéns! Esse mês você está de aniversário."
     end
     if @aluno.esta_adiantado?
-      @mensagem_sonora << "aguarde_um_instante|" 
+      @mensagem_sonora << "aguarde_um_instante|"
       error << "Aguarde um instante para começar seu treinamento em seu horário. Agradecemos!"
     elsif @aluno.esta_atrasado?
-      @mensagem_sonora << "voce_esta_atrasado|" 
+      @mensagem_sonora << "voce_esta_atrasado|"
       error << ("Você está atrasado " << @aluno.minutos_atrasados << " minutos. Procure não se atrasar novamente!")
     else
-      @mensagem_sonora << "parabens_pontualidade|" 
+      @mensagem_sonora << "parabens_pontualidade|"
       notice << "Parabéns pela sua pontualidade!"
     end
     if @aluno.primeira_aula?
-      @mensagem_sonora << "bem_vindo|" 
+      @mensagem_sonora << "bem_vindo|"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
     if @aluno.faltou_aula_passada_sem_justificativa?
-      @mensagem_sonora << "voce_faltou|" 
+      @mensagem_sonora << "voce_faltou|"
       error << "Você faltou aula passada e não justificou."
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe

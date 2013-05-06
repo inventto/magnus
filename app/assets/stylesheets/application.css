@@ -58,11 +58,14 @@ body{
 }
 #horarios ul li {
   font-size: 16px;
-  padding: 3px;
+  padding: 5px;
 }
 i{
   display:block;
   clear:both
+}
+#titulo_agenda {
+  padding: 6px;
 }
 #agenda #titulo_agenda {
   text-align: center;
@@ -166,4 +169,8 @@ i{
 }
 #signed-in {
   color: #00b050;
+}
+.status_presenca {
+  float: right;
+  margin: -10px;
 }

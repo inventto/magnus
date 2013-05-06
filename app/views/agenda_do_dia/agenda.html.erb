@@ -13,7 +13,7 @@
     <% else %>
       <ul>
         <% @agenda_do_dia.each do |agenda|%>
-          <li><%= agenda.horario %>h - <%= agenda.matricula.aluno.nome %> <%= "- " + presenca(agenda.matricula.aluno.id) rescue "" %></li>
+          <li><%= agenda.horario %>h - <%= agenda.matricula.aluno.nome rescue agenda.aluno.nome %><div class="status_presenca"><%= presenca(agenda.matricula.aluno.id) rescue presenca(agenda.aluno.id) %></div></li>
         <% end %>
       </ul>
     <% end %>

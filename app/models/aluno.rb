@@ -23,16 +23,22 @@ class Aluno < ActiveRecord::Base
       data_atual = Date.today
     else
       data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
-      hora_atual = data_hora.strftime("%H:%M") 
+      hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-    presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
-    if presenca.nil?
-      Presenca.create(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
-    elsif not presenca.presenca
-      presenca.presenca = true
-      presenca.horario = hora_atual
+    @presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
+    if @presenca.nil?
+      presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
+      if esta_fora_de_horario?
+        presenca.fora_de_horario = true
+      end
       presenca.save
+    elsif not @presenca.presenca?
+      if not @presenca.reposicao?
+        @presenca.horario = hora_atual
+      end
+      @presenca.presenca = true
+      @presenca.save
     end
   end
 
@@ -57,9 +63,18 @@ class Aluno < ActiveRecord::Base
   end
 
   def aula_de_reposicao?
+    if not @presenca.nil? and @presenca.reposicao?
+      @hora_da_aula = Time.strptime(@presenca.horario, "%H:%M")
+      return true
+    end
+  end
+
+  def esta_fora_de_horario?
     @horario = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => self.id).where(:dia_da_semana => Date.today.wday)[0]
     if @horario.nil?
-      return true
+      if not aula_de_reposicao?
+        return true
+      end
     end
     @hora_da_aula = Time.parse(@horario[:horario])
     @hora_registrada = Time.now + Time.zone.utc_offset
@@ -95,10 +110,6 @@ class Aluno < ActiveRecord::Base
     if not presenca.blank?
       return (not presenca.last.presenca and presenca.last.justificativa_de_falta.nil?)
     end
-  end
-
-  def self.verifica_presenca
-    Presenca.create(:aluno_id => 4, :data => Date.today, :horario => Time.now.strftime("%H:%M"), :presenca => false)
   end
 
   def label
