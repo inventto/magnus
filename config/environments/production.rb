@@ -74,7 +74,7 @@ ControleDePresencaMagnus::Application.configure do
     :enable_starttls_auto => true,
     :address => "smtp.gmail.com",
     :port => 587,
-    :tls                => true,
+    # :tls                => true,
     :domain             => 'gmail.com', #you can also use google.com
     :authentication     => :plain,
     :user_name => "edsontofolo@gmail.com",

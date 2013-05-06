@@ -119,12 +119,6 @@ i{
   font-weight: bold;
   font-size: 24px;
 }
-.message-notice {
-  color: #00b050;
-}
-.message-error {
-  color: red;
-}
 .message-error, .message-notice {
   text-align: center;
   margin: 20px;
@@ -132,9 +126,21 @@ i{
   font-style: italic;
 }
 .message-notice {
+  color: #00b050;
   margin-left: 150px;
 }
-.registro_presenca, #sign_in, #forgot_pass, #sign_up {
+.message-error {
+  color: red;
+}
+.border {
+  width: 250px;
+  background: rgba(237, 247, 247, 0.5);
+  margin: 5px auto;
+  border: 2px solid rgb(95, 201, 221);
+  border-radius: 30px 30px 30px 30px;
+  padding: 15px;
+}
+.registro_presenca, #sign_in, #forgot_pass, #sign_up, #reset_password {
   width: 250px;
   background: rgba(237, 247, 247, 0.5);
   margin: 5px auto;

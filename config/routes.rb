@@ -26,6 +26,13 @@ ControleDePresencaMagnus::Application.routes.draw do
   post "/registro_presenca/marcar_falta"
   get "/registro_presenca/marcar_falta"
 
+  get "/users/reset_password"
+  get "/users/reset_password_edit"
+
+  resource :users do
+    post 'do_reset_password'
+  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

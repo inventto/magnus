@@ -1,5 +1,8 @@
 pt-BR:
   devise:
+    passwords:
+      user: 
+        send_instructions: "Você receberá em instantes um email com instruções sobre como alterar sua senha."
     sessions:
       user:
         signed_in: "Usuário autenticado com Sucesso!"

@@ -10,41 +10,8 @@
   }
 </script>
 <div class="registro_presenca">
-  <div class="message-error"><%= error = flash[:error] if flash[:error] %></div>
+  <div class="message-error"><%= flash[:error] if flash[:error] %></div>
   <%= form_tag('/registro_presenca/registrar', :method => "post") %>
   <p><strong>Código do Aluno</strong><%= text_field_tag "id" %></p>
   <%= submit_tag "Registrar" %>
 </div>
-<!--video src="http://translate.google.com/translate_tts?ie=utf-8&tl=pt&q=Funciona.<%= error %>"></video>
-<audio src="http://translate.google.com/translate_tts?ie=utf-8&tl=pt&q=Funciona.<%= error %>" preload="auto" autoplay>
-</audio>
-<audio controls="controls"> <source src="http://translate.google.com/translate_tts?tl=en&q=Hello%2C+World"> </audio>
-<script>
-var audioTagSupport = !!(document.createElement('audio').canPlayType);
-if (audioTagSupport) {
-var text = 'say-text';
-var audio = document.createElement('audio');
-audio.setAttribute('src', 'http://translate.google.com/translate_tts?tl=en&q=' + encodeURIComponent(text));
-audio.load();
-audio.play();
-}
-</script>
-<object data="http://translate.google.com.br/translate_tts?ie=UTF-8&q=asd&tl=en&total=1&idx=0&textlen=3&prev=input"></object>
-<audio autoplay height="10" width="10">
-  <source src="http://translate.google.com.br/translate_tts?ie=UTF-8&q=asd&tl=en&total=1&idx=0&textlen=3" type="audio/mpeg">
-  <source src="http://translate.google.com.br/translate_tts?ie=UTF-8&q=asd&tl=en&total=1&idx=0&textlen=3" type="audio/ogg">
-</audio> 
-<a id="play" href="http://translate.google.com.br/translate_tts?ie=UTF-8&q=agora+sabe+falar&tl=pt"></a>
-<script src="http://mediaplayer.yahoo.com/js"></script> 
-<script>$('#play').click();</script>
-<object type="application/x-shockwave-flash" data="http://flash-mp3-player.net/medias/player_mp3_mini.swf" width="200" height="20">
-    <param name="movie" value="http://flash-mp3-player.net/medias/player_mp3_mini.swf" />
-    <param name="bgcolor" value="#000000" />
-    <param name="FlashVars" value="mp3=http%3A//translate.google.com.br/translate_tts%3Fie%3DUTF-8%26q%3Dagora+sabe+falar%26tl%3Dpt&amp;autoplay=1" />
-</object>
-<object type="audio/x-mpeg" data="http://translate.google.com/translate_tts?tl=en&q=Hello%2C+World" width="200" height="16" autoplay="true">
-<param name="src" value="http://translate.google.com/translate_tts?tl=en&q=Hello%2C+World" />
-<param name="autoplay" value="true" />
-</object>
--->
-

@@ -1,8 +1,12 @@
 <script type="text/javascript">
    $('#signin-invalid').show('fade',1000);
    setTimeout("$('#signin-invalid').hide('fade',1000);", 5000);
+   $('.message-notice').show('fade',1000);
+   setTimeout("$('.message-notice').hide('fade',1000);", 5000);
 </script>
-<% if flash[:alert] %>
+<% if flash[:notice] %>
+  <div class="message-notice border"><%= flash[:notice] %></div>
+<% elsif flash[:alert] %>
   <div id="signin-invalid"><%= flash[:alert] %></div>
 <% end %>
 <div id="sign_in">
