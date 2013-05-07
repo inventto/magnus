@@ -3,7 +3,7 @@ module ApplicationHelper
   def status_presenca aluno_id, presenca_id
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id")
     if presenca_id.blank?
-      presenca = presenca.where(:aluno_id => aluno_id, :data => Time.now, :reposicao => false)
+      presenca = presenca.where(:aluno_id => aluno_id, :data => Time.now).where("reposicao is null or reposicao = false")
     else
       presenca = presenca.where(:id => presenca_id)
     end
