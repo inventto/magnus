@@ -1,5 +1,5 @@
 <script type="text/javascript">
-   $('#signed-in').show('fade',1000);
+   $('#signed-in').show('fade', 1000);
    setTimeout("$('#signed-in').slideUp();", 5000);
 </script>
 <% if flash[:notice] %>
@@ -11,11 +11,14 @@
     <% if @agenda_do_dia.blank? %>
     <div id="sem_horas">Nenhum Horário Cadastrado para Hoje</div>
     <% else %>
-      <ul>
+      <table>
         <% @agenda_do_dia.each do |agenda|%>
-          <li><%= agenda.horario %>h - <%= agenda.matricula.aluno.nome rescue agenda.aluno.nome %><div class="status_presenca"><%= presenca(agenda.matricula.aluno.id) rescue presenca(agenda.aluno.id) %></div></li>
+          <tr>
+            <td><%= agenda.horario %>h - <%= agenda.matricula.aluno.nome rescue agenda.aluno.nome %></td>
+            <td><%= status_presenca(agenda.matricula.aluno.id, "") rescue status_presenca(agenda.aluno.id, agenda.id) %></td>
+          </tr>
         <% end %>
-      </ul>
+      </table>
     <% end %>
   </div>
 </div>

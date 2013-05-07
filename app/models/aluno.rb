@@ -17,6 +17,39 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
+  def get_presenca data_atual, hora_atual
+    matricula =  HorarioDeAula.joins(:matricula).where(:dia_da_semana => data_atual.wday).where(:"matriculas.aluno_id" => self.id)
+    horario_na_matricula = 0
+    if not matricula.blank?
+      horario = matricula[0].horario
+      horario_na_matricula = horario[0..1].to_i * 3600 + horario[1..2].to_i * 60
+    end
+
+    presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
+    horario_na_reposicao = 0
+    if not presenca.blank?
+      horario_na_reposicao = presenca.horario if presenca.reposicao
+      horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60 if not horario_na_reposicao.blank?
+    end
+
+    hora_atual = Time.strptime(hora_atual, "%H:%M").seconds_since_midnight
+
+    dif_hora_matricula = 0
+    dif_hora_reposicao = 0
+
+    dif_hora_matricula = hora_atual - horario_na_matricula if horario_na_matricula > 0
+    dif_hora_reposicao = hora_atual - horario_na_reposicao if horario_na_reposicao > 0
+
+    dif_hora_matricula = dif_hora_matricula * -1 if dif_hora_matricula < 0
+    dif_hora_reposicao = dif_hora_reposicao * -1 if horario_na_reposicao < 0
+
+    if dif_hora_reposicao < dif_hora_matricula
+      return presenca
+    else
+      return nil
+    end
+  end
+
   def registrar_presenca time_millis
     if time_millis.nil?
       hora_atual = (Time.now + Time.zone.utc_offset).strftime("%H:%M")
@@ -26,7 +59,9 @@ class Aluno < ActiveRecord::Base
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-    @presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
+#    hora_atual = Time.now.strftime("%H:%M")
+#    data_atual = Date.today
+    @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
       if esta_fora_de_horario?
