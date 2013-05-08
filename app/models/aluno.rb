@@ -28,8 +28,12 @@ class Aluno < ActiveRecord::Base
     presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     horario_na_reposicao = 0
     if not presenca.blank?
-      horario_na_reposicao = presenca.horario if presenca.reposicao
-      horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60 if not horario_na_reposicao.blank?
+      if presenca.reposicao
+        horario_na_reposicao = presenca.horario
+        if not horario_na_reposicao.blank?
+          horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60
+        end
+      end
     end
 
     hora_atual = Time.strptime(hora_atual, "%H:%M").seconds_since_midnight
