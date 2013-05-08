@@ -33,6 +33,8 @@ class Aluno < ActiveRecord::Base
         if not horario_na_reposicao.blank?
           horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60
         end
+      elsif presenca.presenca
+        return presenca
       end
     end
 

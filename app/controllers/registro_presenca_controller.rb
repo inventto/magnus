@@ -37,7 +37,8 @@ class RegistroPresencaController < ApplicationController
     error = []
     if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "Hoje não é seu dia normal de aula!"
-      notice << "Hoje não é seu dia normal de aula!"
+      flash[:error] = "Hoje não é seu dia normal de aula!"
+      return
     end
     if @aluno.aula_de_reposicao?
       @mensagem_sonora = "Hoje é sua Aula de Reposição!"
@@ -116,7 +117,8 @@ class RegistroPresencaController < ApplicationController
     error = []
     if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "fora_de_horario|"
-      notice << "Hoje não é seu dia normal de aula!"
+      flash[:error] = "Hoje não é seu dia normal de aula!"
+      return
     end
     if @aluno.aula_de_reposicao?
       @mensagem_sonora = "aula_de_reposicao|"
