@@ -11,5 +11,6 @@ class PresencasController < ApplicationController
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
     conf.field_search.columns = [:aluno, :data, :horario, :presenca]
+    list.sorting = {:data => 'DESC'}
   end
 end
