@@ -118,7 +118,7 @@ class RegistroPresencaController < ApplicationController
     if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "fora_de_horario|"
       flash[:error] = "Hoje não é seu dia normal de aula!"
-      return
+      render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
     end
     if @aluno.aula_de_reposicao?
       @mensagem_sonora = "aula_de_reposicao|"
