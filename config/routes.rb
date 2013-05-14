@@ -21,6 +21,7 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/agenda_do_dia", to: "agenda_do_dia#agenda"
   match "/registro_presenca", to: "registro_presenca#index"
+  get "/agenda_do_dia/filtrar"
   post "registro_presenca/registrar"
   post "registro_presenca/registro_android"
   post "/registro_presenca/marcar_falta"

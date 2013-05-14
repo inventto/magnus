@@ -174,3 +174,7 @@ i{
   float: right;
   margin: -10px;
 }
+#filtros {
+  width: 510px;
+  margin: 0 auto;
+}

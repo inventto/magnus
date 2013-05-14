@@ -2,6 +2,16 @@
    $('#signed-in').show('fade', 1000);
    setTimeout("$('#signed-in').slideUp();", 5000);
 </script>
+<div id="filtros">
+  <form action="<%= agenda_do_dia_filtrar_path %>" method="GET">
+    <label for="data_inicial">Data inicial:</label>
+    <input name="data-inicial" type="date" value="<%= @data_inicial %>" />
+    <label for="data_final">Data final:</label>
+    <input name="data-final" type="date" value="<%= @data_final %>" />
+
+    <input type="submit" value="Filtrar" />
+  </form>
+</div>
 <% if flash[:notice] %>
   <div id="signed-in"><%= flash[:notice] %></div>
 <% end %>
@@ -12,11 +22,21 @@
     <div id="sem_horas">Nenhum Horário Cadastrado para Hoje</div>
     <% else %>
       <table>
-        <% @agenda_do_dia.each do |agenda|%>
-          <tr>
-            <td><%= agenda.horario %>h - <%= agenda.matricula.aluno.nome rescue agenda.aluno.nome %></td>
-            <td><%= status_presenca(agenda.matricula.aluno.id, "") rescue status_presenca(agenda.aluno.id, agenda.id) %></td>
-          </tr>
+        <% dia_atual = Date.parse(@data_inicial) %>
+        <% @agenda_do_dia.each do |dia, agenda|%>
+          <% if (dia_atual.wday > dia)
+               dia_atual += 7 - (dia_atual.wday - dia)
+             else
+               dia_atual += dia - dia_atual.wday
+             end
+          %>
+        <tr><td><%= Date::DAYNAMES[dia] %> - <%= dia_atual %></td></tr>
+          <% agenda.each do |a| %>
+            <tr>
+              <td><%= a.horario %>h - <%= a.matricula.aluno.nome rescue a.aluno.nome %></td>
+              <td><%= status_presenca(a.matricula.aluno.id, "") rescue status_presenca(a.aluno.id, a.id) %></td>
+            </tr>
+          <% end %>
         <% end %>
       </table>
     <% end %>
