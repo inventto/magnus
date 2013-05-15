@@ -4,7 +4,8 @@ class AlunosController < ApplicationController
     conf.columns[:endereco].label = "Endereço"
     conf.columns[:cpf].label = "CPF"
     conf.columns[:telefones].label = "Telefone"
-    conf.columns = [:id, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :foto, :endereco, :telefones]
+    conf.columns[:codigo_de_acesso].label = "Código de Acesso"
+    conf.columns = [:id, :foto, :nome, :cpf, :email, :codigo_de_acesso,:sexo, :data_nascimento, :foto, :endereco, :telefones]
     conf.columns[:data_nascimento].options[:format] = :default
     conf.columns[:sexo].form_ui = :select
     conf.columns[:sexo].options = {:options => Aluno::SEX.map(&:to_sym)}

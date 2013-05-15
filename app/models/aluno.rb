@@ -1,6 +1,6 @@
 #coding: utf-8
 class Aluno < ActiveRecord::Base
-  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco
+  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
 
   has_many :telefones, :dependent => :destroy
   belongs_to :endereco
@@ -10,9 +10,12 @@ class Aluno < ActiveRecord::Base
 
   validates_presence_of :nome
   validates_format_of :email, :with => /^([[^õüãáéíóúç]^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Inválido!', :unless => "email.blank?"
-  validates :cpf, :presence => true, :uniqueness => true
+  validates :cpf, :uniqueness => true, :unless => "cpf.blank?"
+
   validates_each :cpf do |model, attr, value|
-    model.errors.add(attr, "Inválido!") unless model.valido?(value)
+    if not value.blank?
+      model.errors.add(attr, "Inválido!") unless model.valido?(value)
+    end
   end
 
   SEX = %w(M F)
