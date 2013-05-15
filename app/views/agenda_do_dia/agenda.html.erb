@@ -19,24 +19,39 @@
   <strong><div id="titulo_agenda">Agenda do Dia</div></strong>
   <div id="horarios">
     <% if @agenda_do_dia.blank? %>
-    <div id="sem_horas">Nenhum Horário Cadastrado para Hoje</div>
+      <% data_inicio = Date.parse(@data_inicial) rescue @data_inicial %>
+      <% data_final = Date.parse(@data_final) rescue @data_final %>
+      <% if data_inicio == data_final %>
+        <% if data_inicio == Date.today %>
+          <div id="sem_horas">Nenhum Horário Cadastrado para Hoje</div>
+        <% else %>
+          <div id="sem_horas">Nenhum Horário Cadastrado</div>
+        <% end %>
+      <% end %>
     <% else %>
       <table>
-        <% dia_atual = Date.parse(@data_inicial) %>
-        <% @agenda_do_dia.each do |dia, agenda|%>
-          <% if (dia_atual.wday > dia)
-               dia_atual += 7 - (dia_atual.wday - dia)
-             else
-               dia_atual += dia - dia_atual.wday
-             end
-          %>
-        <tr><td><%= Date::DAYNAMES[dia] %> - <%= dia_atual %></td></tr>
-          <% agenda.each do |a| %>
-            <tr>
-              <td><%= a.horario %>h - <%= a.matricula.aluno.nome rescue a.aluno.nome %></td>
-              <td><%= status_presenca(a.matricula.aluno.id, "") rescue status_presenca(a.aluno.id, a.id) %></td>
-            </tr>
+        <% dia_atual = @data_inicial %>
+        <% while(dia_atual <= @data_final) %>
+          <% @agenda_do_dia.each do |dia, agenda|%>
+            <% if (dia_atual.wday > dia)
+                 dia_atual += 7 - (dia_atual.wday - dia)
+               else
+                 dia_atual += dia - dia_atual.wday
+               end
+            %>
+            <% break if dia_atual > @data_final %>
+            <tr><td class="titulo_dia" colspan="2"><%= HorarioDeAula::DAYNAMES[dia] %>  <%= dia_atual.strftime("%d/%m/%Y") %></td></tr>
+            <% agenda.each do |a| %>
+              <% aluno_id = a.matricula.aluno.id rescue a.aluno.id %>
+              <% if exibir_aluno?(aluno_id, dia_atual) %>
+                <tr>
+                  <td><%= horario = a.horario %> - <%= final_do_horario(horario) %>: <%= a.matricula.aluno.nome rescue a.aluno.nome %></td>
+                  <td><%= status_presenca(a) %></td>
+                </tr>
+              <% end %>
+            <% end %>
           <% end %>
+          <% break if dia_atual == @data_final %>
         <% end %>
       </table>
     <% end %>
