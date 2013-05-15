@@ -174,3 +174,15 @@ i{
   float: right;
   margin: -10px;
 }
+#filtros {
+  width: 510px;
+  margin: 0 auto;
+}
+.titulo_dia {
+  border: 1px solid black;
+  font-weight: bold;
+  background-color: lightgray;
+  padding: 2px;
+  text-align: center;
+  width: 390px;
+}
