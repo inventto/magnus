@@ -6,9 +6,15 @@ class Telefone < ActiveRecord::Base
 
   def label
     desc = ""
-    desc = "(" << ddd << ") "
+    desc = "(" << self.ddd.gsub(/\D/,"") << ") "
     numero = self.numero.gsub(/\D/,"")
-    desc << numero[0..3] << " -  " << numero[4..8]
+    if numero.length == 8
+      desc << numero[0..3] << " -  " << numero[4..8]
+    elsif numero.length == 9
+      desc << numero[0..4] << " -  " << numero[5..9]
+    else
+      desc << numero
+    end
     desc
   end
 end

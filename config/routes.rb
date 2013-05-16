@@ -20,14 +20,23 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :tipos_telefone do as_routes end
 
   match "/agenda_do_dia", to: "agenda_do_dia#agenda"
+
   match "/registro_presenca", to: "registro_presenca#index"
+
+  match "/gerar_codigo_de_acesso", to: "alunos#gerar_codigo_de_acesso"
+
   get "/agenda_do_dia/filtrar"
+
   post "registro_presenca/registrar"
+
   post "registro_presenca/registro_android"
+
   post "/registro_presenca/marcar_falta"
+
   get "/registro_presenca/marcar_falta"
 
   get "/users/reset_password"
+
   get "/users/reset_password_edit"
 
   resource :users do

@@ -8,9 +8,10 @@ class Aluno < ActiveRecord::Base
   has_many :presencas, :dependent => :destroy
   mount_uploader :foto, FotoUploader
 
-  validates_presence_of :nome
+  validates_presence_of :nome, :data_nascimento
   validates_format_of :email, :with => /^([[^õüãáéíóúç]^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Inválido!', :unless => "email.blank?"
   validates :cpf, :uniqueness => true, :unless => "cpf.blank?"
+  validates :codigo_de_acesso, :presence => true, :uniqueness => true
 
   validates_each :cpf do |model, attr, value|
     if not value.blank?
