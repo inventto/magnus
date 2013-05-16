@@ -55,6 +55,8 @@ class AgendaDoDiaController < ApplicationController
   def agrupa_e_ordena
     @agenda_do_dia = @agenda_do_dia.group_by{ |a| a.dia_da_semana.to_i }
 
+    @agenda_do_dia = @agenda_do_dia.sort
+
     @agenda_do_dia.each do |k, agenda|
       agenda.sort! {|x, y| (x.horario[0..1].to_i * 3600 + x.horario[1..2].to_i * 60) <=> (y.horario[0..1].to_i * 3600 + y.horario[1..2].to_i * 60)}
     end
