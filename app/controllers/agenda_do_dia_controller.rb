@@ -10,7 +10,11 @@ class AgendaDoDiaController < ApplicationController
     @data_inicial = Date.parse(params[:"data-inicial"])
     @data_final = Date.parse(params[:"data-final"])
 
-    load_agenda
+    if @data_inicial <= @data_final
+      load_agenda
+    else
+      flash[:error] = "Data Inicial deve ser menor ou igual a Data Final!"
+    end
 
     render 'agenda'
   end

@@ -20,6 +20,13 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
+  def chk_horarios?(hora_presenca, hora_atual)
+    hora_presenca = Time.strptime(hora_presenca, "%H:%M").seconds_since_midnight
+    hora_registrada = Time.strptime(hora_atual, "%H:%M").seconds_since_midnight
+
+    (hora_registrada >= (hora_presenca - 900)) && (hora_registrada <= (hora_presenca + 3600))
+  end
+
   def get_presenca data_atual, hora_atual
     matricula =  HorarioDeAula.joins(:matricula).where(:dia_da_semana => data_atual.wday).where(:"matriculas.aluno_id" => self.id)
     horario_na_matricula = 0
@@ -28,16 +35,20 @@ class Aluno < ActiveRecord::Base
       horario_na_matricula = horario[0..1].to_i * 3600 + horario[1..2].to_i * 60
     end
 
-    presenca = Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
+    p = Presenca.where(:aluno_id => self.id).where(:data => data_atual)
     horario_na_reposicao = 0
-    if not presenca.blank?
-      if presenca.reposicao
-        horario_na_reposicao = presenca.horario
-        if not horario_na_reposicao.blank?
-          horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60
+    if not p.blank?
+      p.each do |presenca|
+        p = presenca
+        next if not chk_horarios?(presenca.horario, hora_atual)
+        if presenca.reposicao
+          horario_na_reposicao = presenca.horario
+          if not horario_na_reposicao.blank?
+            horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60
+          end
+        elsif presenca.presenca
+          return presenca
         end
-      elsif presenca.presenca
-        return presenca
       end
     end
 
@@ -52,8 +63,8 @@ class Aluno < ActiveRecord::Base
     dif_hora_matricula = dif_hora_matricula * -1 if dif_hora_matricula < 0
     dif_hora_reposicao = dif_hora_reposicao * -1 if horario_na_reposicao < 0
 
-    if dif_hora_reposicao < dif_hora_matricula
-      return presenca
+    if not p.blank? and dif_hora_reposicao < dif_hora_matricula
+      return p
     else
       return nil
     end
@@ -68,8 +79,8 @@ class Aluno < ActiveRecord::Base
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-#    hora_atual = Time.now.strftime("%H:%M")
-#    data_atual = Date.today
+    hora_atual = Time.now.strftime("%H:%M")
+    data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)

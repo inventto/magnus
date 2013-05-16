@@ -1,7 +1,13 @@
 <script type="text/javascript">
    $('#signed-in').show('fade', 1000);
    setTimeout("$('#signed-in').slideUp();", 5000);
+   $('.message-error').show('fade', 1000);
+   setTimeout("$('.message-error').slideUp();", 5000);
 </script>
+<% if flash[:error] %>
+  <div class="message-error border"><%= flash[:error] %></div>
+  <% flash[:error] = nil %>
+<% end %>
 <div id="filtros">
   <form action="<%= agenda_do_dia_filtrar_path %>" method="GET">
     <label for="data_inicial">Data inicial:</label>
@@ -31,8 +37,10 @@
     <% else %>
       <table>
         <% dia_atual = @data_inicial %>
+        <% primeiro = true %>
         <% while(dia_atual <= @data_final) %>
           <% @agenda_do_dia.each do |dia, agenda|%>
+            <% next if primeiro and dia < dia_atual.wday %>
             <% if (dia_atual.wday > dia)
                  dia_atual += 7 - (dia_atual.wday - dia)
                else
@@ -46,11 +54,12 @@
               <% if exibir_aluno?(aluno_id, dia_atual) %>
                 <tr>
                   <td><%= horario = a.horario %> - <%= final_do_horario(horario) %>: <%= a.matricula.aluno.nome rescue a.aluno.nome %></td>
-                  <td><%= status_presenca(a) %></td>
+                  <td><%= status_presenca(a, dia_atual) %></td>
                 </tr>
               <% end %>
             <% end %>
           <% end %>
+          <% primeiro = false %>
           <% break if dia_atual == @data_final %>
         <% end %>
       </table>
