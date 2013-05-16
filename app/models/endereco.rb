@@ -9,6 +9,9 @@ class Endereco < ActiveRecord::Base
     if logradouro
       descricao << logradouro
     end
-    descricao << "-" << numero
+    if numero
+      descricao << "-" << numero
+    end
+    descricao
   end
 end
