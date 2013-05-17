@@ -184,7 +184,10 @@ i{
   background-color: lightgray;
   padding: 2px;
   text-align: center;
-  width: 390px;
+  width: 390px !important;
+}
+td:nth-child(1) {
+  width: 85px;
 }
 .foto-input, .carrierwave_controls img {
   margin-bottom: 10px;
