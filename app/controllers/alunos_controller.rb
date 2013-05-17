@@ -17,11 +17,9 @@ class AlunosController < ApplicationController
 
   def gerar_codigo_de_acesso
     codigo = ""
+
     if data = params[:nascimento] and not data.blank?
-      nome = params[:nome].downcase
-
       codigo = data[0..1] << data[3..4] << data[8..9]
-
       count = 4
       while(codigo_existe?(codigo))
         codigo[0] = count.to_s

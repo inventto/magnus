@@ -2,6 +2,8 @@
 class Aluno < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
 
+  before_save :chk_codigo_de_acesso
+
   has_many :telefones, :dependent => :destroy
   belongs_to :endereco
   has_one :matricula, :dependent => :destroy
@@ -11,7 +13,7 @@ class Aluno < ActiveRecord::Base
   validates_presence_of :nome, :data_nascimento
   validates_format_of :email, :with => /^([[^õüãáéíóúç]^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :message => 'Inválido!', :unless => "email.blank?"
   validates :cpf, :uniqueness => true, :unless => "cpf.blank?"
-  validates :codigo_de_acesso, :presence => true, :uniqueness => true
+  validates :codigo_de_acesso, :uniqueness => true
 
   validates_each :cpf do |model, attr, value|
     if not value.blank?
@@ -184,6 +186,25 @@ class Aluno < ActiveRecord::Base
   end
 
   private
+
+  def chk_codigo_de_acesso
+    if self.codigo_de_acesso.blank?
+      data = self.data_nascimento
+      data = data.strftime("%d/%m/%Y")
+      codigo = data[0..1] << data[3..4] << data[8..9]
+      count = 4
+      while(codigo_existe?(codigo))
+        codigo[0] = count.to_s
+        count += 1
+      end
+      self.codigo_de_acesso = codigo
+    end
+  end
+
+  def codigo_existe?(codigo)
+    Aluno.find_by_codigo_de_acesso(codigo)
+  end
+
   DIVISOR = 11
 
   CPF_LENGTH = 11
