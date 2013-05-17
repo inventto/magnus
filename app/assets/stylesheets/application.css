@@ -186,3 +186,6 @@ i{
   text-align: center;
   width: 390px;
 }
+.foto-input, .carrierwave_controls img {
+  margin-bottom: 10px;
+}
