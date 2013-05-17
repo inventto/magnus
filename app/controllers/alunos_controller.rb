@@ -22,16 +22,11 @@ class AlunosController < ApplicationController
 
       codigo = data[0..1] << data[3..4] << data[8..9]
 
-      if codigo_existe? codigo
-        for i in 0..(codigo.length - 1)
-          for j in 0..(nome.length - 1)
-            codigo[i] = nome[j]
-            break unless existe = codigo_existe?(codigo)
-          end
-          break unless existe
-        end
+      count = 4
+      while(codigo_existe?(codigo))
+        codigo[0] = count.to_s
+        count += 1
       end
-    else
     end
 
     render :text => codigo

@@ -22,7 +22,7 @@ module AlunosHelper
                       if (codigo != '') {
                         $('[name=\"record[codigo_de_acesso]\"]').val(codigo);
                       } else {
-                        alert('Atenção!Para gerar o código de acesso informe a data de nascimento!');
+                        jAlert('Para gerar o código de acesso informe a data de nascimento!', 'Atenção');
                       }
                     });
                  }

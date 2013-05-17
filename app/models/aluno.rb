@@ -80,8 +80,8 @@ class Aluno < ActiveRecord::Base
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-    hora_atual = Time.now.strftime("%H:%M")
-    data_atual = Date.today
+#    hora_atual = Time.now.strftime("%H:%M")
+#    data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
