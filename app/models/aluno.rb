@@ -106,7 +106,7 @@ class Aluno < ActiveRecord::Base
       mes = self.data_nascimento.month
       data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
       aniversario = Time.mktime(Time.now().year(), mes, dia)
-      ((Time.now() - 30.day)..(Time.now() + 30.day)).cover?(aniversario)
+      ((Time.now().beginning_of_month)..(Time.now().end_of_month)).cover?(aniversario)
     end
   end
 
@@ -116,7 +116,7 @@ class Aluno < ActiveRecord::Base
       mes = self.data_nascimento.month
       data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
       aniversario = Time.mktime(Time.now().year(), mes, dia)
-      ((Time.now() - 4.day)..(Time.now() + 4.day)).cover?(aniversario)
+      ((Time.now().beginning_of_week)..(Time.now().end_of_week)).cover?(aniversario)
     end
   end
 

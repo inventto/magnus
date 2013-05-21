@@ -25,6 +25,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/gerar_codigo_de_acesso", to: "alunos#gerar_codigo_de_acesso"
 
+  match "/aniversariantes", to: "aniversariantes_do_mes#aniversariantes"
+
   get "/agenda_do_dia/filtrar"
 
   post "registro_presenca/registrar"
