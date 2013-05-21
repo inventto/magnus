@@ -49,7 +49,7 @@
                end
             %>
             <% break if dia_atual > @data_final %>
-            <tr><td class="titulo_dia" colspan="3"><%= HorarioDeAula::DAYNAMES[dia] %>  <%= dia_atual.strftime("%d/%m/%Y") %></td></tr>
+            <tr><td class="titulo_dia" colspan="3"><%= Date::DAYNAMES[dia] %>  <%= dia_atual.strftime("%d/%m/%Y") %></td></tr>
             <% agenda.each do |a| %>
               <% aluno_id = a.matricula.aluno.id rescue a.aluno.id %>
               <% if exibir_aluno?(aluno_id, dia_atual) %>

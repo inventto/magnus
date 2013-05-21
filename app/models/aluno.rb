@@ -102,11 +102,12 @@ class Aluno < ActiveRecord::Base
 
   def esta_de_aniversario_esse_mes?
     if self.data_nascimento
-      dia = self.data_nascimento.day
+#      dia = self.data_nascimento.day
       mes = self.data_nascimento.month
-      data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
-      aniversario = Time.mktime(Time.now().year(), mes, dia)
-      ((Time.now().beginning_of_month)..(Time.now().end_of_month)).cover?(aniversario)
+#     data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
+#      aniversario = Time.mktime(Time.now().year(), mes, dia)
+#      ((Time.now().beginning_of_month)..(Time.now().end_of_month)).cover?(aniversario)
+      mes == Time.now.month
     end
   end
 
