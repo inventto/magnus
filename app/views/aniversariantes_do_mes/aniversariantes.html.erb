@@ -18,7 +18,7 @@
     ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i].upcase %>
   </div>
   <br />
-  <% dia_nasc = Date.today.day %>
+  <% dia_nasc = 0 %>
   <% first = true %>
   <% @aniversariantes.each do |aniversariante| %>
     <% data_nasc = aniversariante.data_nascimento %>
@@ -27,10 +27,10 @@
         </ul>
       <% end %>
       <div class="aniver-title">
-        <% if dia != Date.today.day %>
+        <% if dia != Date.today.day || data_nasc.month != Date.today.month %>
           <% data = Time.mktime(Time.now.year, data_nasc.month, data_nasc.day) %>
           <%= Date::DAYNAMES[data.wday] %> <%= data.strftime("%d/%m/%Y") %>
-        <% else %>
+        <% elsif data_nasc.month == Date.today.month %>
           <strong>HOJE</strong> <%= Date::DAYNAMES[Date.today.wday] %> <%= Date.today.strftime("%d/%m/%Y") %>
         <% end %>
       </div>
