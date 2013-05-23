@@ -189,9 +189,14 @@ i{
   float: right;
   margin: -10px;
 }
-#filtros {
-  width: 575px;
+.filtros {
   margin: 0 auto;
+}
+.mes{
+  width: 350px;
+}
+.periodo {
+  width: 575px;
 }
 .titulo_dia {
   border: 1px solid black;

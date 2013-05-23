@@ -15,14 +15,18 @@ module AlunosHelper
     script = "<script type='text/javascript'>
                  function gerarCodigoDeAcesso() {
                     var jqxhr = $.ajax({
-                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&nome='+$('[name=\"record[nome]\"]').val()
+                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&id='+$(\".id\").text()
                     });
                     jqxhr.always(function () {
                       codigo = jqxhr.responseText
                       if (codigo != '') {
                         $('[name=\"record[codigo_de_acesso]\"]').val(codigo);
                       } else {
-                        jAlert('Para gerar o código de acesso informe a data de nascimento!', 'Atenção');
+                        var data = $('[name=\"record[data_nascimento]\"]').val();
+                        data = data.replace(/\D/g, \"\"); //caso o campo data venha com apenas os caracteres da formatação do campo ( __/__/____ )
+                        if (data == \"\") {
+                          jAlert('Para gerar o código de acesso informe a data de nascimento!', 'Atenção');
+                        }
                       }
                     });
                  }

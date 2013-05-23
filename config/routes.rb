@@ -29,6 +29,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   get "/agenda_do_dia/filtrar"
 
+  get "/aniversariantes_do_mes/filtrar"
+
   post "registro_presenca/registrar"
 
   post "registro_presenca/registro_android"

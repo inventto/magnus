@@ -8,7 +8,7 @@
   <div class="message-error border"><%= flash[:error] %></div>
   <% flash[:error] = nil %>
 <% end %>
-<div id="filtros">
+<div class="filtros periodo">
   <form action="<%= agenda_do_dia_filtrar_path %>" method="GET">
     <label for="data_inicial">Data inicial:</label>
     <input name="data-inicial" type="date" value="<%= @data_inicial %>" />

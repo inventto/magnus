@@ -18,16 +18,28 @@ class AlunosController < ApplicationController
   def gerar_codigo_de_acesso
     codigo = ""
 
-    if data = params[:nascimento] and not data.blank?
-      codigo = data[0..1] << data[3..4] << data[8..9]
-      count = 4
-      while(codigo_existe?(codigo))
-        codigo[0] = count.to_s
-        count += 1
+    if not aluno_possui_codigo_de_acesso?
+      if data = params[:nascimento] and not data.blank?
+        codigo = data[0..1] << data[3..4] << data[8..9]
+        count = 4
+        while(codigo_existe?(codigo))
+          codigo[0] = count.to_s
+          count += 1
+        end
       end
     end
 
     render :text => codigo
+  end
+
+  def aluno_possui_codigo_de_acesso?
+    return false if params[:id].blank?
+    aluno = Aluno.find(params[:id])
+    if aluno.codigo_de_acesso.blank?
+      return false
+    else
+      return true
+    end
   end
 
   def codigo_existe?(codigo)
