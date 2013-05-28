@@ -31,7 +31,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def get_presenca data_atual, hora_atual
-    matricula =  HorarioDeAula.joins(:matricula).where(:dia_da_semana => data_atual.wday).where(:"matriculas.aluno_id" => self.id)
+    matricula =  HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)
     horario_na_matricula = 0
     if not matricula.blank?
       horario = matricula[0].horario
@@ -129,7 +129,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def esta_fora_de_horario?
-    @horario = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => self.id).where(:dia_da_semana => Date.today.wday)[0]
+    @horario = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, Date.today.wday)[0]
     if @horario.nil?
       if not aula_de_reposicao?
         return true
