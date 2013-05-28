@@ -14,14 +14,14 @@ module ApplicationHelper
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 
     if presenca_id.blank?
-      presenca = presenca.where(:aluno_id => aluno_id, :data => Time.now).where("reposicao is null or reposicao = false")
+      presenca = presenca.where(:aluno_id => aluno_id).where("reposicao is null or reposicao = false")
     else
       presenca = presenca.where(:id => presenca_id)
     end
 
     if not presenca.blank?
       presenca = presenca[0]
-
+      puts "==[aluno_id #{aluno_id} - dia #{dia_atual} - "
       return aniversario.html_safe if not chk_horarios?(agenda.horario, presenca.horario)
 
       retorno = ""
