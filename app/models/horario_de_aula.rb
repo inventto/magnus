@@ -2,10 +2,10 @@
 class HorarioDeAula < ActiveRecord::Base
   attr_accessible :dia_da_semana, :horario, :matricula_id
 
+  scope :do_aluno_pelo_dia_da_semana, lambda { |aluno_id, dia| joins(:matricula).where(:"matriculas.aluno_id" => aluno_id).where(:dia_da_semana => dia) }
+
   belongs_to :matricula
   validates_presence_of :horario
-
-  scope :do_aluno_pelo_dia_da_semana, lambda { |aluno_id, dia| joins(:matricula).where(:"matriculas.aluno_id" => aluno_id).where(:dia_da_semana => dia) }
 
   DIAS = {:"Domingo" => "0", :"Segunda" => "1", :"Terça" => "2", :"Quarta" => "3", :"Quinta" => "4", :"Sexta" => "5", :"Sábado" => "6"}
 

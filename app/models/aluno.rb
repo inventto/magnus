@@ -2,6 +2,8 @@
 class Aluno < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
 
+  scope :de_aniversario_no_mes, lambda { |mes| where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :id).order("extract(day from data_nascimento)") }
+
   before_save :chk_codigo_de_acesso
 
   has_many :telefones, :dependent => :destroy
