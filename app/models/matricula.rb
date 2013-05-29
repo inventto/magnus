@@ -6,6 +6,7 @@ class Matricula < ActiveRecord::Base
   has_many :horario_de_aula, :dependent => :destroy
 
   validates_presence_of :aluno
+  validates_uniqueness_of :aluno_id
   validates_presence_of :horario_de_aula
   validates_presence_of :data_inicio
   validates_numericality_of :numero_de_aulas_previstas, :unless => "numero_de_aulas_previstas.blank?"

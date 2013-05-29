@@ -21,7 +21,7 @@ module ApplicationHelper
 
     if not presenca.blank?
       presenca = presenca[0]
-      puts "==[aluno_id #{aluno_id} - dia #{dia_atual} - "
+
       return aniversario.html_safe if not chk_horarios?(agenda.horario, presenca.horario)
 
       retorno = ""
@@ -42,10 +42,13 @@ module ApplicationHelper
           retorno = "<img src='/assets/falta_justif.png' title='Falta Justificada' />"
         end
         if presenca.reposicao
-          if get_in_seconds(presenca.horario) < get_in_seconds()
-            retorno << "<img src='/assets/reposicao.png' title='Reposição' />"
-          else
+          hora_atual = get_in_seconds()
+          hora_presenca = get_in_seconds(presenca.horario)
+
+          if (presenca.data == Date.today) and ( (hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600)) )
             retorno = "<img src='/assets/reposicao.png' title='Reposição' />"
+          else
+            retorno << "<img src='/assets/reposicao.png' title='Reposição' />"
           end
         end
         retorno = (aniversario << retorno)
@@ -86,6 +89,25 @@ module ApplicationHelper
   end
 
   def exibir_aluno? aluno_id, dia_atual
-     Matricula.where("data_inicio <= '#{dia_atual}' and (data_fim >= '#{dia_atual}' or data_fim is null)").find_by_aluno_id(aluno_id)
+    ok = true
+    mat = Matricula.where("data_inicio <= '#{dia_atual}' and (data_fim >= '#{dia_atual}' or data_fim is null)").find_by_aluno_id(aluno_id)
+    if mat.blank?
+      ok = false
+    else
+      p = Presenca.where(:aluno_id => aluno_id, :data => dia_atual)[0]
+      if p.blank? # se a presença ainda não tiver sido lançada
+        hor = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, dia_atual.wday)
+        if hor.blank? # se não existir horário de aula para aquele aluno no dia da semana tal
+          ok = false
+        end
+      else
+        if p.reposicao? # caso exista presença e a mesma for reposição
+          if p.data != dia_atual # e a data da reposição for diferente do dia em questão
+            ok = false
+          end
+        end
+      end
+    end
+    return ok
   end
 end
