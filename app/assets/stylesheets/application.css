@@ -48,6 +48,15 @@ body{
   color: #000;
   background: #fff;
 }
+.menu li ul {
+  display: none;
+  background-color: #EDF7F7;
+  padding: 5px 0;
+}
+.menu li:hover ul {
+  display: block;
+  position: absolute;
+}
 #aniversariantes,
 #agenda{
   width:400px;
@@ -81,8 +90,6 @@ i{
 }
 #titulo_agenda {
   padding: 6px;
-}
-#agenda #titulo_agenda {
   text-align: center;
   font-size: 18px;
 }
@@ -216,3 +223,4 @@ td:nth-child(1) {
   list-style-image: url("/assets/aniversario.png");
   margin-top: 5px;
 }
+

@@ -1,0 +1,40 @@
+<div class="active-scaffold">
+  <table>
+    <tr>
+      <th><a href="#">Código</a></th>
+      <th><a href="#">Nome</a></th>
+      <th><a href="#">Seg</a></th>
+      <th><a href="#">Ter</a></th>
+      <th><a href="#">Qua</a></th>
+      <th><a href="#">Qui</a></th>
+      <th><a href="#">Sex</a></th>
+      <th><a href="#">Sáb</a></th>
+      <th><a href="#">Motivo da Interrupção</a></th>
+      <th><a href="#">Data de Inicio</a></th>
+      <th><a href="#">Data de Interrupção</a></th>
+      <th><a href="#">Tempo de Permanencia</a></th>
+      <th><a href="#">Frequência Semanal</a></th>
+      <th><a href="#">% Faltas</a></th>
+    </tr>
+    <% even_record = false %>
+    <% @matriculas.each do |matricula| %>
+      <tr class="record <%= "even-record" if even_record %>">
+        <td><%= matricula.aluno_id %></td>
+        <td><%= matricula.aluno.nome %></td>
+        <td><%= matricula.hora_da_aula 1 %></td>
+        <td><%= matricula.hora_da_aula 2 %></td>
+        <td><%= matricula.hora_da_aula 3 %></td>
+        <td><%= matricula.hora_da_aula 4 %></td>
+        <td><%= matricula.hora_da_aula 5 %></td>
+        <td><%= matricula.hora_da_aula 6 %></td>
+        <td></td>
+        <td><%= matricula.data_inicio %></td>
+        <td><%= matricula.data_fim %></td>
+        <td><%= ((matricula.data_fim - matricula.data_inicio).to_i / 30.0).ceil %></td>
+        <td><%= matricula.horario_de_aula.count %></td>
+        <td><%= matricula.percentual_de_faltas * 100 %>%</td>
+      </tr>
+      <% even_record = !even_record %>
+    <% end %>
+  </table>
+</div>

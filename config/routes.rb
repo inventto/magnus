@@ -19,6 +19,10 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :horarios_de_aula do as_routes end
   resources :tipos_telefone do as_routes end
 
+  match "/clientes_inativos", to: "clientes_inativos#index"
+
+  match "/clientes_que_perdemos", to: "clientes_que_perdemos#index"
+
   match "/agenda_do_dia", to: "agenda_do_dia#agenda"
 
   match "/registro_presenca", to: "registro_presenca#index"

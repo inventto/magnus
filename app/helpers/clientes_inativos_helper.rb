@@ -1,0 +1,2 @@
+module ClientesInativosHelper
+end
