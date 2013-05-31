@@ -31,8 +31,12 @@ class Matricula < ActiveRecord::Base
   end
 
   def percentual_de_faltas
-   Presenca.count(:conditions =>["aluno_id = ? and data between ? and ? and presenca = false", aluno_id, data_inicio, data_fim]) /
-   Presenca.count(:conditions =>["aluno_id = ? and data between ? and ?", aluno_id, data_inicio, data_fim])
+   faltas = Presenca.count(:conditions =>["aluno_id = ? and data between ? and ? and presenca = false", aluno_id, data_inicio, data_fim])
+   presencas = Presenca.count(:conditions =>["aluno_id = ? and data between ? and ?", aluno_id, data_inicio, data_fim])
+   if presencas > 0
+     return faltas / presencas
+   else
+     return 0
+   end
   end
-
 end

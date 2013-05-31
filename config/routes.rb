@@ -19,6 +19,8 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :horarios_de_aula do as_routes end
   resources :tipos_telefone do as_routes end
 
+  match "/graficos", to: "graficos#index"
+
   match "/clientes_inativos", to: "clientes_inativos#index"
 
   match "/clientes_que_perdemos", to: "clientes_que_perdemos#index"

@@ -55,7 +55,6 @@ body{
 }
 .menu li:hover ul {
   display: block;
-  position: absolute;
 }
 #aniversariantes,
 #agenda{

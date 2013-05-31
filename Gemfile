@@ -7,6 +7,7 @@ gem 'devise'
 gem 'pg'
 gem 'active_scaffold'
 gem 'carrierwave'
+#gem 'highcharts-rails'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
