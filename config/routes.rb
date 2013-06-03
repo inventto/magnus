@@ -21,6 +21,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/graficos", to: "graficos#index"
 
+  match "/quadro_de_horarios", to: "quadro_de_horarios#index"
+
   match "/clientes_inativos", to: "clientes_inativos#index"
 
   match "/clientes_que_perdemos", to: "clientes_que_perdemos#index"

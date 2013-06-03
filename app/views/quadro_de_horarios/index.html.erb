@@ -1,0 +1,21 @@
+<h2 id="title_personal">Personal Training</h2>
+<h4 id="title_horario">Manhã</h4>
+<table id="quadro_de_horarios">
+  <thead>
+    <tr>
+      <th></th>
+      <% (1..6).each do |day| %>
+        <th><%= Date::DAYNAMES[day] %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% (6..12).each do |hora| %>
+      <tr>
+        <td><%= hr = hora.to_s + ":00" %>-<%= final_do_horario(hr) %></td>
+        <% (1..6).each do |dia| %>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

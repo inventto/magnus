@@ -7,7 +7,7 @@ class MatriculasController < ApplicationController
     conf.columns[:data_fim].label = "Data de Interrupção"
     conf.columns[:numero_de_aulas_previstas].label = "Número de Aulas Previstas"
     conf.columns[:horario_de_aula].label = "Horário de Aula"
-    conf.columns = [:aluno, :data_matricula, :data_inicio, :data_fim, :numero_de_aulas_previstas, :objetivo, :horario_de_aula]
+    conf.columns = [:aluno, :vip, :data_matricula, :data_inicio, :data_fim, :numero_de_aulas_previstas, :objetivo, :horario_de_aula]
     conf.columns[:horario_de_aula].show_blank_record = false
     conf.columns[:aluno].form_ui = :select
     conf.actions.swap :search, :field_search

@@ -227,4 +227,6 @@ td:nth-child(1) {
   list-style-image: url("/assets/aniversario.png");
   margin-top: 5px;
 }
-
+#quadro_de_horarios, th, tr, td {
+  border: 1px solid black;
+}
