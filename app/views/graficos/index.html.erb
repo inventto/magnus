@@ -1,26 +1,123 @@
-<div id="container" style="height: 400px; min-width: 600px"></div>
+<div id="clientes_perdidos_por_mes" style="height: 400px; min-width: 600px"></div>
+<div id="clientes_perdidos_por_dia_da_semana" style="height: 400px; min-width: 600px"></div>
+<div id="rotatividade_de_clientes" style="height: 400px; min-width: 600px"></div>
 <script src="http://code.highcharts.com/stock/highstock.js"></script>
 <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
 <script>
 $(function() {
-   var chart = new Highcharts.Chart({
+   new Highcharts.Chart({
      chart: {
-      renderTo: 'container',
+      renderTo: 'clientes_perdidos_por_mes',
       type: 'column'
      },
      title: {
-       text: "Clientes que Perdemos"
+       text: "Clientes que Perdemos por Mês"
+     },
+     xAxis: {
+       categories: <%= @meses.to_s.html_safe %>
+     },
+     yAxis: {
+       tickInterval: 1,
+       title: {
+         text: 'Quantidade de clientes'
+       }
+     },
+     plotOptions: {
+         column: {
+             dataLabels: {
+                 enabled: true,
+                 color: 'black',
+                 formatter: function() {
+                   return Math.round(100 * this.y / <%= @total_clientes_perdidos %>) + '%';
+                 }
+             }
+         }
      },
      legend: {
        enabled: false
-      },
-      rangeSelector: {
-        selected: 1
-      },
-      series: [{
-        pointStart: <%= Date::MONTHNAMES.each {|mes| mes}%>
-        data: [1,2 ,3,4,5,6]
-      }]
+     },
+     rangeSelector: {
+       selected: 1
+     },
+     series: [{
+       data: <%= @clientes_que_perdemos_por_mes.to_s.html_safe %>
+     }]
+    });
+    new Highcharts.Chart({
+     chart: {
+      renderTo: 'clientes_perdidos_por_dia_da_semana',
+      type: 'column'
+     },
+     title: {
+       text: "Clientes que Perdemos por Semana"
+     },
+     xAxis: {
+       categories: <%= Date::DAYNAMES.to_s.html_safe %>
+     },
+     yAxis: {
+       tickInterval: 1,
+       title: {
+         text: 'Quantidade de clientes'
+       }
+     },
+     plotOptions: {
+         column: {
+             dataLabels: {
+                 enabled: true,
+                 color: 'black',
+                 formatter: function() {
+                   return Math.round(100 * this.y / <%= @total_clientes_perdidos_dia_da_semana %>) + '%';
+                 }
+             }
+         }
+     },
+     legend: {
+       enabled: false
+     },
+     rangeSelector: {
+       selected: 1
+     },
+     series: [{
+       data: <%= @clientes_que_perdemos_por_dia_da_semana.to_s.html_safe %>
+     }]
+    });
+    new Highcharts.Chart({
+     chart: {
+      renderTo: 'rotatividade_de_clientes',
+      type: 'column'
+     },
+     title: {
+       text: "Rotatividade de Clientes por Mês e Ano"
+     },
+     xAxis: {
+       categories: <%= @rotatividade_keys.to_s.html_safe %>
+     },
+     yAxis: {
+       tickInterval: 1,
+       title: {
+         text: 'Quantidade de clientes'
+       }
+     },
+     plotOptions: {
+         column: {
+             dataLabels: {
+                 enabled: true,
+                 color: 'black',
+                 formatter: function() {
+                   return Math.round(100 * this.y / <%= @total_clientes_perdidos_dia_da_semana %>) + '%';
+                 }
+             }
+         }
+     },
+     legend: {
+       enabled: false
+     },
+     rangeSelector: {
+       selected: 1
+     },
+     series: [{
+       data: <%= @rotatividade_de_clientes.to_s.html_safe %>
+     }]
     });
   });
 </script>

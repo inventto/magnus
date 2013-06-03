@@ -52,6 +52,11 @@ body{
   display: none;
   background-color: #EDF7F7;
   padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+}
+.menu li ul li {
+  float: none;
 }
 .menu li:hover ul {
   display: block;
