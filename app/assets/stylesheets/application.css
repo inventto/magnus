@@ -230,14 +230,18 @@ td:nth-child(1) {
 #quadro_de_horarios h2 {
   text-align: center;
 }
+#quadro_de_horarios table {
+  width: 700px;
+}
 #quadro_de_horarios {
-  width: 605px;
+  width: 705px;
   margin: 0 auto;
 }
 #quadro_de_horarios th,
 #quadro_de_horarios table tr td {
   border: 1px solid black;
   padding: 3px;
+  width: 14%;
 }
 .vip, .horario_ocupado {
   background-color: #D99694;
