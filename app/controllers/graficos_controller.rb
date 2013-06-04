@@ -8,9 +8,9 @@ class GraficosController < ApplicationController
     @desistentes = Matricula.where("data_fim is not null")
 
     @desistentes_por_mes = @desistentes.group_by{|m| m.data_fim.month}
-    @desistentes_por_mes_e_ano = @desistentes.group_by{|m| "#{m.data_fim.year - 2000}/#{m.data_fim.month}"}
+    @desistentes_por_mes_e_ano = @desistentes.group_by{|m| m.data_fim.strftime("%y")+"/#{m.data_fim.month}"}
 
-    @matriculas_por_mes_e_ano = @matriculas.group_by{|m| "#{m.data_inicio.year - 2000}/#{m.data_inicio.month}"}
+    @matriculas_por_mes_e_ano = @matriculas.group_by{|m| m.data_inicio.strftime("%y")+"/#{m.data_inicio.month}"}
 
     @total_clientes_perdidos = @desistentes.size
     @clientes_que_perdemos_por_mes = (1..12).collect do |mes|
