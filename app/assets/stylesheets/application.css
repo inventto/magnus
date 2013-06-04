@@ -227,6 +227,24 @@ td:nth-child(1) {
   list-style-image: url("/assets/aniversario.png");
   margin-top: 5px;
 }
-#quadro_de_horarios, th, tr, td {
+#quadro_de_horarios h2 {
+  text-align: center;
+}
+#quadro_de_horarios {
+  width: 605px;
+  margin: 0 auto;
+}
+#quadro_de_horarios th,
+#quadro_de_horarios table tr td {
   border: 1px solid black;
+  padding: 3px;
+}
+.vip, .horario_ocupado {
+  background-color: #D99694;
+}
+.horario_disponivel {
+  background-color: #DAFFCD;
+}
+.horario_disponivel, .horario_ocupado, .vip {
+  text-align: center;
 }
