@@ -7,7 +7,9 @@
         <tr>
           <th></th>
           <% (1..6).each do |day| %>
-            <th><%= Date::DAYNAMES[day] %></th>
+            <% if not (day == 6 and periodo != (6..12)) %>
+              <th><%= Date::DAYNAMES[day] %></th>
+            <% end %>
           <% end %>
         </tr>
       </thead>
@@ -17,6 +19,9 @@
             <td><%= hr = format("%.2d", hora) + ":00" %> - <%= final_do_horario(hr) %></td>
             <% achou = false %>
             <% (1..6).each do |dia| %>
+              <% if dia == 6 and hora > 12 %>
+                <% break %>
+              <% end %>
               <% @horarios[dia].each do |horario| %>
                 <% achou = false %>
                 <% if horario[0][0..1].to_i == hora %>
