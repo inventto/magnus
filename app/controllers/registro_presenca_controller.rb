@@ -108,6 +108,9 @@ class RegistroPresencaController < ApplicationController
   def registro_android
     begin
       @aluno = Aluno.joins(:matricula).find_by_codigo_de_acesso(params[:codigo])
+      if not @aluno
+        raise ""
+      end
     rescue
       flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
       render :text => [flash[:error], "codigo_invalido"].join("|") and return
