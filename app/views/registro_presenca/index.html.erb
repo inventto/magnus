@@ -12,6 +12,6 @@
 <div class="registro_presenca">
   <div class="message-error"><%= flash[:error] if flash[:error] %></div>
   <%= form_tag('/registro_presenca/registrar', :method => "post") %>
-  <p><strong>Código do Aluno</strong><%= text_field_tag "id" %></p>
+  <p><strong>Código de Acesso</strong><%= text_field_tag "codigo" %></p>
   <%= submit_tag "Registrar" %>
 </div>
