@@ -61,9 +61,14 @@ body{
 .menu li:hover ul {
   display: block;
 }
+#agenda {
+  width:420px;
+}
+#aniversariantes {
+  width:400px;
+}
 #aniversariantes,
 #agenda{
-  width:400px;
   background: rgba(237, 247, 247, 0.5);
   margin:5px auto;
   border: 2px solid rgb(95, 201, 221);
@@ -215,10 +220,10 @@ i{
   background-color: lightgray;
   padding: 2px;
   text-align: center;
-  width: 390px !important;
+  width: 414px !important;
 }
 td:nth-child(1) {
-  width: 85px;
+  width: 95px;
 }
 .foto-input, .carrierwave_controls img {
   margin-bottom: 10px;
