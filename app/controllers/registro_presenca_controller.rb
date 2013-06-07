@@ -126,6 +126,8 @@ class RegistroPresencaController < ApplicationController
       flash[:error] = "Aluno já possui Presença Registrada!"
       render :text => [flash[:error], "aluno_possui_presenca"].join("|") and return
     end
+    return if not params[:time_millis].nil? # caso venha o time_millis significa que nada será exibido ao usuário, logo não havendo necessidade de executar os códigos abaixo
+
     saudacao
     @mensagem_sonora = ""
     notice = []

@@ -26,8 +26,8 @@ class Aluno < ActiveRecord::Base
   SEX = %w(M F)
 
   def chk_horarios?(hora_presenca, hora_atual)
-    hora_presenca = Time.strptime(hora_presenca, "%H:%M").seconds_since_midnight
-    hora_registrada = Time.strptime(hora_atual, "%H:%M").seconds_since_midnight
+    hora_presenca = txt_to_seg(hora_presenca)
+    hora_registrada = txt_to_seg(hora_atual)
 
     (hora_registrada >= (hora_presenca - 900)) && (hora_registrada <= (hora_presenca + 3600))
   end
@@ -57,7 +57,7 @@ class Aluno < ActiveRecord::Base
       end
     end
 
-    hora_atual = Time.strptime(hora_atual, "%H:%M").seconds_since_midnight
+    hora_atual = txt_to_seg(hora_atual)
 
     dif_hora_matricula = 0
     dif_hora_reposicao = 0
@@ -75,6 +75,13 @@ class Aluno < ActiveRecord::Base
     end
   end
 
+  def get_pontualidade hora_atual
+    horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0].horario
+    horario_de_aula = txt_to_seg(horario_de_aula)
+    hora_atual = txt_to_seg(hora_atual)
+    ((horario_de_aula - hora_atual) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
+  end
+
   def registrar_presenca time_millis
     if time_millis.nil?
       @hora_certa = (Time.now + Time.zone.utc_offset)
@@ -90,7 +97,7 @@ class Aluno < ActiveRecord::Base
 #    data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if @presenca.nil?
-      presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
+      presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true, :pontualidade => get_pontualidade(hora_atual))
       if esta_fora_de_horario? || esta_no_dia_errado?
         presenca.fora_de_horario = true
       end
@@ -129,7 +136,7 @@ class Aluno < ActiveRecord::Base
 
   def chk_horarios? hora_registrada, hora_da_aula
     hora_registrada = hora_registrada.seconds_since_midnight
-    hora_da_aula = Time.strptime(hora_da_aula, "%H:%M").seconds_since_midnight
+    hora_da_aula = txt_to_seg(hora_da_aula)
     (hora_registrada >= (hora_da_aula - 900)) && (hora_registrada <= (hora_da_aula + 3600))
   end
 
@@ -184,6 +191,10 @@ class Aluno < ActiveRecord::Base
     if not presenca.blank?
       return (not presenca.last.presenca and presenca.last.justificativa_de_falta.nil?)
     end
+  end
+
+  def txt_to_seg hora
+    Time.strptime(hora, "%H:%M").seconds_since_midnight
   end
 
   def label
