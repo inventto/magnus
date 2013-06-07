@@ -77,8 +77,9 @@ class Aluno < ActiveRecord::Base
 
   def registrar_presenca time_millis
     if time_millis.nil?
-      hora_atual = (Time.now + Time.zone.utc_offset).strftime("%H:%M")
-      data_atual = Date.today
+      hora_certa = (Time.now + Time.zone.utc_offset)
+      hora_atual = hora_certa.strftime("%H:%M")
+      data_atual = hora_certa.to_date
     else
       data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
       hora_atual = data_hora.strftime("%H:%M")
