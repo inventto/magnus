@@ -24,7 +24,7 @@ class AgendaDoDiaController < ApplicationController
 
     reposicao_do_dia = consulta_reposicao
 
-    concatena_horarios(agenda, reposicao_do_dia)
+    unir_horarios(agenda, reposicao_do_dia)
 
     agrupa_e_ordena
   end
@@ -62,7 +62,7 @@ class AgendaDoDiaController < ApplicationController
     end
   end
 
-  def concatena_horarios agenda, reposicao
+  def unir_horarios agenda, reposicao
     @agenda_do_dia = []
 
     agenda.each do |a|

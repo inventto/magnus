@@ -22,7 +22,7 @@ module ApplicationHelper
     if not presenca.blank?
       presenca = presenca[0]
 
-      return aniversario.html_safe if not chk_horarios?(agenda.horario, presenca.horario)
+#      return aniversario.html_safe if not chk_horarios?(agenda.horario, presenca.horario)
 
       retorno = ""
       if presenca.presenca
@@ -77,12 +77,12 @@ module ApplicationHelper
     retorno
   end
 
-  def chk_horarios?(horario_agenda, horario_presenca)
+=begin  def chk_horarios?(horario_agenda, horario_presenca)
     agenda = Time.strptime(horario_agenda, "%H:%M").seconds_since_midnight
     presenca = Time.strptime(horario_presenca, "%H:%M").seconds_since_midnight
 
     (presenca >= (agenda - 900)) && (presenca <= (agenda + 3600))
-  end
+=end  end
 
   def final_do_horario horario
     (Time.strptime(horario,"%H:%M") + 3600).strftime("%H:%M")

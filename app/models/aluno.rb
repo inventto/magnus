@@ -89,7 +89,7 @@ class Aluno < ActiveRecord::Base
     @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true)
-      if esta_fora_de_horario?
+      if esta_fora_de_horario? || esta_no_dia_errado?
         presenca.fora_de_horario = true
       end
       presenca.save
@@ -139,8 +139,8 @@ class Aluno < ActiveRecord::Base
       if not chk_horarios?(@hora_registrada, hora_da_aula)
         return true
       end
+      @hora_da_aula = Time.parse(hora_da_aula)
     end
-    @hora_da_aula = Time.parse(hora_da_aula)
     false
   end
 

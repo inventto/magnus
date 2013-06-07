@@ -49,7 +49,7 @@ class RegistroPresencaController < ApplicationController
     if @aluno.esta_no_dia_errado?
       @mensagem_sonora = "dia_errado|"
       flash[:error] = "Hoje não é seu dia normal de aula!"
-      render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
+      return
     end
     if @aluno.aula_de_reposicao?
       @mensagem_sonora = "Hoje é sua Aula de Reposição!"
