@@ -77,15 +77,16 @@ class Aluno < ActiveRecord::Base
 
   def registrar_presenca time_millis
     if time_millis.nil?
-      hora_certa = (Time.now + Time.zone.utc_offset)
-      hora_atual = hora_certa.strftime("%H:%M")
-      data_atual = hora_certa.to_date
+      @hora_certa = (Time.now + Time.zone.utc_offset)
+      hora_atual = @hora_certa.strftime("%H:%M")
+      data_atual = @hora_certa.to_date
     else
       data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-#    hora_atual = Time.now.strftime("%H:%M")
+#    @hora_certa =Time.now  #--> variáveis para teste local
+#    hora_atual = @hora_certa.strftime("%H:%M")
 #    data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
     if @presenca.nil?
@@ -133,10 +134,10 @@ class Aluno < ActiveRecord::Base
   end
 
   def esta_fora_de_horario?
-    @hora_registrada = Time.now + Time.zone.utc_offset
-    @horario = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, Date.today.wday)[0]
-    if not @horario.nil?
-      hora_da_aula = @horario[:horario]
+    @hora_registrada = @hora_certa
+    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0]
+    if not @horario_de_aula.nil?
+      hora_da_aula = @horario_de_aula[:horario]
       if not chk_horarios?(@hora_registrada, hora_da_aula)
         return true
       end
@@ -146,7 +147,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def esta_no_dia_errado?
-    if @horario.nil?
+    if @horario_de_aula.nil?
       if not aula_de_reposicao?
         return true
       end
@@ -161,12 +162,12 @@ class Aluno < ActiveRecord::Base
   def minutos_atrasados
     dif = @hora_registrada - @hora_da_aula
     min = dif / 60
-    seg = dif % 60
-    if seg.round < 10
-      seg = "0" << seg.round.to_s
-    else
-      seg = seg.round.to_s
-    end
+#    seg = dif % 60
+#    if seg.round < 10
+#      seg = "0" << seg.round.to_s
+#    else
+#      seg = seg.round.to_s
+#    end
     min.round.to_s
   end
 
@@ -175,7 +176,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def primeira_aula?
-    @horario.matricula.data_inicio == Date.today
+    @horario_de_aula.matricula.data_inicio == @hora_certa.to_date
   end
 
   def faltou_aula_passada_sem_justificativa?
