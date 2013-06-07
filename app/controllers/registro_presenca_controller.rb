@@ -86,8 +86,8 @@ class RegistroPresencaController < ApplicationController
 
   def marcar_falta
     if not hoje_eh_feriado?
-      #horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => Time.now.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < (EXTRACT(HOUR FROM CURRENT_TIME) * 3600 + EXTRACT(MINUTE FROM CURRENT_TIME) * 60)")
-      horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => Time.now.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", (Time.now + Time.zone.utc_offset).hour, (Time.now + Time.zone.utc_offset).min)
+      hora_certa = (Time.now + Time.zone.utc_offset)
+      horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => hora_certa.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", hora_certa.hour, hora_certa.min)
       horarios.each do |horario|
         aluno_id = horario.matricula.aluno.id
         if Presenca.where(:aluno_id => aluno_id).where(:data => Date.today).blank?
