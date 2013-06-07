@@ -42,9 +42,14 @@ class RegistroPresencaController < ApplicationController
     notice = []
     error = []
     if @aluno.esta_fora_de_horario?
-      @mensagem_sonora = "Hoje não é seu dia normal de aula!"
-      flash[:error] = "Hoje não é seu dia normal de aula!"
+      @mensagem_sonora = "Você está fora do horário da matrícula!"
+      flash[:error] = "Você está fora do horário da matrícula!"
       return
+    end
+    if @aluno.esta_no_dia_errado?
+      @mensagem_sonora = "dia_errado|"
+      flash[:error] = "Hoje não é seu dia normal de aula!"
+      render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
     end
     if @aluno.aula_de_reposicao?
       @mensagem_sonora = "Hoje é sua Aula de Reposição!"
@@ -127,6 +132,11 @@ class RegistroPresencaController < ApplicationController
     error = []
     if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "fora_de_horario|"
+      flash[:error] = "Você está fora do horário da matrícula!"
+      render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
+    end
+    if @aluno.esta_no_dia_errado?
+      @mensagem_sonora = "dia_errado|"
       flash[:error] = "Hoje não é seu dia normal de aula!"
       render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
     end

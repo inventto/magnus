@@ -35,12 +35,14 @@ class GraficosController < ApplicationController
 
    @rotatividade_de_clientes = []
    @rotatividade_keys = @matriculas_por_mes_e_ano.keys.sort
+   @soma_rotatividade = 0
    @rotatividade_keys.each_with_index do |key, i|
      if @desistentes_por_mes_e_ano[i]
        @rotatividade_de_clientes[i] = @matriculas_por_mes_e_ano[key].size - @desistentes_por_mes_e_ano[key].size
      else
        @rotatividade_de_clientes[i] = @matriculas_por_mes_e_ano[key].size
      end
+     @soma_rotatividade += @rotatividade_de_clientes[i]
    end
   end
 end

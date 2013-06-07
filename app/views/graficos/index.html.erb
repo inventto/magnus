@@ -90,7 +90,10 @@ $(function() {
        text: "Rotatividade de Clientes por Mês e Ano"
      },
      xAxis: {
-       categories: <%= @rotatividade_keys.to_s.html_safe %>
+       categories: <%= @rotatividade_keys.to_s.html_safe %>,
+       labels: {
+         rotation: -90
+       }
      },
      yAxis: {
        tickInterval: 1,
@@ -104,7 +107,7 @@ $(function() {
                  enabled: true,
                  color: 'black',
                  formatter: function() {
-                   return Math.round(100 * this.y / <%= @total_clientes_perdidos_dia_da_semana %>) + '%';
+                   return Math.round(100 * this.y / <%= @soma_rotatividade %>) + '%';
                  }
              }
          }

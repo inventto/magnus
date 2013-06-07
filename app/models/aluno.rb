@@ -103,13 +103,8 @@ class Aluno < ActiveRecord::Base
   end
 
   def esta_de_aniversario_esse_mes?
-    if self.data_nascimento
-#      dia = self.data_nascimento.day
-      mes = self.data_nascimento.month
-#     data_nascimento = Time.mktime(self.data_nascimento.year, mes, dia)
-#      aniversario = Time.mktime(Time.now().year(), mes, dia)
-#      ((Time.now().beginning_of_month)..(Time.now().end_of_month)).cover?(aniversario)
-      mes == Time.now.month
+    if (mes = self.data_nascimento)
+      mes.month == Time.now.month
     end
   end
 
@@ -130,15 +125,31 @@ class Aluno < ActiveRecord::Base
     end
   end
 
+  def chk_horarios? hora_registrada, hora_da_aula
+    hora_registrada = hora_registrada.seconds_since_midnight
+    hora_da_aula = Time.strptime(hora_da_aula, "%H:%M").seconds_since_midnight
+    (hora_registrada >= (hora_da_aula - 900)) && (hora_registrada <= (hora_da_aula + 3600))
+  end
+
   def esta_fora_de_horario?
+    @hora_registrada = Time.now + Time.zone.utc_offset
     @horario = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, Date.today.wday)[0]
+    if not @horario.nil?
+      hora_da_aula = @horario[:horario]
+      if not chk_horarios?(@hora_registrada, hora_da_aula)
+        return true
+      end
+    end
+    @hora_da_aula = Time.parse(hora_da_aula)
+    false
+  end
+
+  def esta_no_dia_errado?
     if @horario.nil?
       if not aula_de_reposicao?
         return true
       end
     end
-    @hora_da_aula = Time.parse(@horario[:horario])
-    @hora_registrada = Time.now + Time.zone.utc_offset
     false
   end
 
