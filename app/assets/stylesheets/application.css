@@ -93,6 +93,14 @@ body{
   font-size: 16px;
   padding: 5px;
 }
+#horarios tr td a:visited {
+  color: black;
+}
+#horarios tr td a:hover {
+  text-decoration: underline;
+  background-color: transparent;
+  color: black;
+}
 i{
   display:block;
   clear:both
@@ -222,7 +230,7 @@ i{
   text-align: center;
   width: 414px !important;
 }
-td:nth-child(1) {
+#horarios tr td:nth-child(1) {
   width: 98px;
 }
 .foto-input, .carrierwave_controls img {
