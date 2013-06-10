@@ -39,7 +39,7 @@ class Aluno < ActiveRecord::Base
     if not p.blank?
       p.each do |presenca|
         p = presenca
-        next if not chk_horarios?(presenca.horario, hora_atual)
+        next if not hora_esta_contida_em_horario?(hora_atual, presenca.horario)
         if presenca.reposicao
           horario_na_reposicao = presenca.horario
           if not horario_na_reposicao.blank?
@@ -89,7 +89,7 @@ class Aluno < ActiveRecord::Base
 #    @hora_certa =Time.now  #--> variáveis para teste local
 #    hora_atual = @hora_certa.strftime("%H:%M")
 #    data_atual = Date.today
-    @presenca = get_presenca(data_atual, hora_atual) #Presenca.where(:data => data_atual).find_by_aluno_id(self.id)
+    @presenca = get_presenca(data_atual, hora_atual)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true, :pontualidade => get_pontualidade(hora_atual))
       if esta_fora_de_horario? || esta_no_dia_errado?
@@ -128,16 +128,11 @@ class Aluno < ActiveRecord::Base
     end
   end
 
-  def chk_hora_registrada? hora_registrada, hora_da_aula
-    hora_registrada = hora_registrada.seconds_since_midnight
-    hora_da_aula = txt_to_seg(hora_da_aula)
-    (hora_registrada >= (hora_da_aula - 900)) && (hora_registrada <= (hora_da_aula + 3600))
-  end
+  def hora_esta_contida_em_horario?(hora, horario)
+    hora = txt_to_seg(hora)
+    horario = txt_to_seg(horario)
 
-  def chk_horarios?(hora_presenca, hora_atual)
-    hora_presenca = txt_to_seg(hora_presenca)
-    hora_registrada = txt_to_seg(hora_atual)
-    (hora_registrada >= (hora_presenca - 900)) && (hora_registrada <= (hora_presenca + 3600))
+    (hora >= (horario - 900)) && (hora <= (horario + 3600))
   end
 
   def esta_fora_de_horario?
@@ -145,10 +140,10 @@ class Aluno < ActiveRecord::Base
     @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0]
     if not @horario_de_aula.nil?
       hora_da_aula = @horario_de_aula[:horario]
-      if not chk_hora_registrada?(@hora_registrada, hora_da_aula)
+      if not hora_esta_contida_em_horario?(@hora_registrada.strftime("%H:%M"), hora_da_aula)
         return true
       end
-      @hora_da_aula = Time.parse(hora_da_aula)
+      @hora_da_aula = Time.strptime(hora_da_aula, "%H:%M")
     end
     false
   end
@@ -169,12 +164,6 @@ class Aluno < ActiveRecord::Base
   def minutos_atrasados
     dif = @hora_registrada - @hora_da_aula
     min = dif / 60
-#    seg = dif % 60
-#    if seg.round < 10
-#      seg = "0" << seg.round.to_s
-#    else
-#      seg = seg.round.to_s
-#    end
     min.round.to_s
   end
 
