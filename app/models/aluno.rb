@@ -25,12 +25,6 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
-  def chk_horarios?(hora_presenca, hora_atual)
-    hora_presenca = txt_to_seg(hora_presenca)
-    hora_registrada = txt_to_seg(hora_atual)
-
-    (hora_registrada >= (hora_presenca - 900)) && (hora_registrada <= (hora_presenca + 3600))
-  end
 
   def get_presenca data_atual, hora_atual
     matricula =  HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)
@@ -134,10 +128,16 @@ class Aluno < ActiveRecord::Base
     end
   end
 
-  def chk_horarios? hora_registrada, hora_da_aula
+  def chk_hora_registrada? hora_registrada, hora_da_aula
     hora_registrada = hora_registrada.seconds_since_midnight
     hora_da_aula = txt_to_seg(hora_da_aula)
     (hora_registrada >= (hora_da_aula - 900)) && (hora_registrada <= (hora_da_aula + 3600))
+  end
+
+  def chk_horarios?(hora_presenca, hora_atual)
+    hora_presenca = txt_to_seg(hora_presenca)
+    hora_registrada = txt_to_seg(hora_atual)
+    (hora_registrada >= (hora_presenca - 900)) && (hora_registrada <= (hora_presenca + 3600))
   end
 
   def esta_fora_de_horario?
@@ -145,7 +145,7 @@ class Aluno < ActiveRecord::Base
     @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0]
     if not @horario_de_aula.nil?
       hora_da_aula = @horario_de_aula[:horario]
-      if not chk_horarios?(@hora_registrada, hora_da_aula)
+      if not chk_hora_registrada?(@hora_registrada, hora_da_aula)
         return true
       end
       @hora_da_aula = Time.parse(hora_da_aula)
