@@ -74,6 +74,8 @@ class Aluno < ActiveRecord::Base
     horario_de_aula = txt_to_seg(horario_de_aula)
     hora_atual = txt_to_seg(hora_atual)
     ((horario_de_aula - hora_atual) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
+  rescue # caso o aluno não esteja em algum dia cadastrado nos horarios de aula
+    nil
   end
 
   def registrar_presenca time_millis
@@ -99,6 +101,10 @@ class Aluno < ActiveRecord::Base
     elsif not @presenca.presenca?
       if not @presenca.reposicao?
         @presenca.horario = hora_atual
+        @presenca.pontualidade = get_pontualidade(hora_atual)
+        if esta_fora_de_horario?
+          @presenca.fora_de_horario = true
+        end
       end
       @presenca.presenca = true
       @presenca.save

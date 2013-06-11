@@ -39,7 +39,6 @@ module AlunosHelper
   end
 
   def presencas_column(record, column)
-#    puts "====Record #{record.presencas}"
     inputDisabled = "<input type='checkbox' disabled='disabled' />"
     inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
     conteudo = ""
@@ -52,10 +51,11 @@ module AlunosHelper
       conteudo << "<td>" << ( (presenca.presenca) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.reposicao) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.fora_de_horario) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? "" : presenca.justificativa_de_falta.descricao ) << "</td>"
+      conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? get_link(presenca) : presenca.justificativa_de_falta.descricao ) << "</td>"
       conteudo << "</tr>"
       even_record = !even_record
     end
+
     table = "<div class='active-scaffold'>
        <table>
          <thead>
@@ -75,8 +75,45 @@ module AlunosHelper
        </table>
      </div>"
 
-     input = "" #"<input type='button' id='justificar' value='Justificar Próxima Falta' onclick='' />"
+    hora_certa = Time.now + Time.zone.utc_offset
+    proximo_horario_de_aula = get_proximo_horario_de_aula(record.id, hora_certa)
 
-     (table << input).html_safe
+    data = (hora_certa + (proximo_horario_de_aula.dia_da_semana - hora_certa.wday).day).to_date
+    horario = proximo_horario_de_aula.horario
+
+    next_class = "<br /><h4>Próxima Aula</h4>
+                  <p>Data</p>
+                  <p><input  class='text-input' name='data' type='date' value='#{data.to_date}' /></p>
+                  <p>Horário<p>
+                  <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
+                  <p>Justificativa</p>
+                  <p><input autocomplete='off' class='text-input' id='descricao_justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>"
+
+    input = "<br /><input type='button' id='justificar' value='Justificar Falta' onclick='' />"
+
+    (table << next_class << input).html_safe
+  end
+
+  def get_proximo_horario_de_aula aluno_id, hora_certa
+    horarios_de_aula = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => aluno_id).order(:dia_da_semana)
+
+    aula_de_hoje = horarios_de_aula.find_by_dia_da_semana(hora_certa.wday)
+
+    if not aula_de_hoje.nil? and Presenca.where(:aluno_id => aluno_id).where(:data => hora_certa.to_date).blank?
+      proximo_horario_de_aula = aula_de_hoje
+    elsif horarios_de_aula.last == aula_de_hoje
+      proximo_horario_de_aula = horarios_de_aula.first
+    else
+      proximo_horario_de_aula = horarios_de_aula.where("dia_da_semana > ?", hora_certa.wday).order(:dia_da_semana).limit(1)[0]
+    end
+    proximo_horario_de_aula
+  end
+
+  def get_link(presenca)
+    if presenca.presenca
+      return ""
+    else
+      return "<a href='/presencas/#{presenca.id}/edit'>Justificar</a>"
+    end
   end
 end

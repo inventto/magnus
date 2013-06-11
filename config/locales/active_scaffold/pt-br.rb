@@ -51,7 +51,7 @@
       :_to_  => ' para ',
       :update => 'Atualizar',
       :update_model => 'Atualizar %{model}',
-      :udated_model => 'Atualizado(a) %{model}',
+      :updated_model => 'Atualizado(a) %{model}',
       :'=' => '=',
       :'>=' => '>=',
       :'<=' => '<=',
