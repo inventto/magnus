@@ -75,7 +75,7 @@ module AlunosHelper
        </table>
      </div>"
 
-     input = "<input type='button' id='justificar' value='Justificar Próxima Falta' onclick='' />"
+     input = "" #"<input type='button' id='justificar' value='Justificar Próxima Falta' onclick='' />"
 
      (table << input).html_safe
   end
