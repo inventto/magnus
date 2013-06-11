@@ -16,6 +16,16 @@ class AlunosController < ApplicationController
     conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento]
   end
 
+  def justificar_falta
+    error = "Deve-se informar a Justificativa!"
+    if not params[:justificativa].blank?
+      presenca = Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :horario => params[:horario], :presenca => false, :reposicao => false, :fora_de_horario => false)
+      JustificativaDeFalta.create(:descricao => params[:justificativa], :presenca_id => presenca.id)
+      error = ""
+    end
+    render :text => error
+  end
+
   def gerar_codigo_de_acesso
     codigo = ""
 

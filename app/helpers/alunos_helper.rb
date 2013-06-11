@@ -83,15 +83,31 @@ module AlunosHelper
 
     next_class = "<br /><h4>Próxima Aula</h4>
                   <p>Data</p>
-                  <p><input  class='text-input' name='data' type='date' value='#{data.to_date}' /></p>
+                  <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
                   <p>Horário<p>
                   <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
                   <p>Justificativa</p>
-                  <p><input autocomplete='off' class='text-input' id='descricao_justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>"
+                  <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>"
 
-    input = "<br /><input type='button' id='justificar' value='Justificar Falta' onclick='' />"
+    input = "<br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />"
 
-    (table << next_class << input).html_safe
+    script = "<script type='text/javascript'>
+                 function justificarFalta() {
+                    var jqxhr = $.ajax({
+                      url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula').val()+'&horario='+$('#record_horario').val()+'&justificativa='+$('#justificativa_de_falta').val()
+                    });
+                    jqxhr.always(function () {
+                      var error = jqxhr.responseText
+                      if (error != '') {
+                        jAlert(error, 'Atenção');
+                      } else {
+                        //fazer o redirect_to aqui....widows.goback
+                      }
+                    });
+                 }
+              </script>"
+
+    (table << next_class << input << script).html_safe
   end
 
   def get_proximo_horario_de_aula aluno_id, hora_certa
