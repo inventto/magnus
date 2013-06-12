@@ -65,11 +65,11 @@
                     <% aluno = a.matricula.aluno rescue aluno = a.aluno %>
                     <%= link_to aluno.nome, aluno_path(aluno) %>
                   </td>
-                  <td><%= status_presenca(aluno, dia_atual) %></td>
+                  <td><%= status_presenca(a, dia_atual) %></td>
                 </tr>
               <% end %>
             <% end %>
-          </table>
+            </table>
           <% end %>
           <% primeiro = false %>
           <% break if dia_atual == @data_final %>
