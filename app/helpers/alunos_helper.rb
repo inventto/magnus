@@ -142,6 +142,8 @@ module AlunosHelper
   def get_proximo_horario_de_aula aluno_id, data
     horarios_de_aula = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => aluno_id).order(:dia_da_semana)
 
+    return horarios_de_aula[0] if horarios_de_aula.count == 1 #caso tenha horario de aula em somente um dia da semana
+
     aula_de_hoje = horarios_de_aula.find_by_dia_da_semana(data.wday)
 
     if not aula_de_hoje.nil? and Presenca.where(:aluno_id => aluno_id).where(:data => data.to_date).blank?
