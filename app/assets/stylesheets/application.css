@@ -265,3 +265,11 @@ i{
 .horario_disponivel, .horario_ocupado, .vip {
   text-align: center;
 }
+#presencas_table th,
+#presencas_table table tr td {
+  padding: 4px;
+}
+#presencas_table table thead tr th {
+  color: white;
+  font-size: 12px;
+}

@@ -17,12 +17,21 @@ class AlunosController < ApplicationController
   end
 
   def justificar_falta
-    error = "Deve-se informar a Justificativa!"
-    if not params[:justificativa].blank?
-      presenca = Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :horario => params[:horario], :presenca => false, :reposicao => false, :fora_de_horario => false)
-      JustificativaDeFalta.create(:descricao => params[:justificativa], :presenca_id => presenca.id)
-      error = ""
+    error = ""
+
+    if params[:horario].blank?
+      error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
     end
+    if params[:justificativa].blank?
+      error << "<strong>Justificativa</strong> não pode ficar vazio!"
+    end
+    if not error.blank?
+      render :text => error and return
+    end
+
+    presenca = Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :horario => params[:horario], :presenca => false, :reposicao => false, :fora_de_horario => false)
+    JustificativaDeFalta.create(:descricao => params[:justificativa], :presenca_id => presenca.id)
+
     render :text => error
   end
 
