@@ -12,5 +12,6 @@ class MatriculasController < ApplicationController
     conf.columns[:aluno].form_ui = :select
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
+    conf.columns[:aluno].sort_by :sql => 'alunos.nome'
   end
 end

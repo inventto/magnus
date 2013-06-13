@@ -25,6 +25,14 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
+  def primeiro_nome
+    nome.gsub(/ .*$/,"")
+  end
+
+  def segundo_nome
+    nome.gsub(/^[^ ]* /, "")
+  end
+
 
   def get_presenca data_atual, hora_atual
     matricula =  HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)

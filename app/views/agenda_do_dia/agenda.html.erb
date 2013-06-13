@@ -63,7 +63,7 @@
                   </td>
                   <td>
                     <% aluno = a.matricula.aluno rescue aluno = a.aluno %>
-                    <%= link_to aluno.nome, aluno_path(aluno) %>
+                    <%= link_to "#{aluno.primeiro_nome}<span> #{aluno.segundo_nome}</span>".html_safe, aluno_path(aluno) %>
                   </td>
                   <td><%= status_presenca(a, dia_atual) %></td>
                 </tr>
