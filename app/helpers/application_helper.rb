@@ -28,7 +28,7 @@ module ApplicationHelper
       if presenca.presenca
         retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
         if presenca.reposicao
-          retorno << "<img src='/assets/reposicao.png' title='Reposição' />"
+          retorno << "<img class='reposicao' src='/assets/reposicao.png' title='Reposição' />"
         end
         if presenca.fora_de_horario
           retorno = "<img src='/assets/fora_de_horario.png' title='Fora de Horario' />"
@@ -46,9 +46,9 @@ module ApplicationHelper
           hora_presenca = get_in_seconds(presenca.horario)
 
           if (presenca.data == Date.today) and ( (hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600)) )
-            retorno = "<img src='/assets/reposicao.png' title='Reposição' />"
+            retorno = "<img class='reposicao' src='/assets/reposicao.png' title='Reposição' />"
           else
-            retorno << "<img src='/assets/reposicao.png' title='Reposição' />"
+            retorno << "<img class='reposicao' src='/assets/reposicao.png' title='Reposição' />"
           end
         end
         retorno = (aniversario << retorno)

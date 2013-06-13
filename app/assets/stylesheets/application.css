@@ -220,7 +220,7 @@ i{
   width: 350px;
 }
 .periodo {
-  width: 575px;
+  width: 650px;
 }
 .titulo_dia {
   border: 1px solid black;
@@ -232,6 +232,7 @@ i{
 }
 #horarios tr td:nth-child(1) {
   width: 98px;
+  white-space: nowrap;
 }
 .foto-input, .carrierwave_controls img {
   margin-bottom: 10px;
@@ -272,4 +273,31 @@ i{
 #presencas_table table thead tr th {
   color: white;
   font-size: 12px;
+}
+#horarios table img {
+  margin-right: 20px;
+  margin-left: -20px;
+}
+#horarios table img.reposicao {
+  margin-right: 0;
+}
+#horarios.compact table span,
+#horarios.compact table img {
+  display: none;
+}
+#horarios.compact table div {
+  display: inline;
+}
+#horarios.compact table div:after {
+  content: "/";
+}
+#horarios.compact table div:nth-last-child(1):after {
+  content: ""
+}
+#horarios table td {
+  vertical-align: top;
+}
+.periodo .data, #compactar_nomes {
+  vertical-align: middle;
+  margin: 0px;
 }
