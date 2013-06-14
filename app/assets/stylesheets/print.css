@@ -2,31 +2,31 @@
   .menu, #login, .filtros {
     display: none;
   }
-  #agenda table {
-    width: 350px;
-  }
   #agenda {
-    width: 720px;
-    -moz-column-count:2;
-    -webkit-column-count:2;
-    column-count:2;
-    -moz-column-gap:20px;
-    -webkit-column-gap:20px;
-    column-gap:20px;
+    width: 690px;
+  }
+  #agenda #horarios {
+    width: 690px;
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    column-count: 20px;
+  }
+  #agenda #horarios table {
+    width: 330px;
   }
   #agenda, #aniversariantes {
     border: none;
     background: transparent;
   }
-  #agenda * {
-    font-size: 14px;
+  #horarios * {
+    font-size: 12px;
   }
   #aniversariantes * {
     font-size: 18px;
   }
-  td:nth-child(1) {
+  /*td:nth-child(1) {
     width: 100px;
-  }
+  }*/
   #logo {
     float: none;
     margin: 0 auto !important;

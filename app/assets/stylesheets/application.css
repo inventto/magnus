@@ -220,7 +220,7 @@ i{
   width: 350px;
 }
 .periodo {
-  width: 730px;
+  width: 575px;
 }
 .titulo_dia {
   border: 1px solid black;
@@ -228,11 +228,15 @@ i{
   background-color: lightgray;
   padding: 2px;
   text-align: center;
-  width: 414px !important;
+  width: 4140px !important;
+}
+#horarios tr td:nth-child(1),
+#horarios tr td:nth-child(2),
+#horarios tr td:nth-child(3) {
+  white-space: nowrap;
 }
 #horarios tr td:nth-child(1) {
-  width: 98px;
-  white-space: nowrap;
+  width: 85px;
 }
 .foto-input, .carrierwave_controls img {
   margin-bottom: 10px;
@@ -300,4 +304,15 @@ i{
 .periodo .data, #compactar_nomes {
   vertical-align: middle;
   margin: 0px;
+}
+.periodo #compactar {
+  cursor: pointer;
+}
+#input_compactar_nomes {
+  width: 155px;
+  margin: 0 auto;
+}
+.nome_do_aluno:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }

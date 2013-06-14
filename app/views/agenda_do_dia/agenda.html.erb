@@ -16,8 +16,11 @@
     <input class='data' name="data-final" type="date" value="<%= @data_final %>" />
 
     <input type="submit" value="Filtrar" />
-    <input type="checkbox" id="compactar_nomes" onclick="$('#horarios').toggleClass('compact')" >Compactar Nomes</input>
   </form>
+  <div id="input_compactar_nomes">
+    <input type="checkbox" id="compactar_nomes" onclick="$('#horarios').toggleClass('compact')" />
+    <label for="compactar_nomes" id="compactar">Compactar Nomes</label>
+  </div>
 </div>
 <% if flash[:notice] %>
   <div id="signed-in"><%= flash[:notice] %></div>
@@ -51,23 +54,25 @@
             <% break if dia_atual > @data_final %>
             <tr><td class="titulo_dia" colspan="3"><%= Date::DAYNAMES[dia] %>  <%= dia_atual.strftime("%d/%m/%Y") %></td></tr>
             <% agenda.group_by{|a| a.horario}.each do |hora, horarios_de_aula| %>
-              <tr>
-                <td class="hora">
-                  <%= hora %> - <%= final_do_horario(hora) %>:
-                </td>
-                <td>
-                  <% horarios_de_aula.each do |horario| %>
-                    <% aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id %>
-                    <% if exibir_aluno?(aluno_id, dia_atual) %>
-                      <% aluno = horario.matricula.aluno rescue aluno = horario.aluno %>
-                      <div>
-                        <%= link_to "#{aluno.primeiro_nome}<span> #{aluno.segundo_nome}</span>".html_safe, aluno_path(aluno) %>
-                        <span style="float: right;"><%= status_presenca(horario, dia_atual) %></span>
-                      </div>
+              <% if horario_possui_aluno_valido?(horarios_de_aula, dia_atual) %> <!-- Se houver pelo menos um aluno válido nesse horario o horario é exibido caso contrário não. -->
+                <tr>
+                  <td class="hora">
+                    <%= hora %> - <%= final_do_horario(hora) %>:
+                  </td>
+                  <td>
+                    <% horarios_de_aula.each do |horario| %>
+                      <% aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id %>
+                      <% if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual) %> <!-- Se o aluno é válido, ou seja, se a matricula dele é válida e se o horario de aula também for. -->
+                        <% aluno = horario.matricula.aluno rescue aluno = horario.aluno %>
+                        <div class='nome_do_aluno' onclick="window.location='<%= aluno_path(aluno) %>'">
+                          <%= aluno.primeiro_nome %> <span><%= aluno.segundo_nome %></span>
+                          <span style="float: right;"><%= status_presenca(horario, dia_atual) %></span>
+                        </div>
+                      <% end %>
                     <% end %>
-                  <% end %>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              <% end %>
             <% end %>
           </table>
         <% end %>

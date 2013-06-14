@@ -88,7 +88,20 @@ module ApplicationHelper
     (Time.strptime(horario,"%H:%M") + 3600).strftime("%H:%M")
   end
 
-  def exibir_aluno? aluno_id, dia_atual
+  def horario_possui_aluno_valido? horarios_de_aula, dia_atual
+    exibir = false
+    horarios_de_aula.each do |horario|
+      aluno_nome = horario.matricula.aluno.nome rescue aluno_nome = horario.aluno.nome
+      aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id
+      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual) # se pelo menos um aluno for válido
+        exibir = true
+        break
+      end
+    end
+    exibir
+  end
+
+  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual
     ok = true
     mat = Matricula.where("data_inicio <= '#{dia_atual}' and (data_fim >= '#{dia_atual}' or data_fim is null)").find_by_aluno_id(aluno_id)
     if mat.blank?
