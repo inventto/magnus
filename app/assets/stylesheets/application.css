@@ -231,7 +231,8 @@ i{
   width: 414px !important;
 }
 #horarios tr td:nth-child(1) {
-  width: 98px;
+  width: 85px;
+  white-space: nowrap;
 }
 .foto-input, .carrierwave_controls img {
   margin-bottom: 10px;
@@ -272,4 +273,42 @@ i{
 #presencas_table table thead tr th {
   color: white;
   font-size: 12px;
+}
+#horarios table img {
+  margin-right: 20px;
+  margin-left: -20px;
+}
+#horarios table img.reposicao {
+  margin-right: 0;
+}
+#horarios.compact table span,
+#horarios.compact table img {
+  display: none;
+}
+#horarios.compact table div {
+  display: inline;
+}
+#horarios.compact table div:after {
+  content: "/";
+}
+#horarios.compact table div:nth-last-child(1):after {
+  content: ""
+}
+#horarios table td {
+  vertical-align: top;
+}
+.periodo .data, #compactar_nomes {
+  vertical-align: middle;
+  margin: 0px;
+}
+.periodo #compactar {
+  cursor: pointer;
+}
+#input_compactar_nomes {
+  width: 155px;
+  margin: 0 auto;
+}
+.nome_do_aluno:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }

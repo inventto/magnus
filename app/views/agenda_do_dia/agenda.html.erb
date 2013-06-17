@@ -11,12 +11,16 @@
 <div class="filtros periodo">
   <form action="<%= agenda_do_dia_filtrar_path %>" method="GET">
     <label for="data_inicial">Data inicial:</label>
-    <input name="data-inicial" type="date" value="<%= @data_inicial %>" />
+    <input class='data' name="data-inicial" type="date" value="<%= @data_inicial %>" />
     <label for="data_final">Data final:</label>
-    <input name="data-final" type="date" value="<%= @data_final %>" />
+    <input class='data' name="data-final" type="date" value="<%= @data_final %>" />
 
     <input type="submit" value="Filtrar" />
   </form>
+  <div id="input_compactar_nomes">
+    <input type="checkbox" id="compactar_nomes" onclick="$('#horarios').toggleClass('compact')" />
+    <label for="compactar_nomes" id="compactar">Compactar Nomes</label>
+  </div>
 </div>
 <% if flash[:notice] %>
   <div id="signed-in"><%= flash[:notice] %></div>
@@ -35,12 +39,11 @@
         <% end %>
       <% end %>
     <% else %>
-        <% dia_atual = @data_inicial %>
-        <% primeiro = true %>
-        <% while(dia_atual <= @data_final) %>
-          <% @agenda_do_dia.each do |dia, agenda|%>
-            <table>
-            <% ultimo_horario = nil %>
+      <% dia_atual = @data_inicial %>
+      <% primeiro = true %>
+      <% while(dia_atual <= @data_final) %>
+        <% @agenda_do_dia.each do |dia, agenda| %>
+          <table>
             <% next if primeiro and dia < dia_atual.wday %>
             <% if (dia_atual.wday > dia)
                  dia_atual += 7 - (dia_atual.wday - dia)
@@ -50,30 +53,32 @@
             %>
             <% break if dia_atual > @data_final %>
             <tr><td class="titulo_dia" colspan="3"><%= Date::DAYNAMES[dia] %>  <%= dia_atual.strftime("%d/%m/%Y") %></td></tr>
-            <% agenda.each do |a| %>
-              <% aluno_id = a.matricula.aluno.id rescue a.aluno.id %>
-              <% if exibir_aluno?(aluno_id, dia_atual) %>
+            <% agenda.group_by{|a| a.horario}.each do |hora, horarios_de_aula| %>
+              <% if horario_possui_aluno_valido?(horarios_de_aula, dia_atual) %> <!-- Se houver pelo menos um aluno válido nesse horario o horario é exibido caso contrário não. -->
                 <tr>
-                  <td>
-                    <% if ultimo_horario == nil or ultimo_horario != a.horario %>
-                      <%= horario = a.horario %> - <%= final_do_horario(horario) %>:
-                    <% end
-                       ultimo_horario = a.horario
-                    %>
+                  <td class="hora">
+                    <%= hora %> - <%= final_do_horario(hora) %>:
                   </td>
                   <td>
-                    <% aluno = a.matricula.aluno rescue aluno = a.aluno %>
-                    <%= link_to aluno.nome, aluno_path(aluno) %>
+                    <% horarios_de_aula.each do |horario| %>
+                      <% aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id %>
+                      <% if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual) %> <!-- Se o aluno é válido, ou seja, se a matricula dele é válida e se o horario de aula também for. -->
+                        <% aluno = horario.matricula.aluno rescue aluno = horario.aluno %>
+                        <div class='nome_do_aluno' onclick="window.location='<%= aluno_path(aluno) %>'">
+                          <%= aluno.primeiro_nome %> <span><%= aluno.segundo_nome %></span>
+                          <span style="float: right;"><%= status_presenca(horario, dia_atual) %></span>
+                        </div>
+                      <% end %>
+                    <% end %>
                   </td>
-                  <td><%= status_presenca(a, dia_atual) %></td>
                 </tr>
               <% end %>
             <% end %>
-            </table>
-          <% end %>
-          <% primeiro = false %>
-          <% break if dia_atual == @data_final %>
+          </table>
         <% end %>
+        <% primeiro = false %>
+        <% break if dia_atual == @data_final %>
+      <% end %>
     <% end %>
   </div>
 </div>

@@ -1,7 +1,7 @@
 class AgendaDoDiaController < ApplicationController
 
   def agenda
-    @data_inicial = Date.today
+    @data_inicial = (Time.now + Time.zone.utc_offset).to_date
     @data_final = @data_inicial
     load_agenda
   end

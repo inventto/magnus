@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/Nerian/bootstrap-datepicker-rails.git
+  revision: 3c6ec54c5f4b36a4bea2f68f763946bcb5a0142e
+  specs:
+    bootstrap-datepicker-rails (1.1.0.1)
+      railties (>= 3.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -128,6 +135,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_scaffold
+  bootstrap-datepicker-rails!
   carrierwave
   coffee-rails (~> 3.2.1)
   devise
