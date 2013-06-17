@@ -230,13 +230,9 @@ i{
   text-align: center;
   width: 414px !important;
 }
-#horarios tr td:nth-child(1),
-#horarios tr td:nth-child(2),
-#horarios tr td:nth-child(3) {
-  white-space: nowrap;
-}
 #horarios tr td:nth-child(1) {
   width: 85px;
+  white-space: nowrap;
 }
 .foto-input, .carrierwave_controls img {
   margin-bottom: 10px;
