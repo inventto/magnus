@@ -1,32 +1,44 @@
 @media print {
-  .menu, #login, .filtros {
+  .menu, #login, .filtros, #agenda #horarios table img {
     display: none;
   }
   #agenda {
-    width: 690px;
+    width: 790px;
   }
   #agenda #horarios {
-    width: 690px;
+    width: 790px;
     -moz-column-count: 2;
     -webkit-column-count: 2;
-    column-count: 20px;
+    column-count: 2;
+
+    -webkit-column-rule: thin solid #000;
+    -moz-column-rule: thin solid #000;
+    column-rule: thin solid #000;
+
+    -moz-column-gap: 21px;
+    -webkit-column-gap: 21px;
+    column-gap: 21px;
   }
   #agenda #horarios table {
-    width: 330px;
+    width: 380px;
   }
   #agenda, #aniversariantes {
     border: none;
-    background: transparent;
+  }
+  .aniver-title {
+    border: thin solid black;
+    border-radius: 0px;
+    padding: 5px;
   }
   #horarios * {
-    font-size: 12px;
+    font-size: 14px;
   }
   #aniversariantes * {
     font-size: 18px;
   }
-  /*td:nth-child(1) {
-    width: 100px;
-  }*/
+  td:nth-child(1) {
+    width: 100px !important;
+  }
   #logo {
     float: none;
     margin: 0 auto !important;
