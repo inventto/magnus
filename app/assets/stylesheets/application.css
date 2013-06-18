@@ -309,6 +309,9 @@ i{
   margin: 0 auto;
   white-space: nowrap;
 }
+.nome_do_aluno {
+  height: 20px;
+}
 .nome_do_aluno:hover {
   text-decoration: underline;
   cursor: pointer;
