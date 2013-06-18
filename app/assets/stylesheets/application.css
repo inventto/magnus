@@ -231,7 +231,7 @@ i{
   width: 414px !important;
 }
 #horarios tr td:nth-child(1) {
-  width: 85px;
+  width: 110px;
   white-space: nowrap;
 }
 .foto-input, .carrierwave_controls img {
@@ -307,6 +307,7 @@ i{
 #input_compactar_nomes {
   width: 155px;
   margin: 0 auto;
+  white-space: nowrap;
 }
 .nome_do_aluno:hover {
   text-decoration: underline;
