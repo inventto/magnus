@@ -91,7 +91,6 @@ module ApplicationHelper
   def horario_possui_aluno_valido? horarios_de_aula, dia_atual
     exibir = false
     horarios_de_aula.each do |horario|
-      aluno_nome = horario.matricula.aluno.nome rescue aluno_nome = horario.aluno.nome
       aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id
       if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual) # se pelo menos um aluno for válido
         exibir = true
