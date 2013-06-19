@@ -6,7 +6,8 @@ class PresencasController < ApplicationController
     conf.columns[:horario].label = "Horário"
     conf.columns[:reposicao].label = "Reposição"
     conf.columns[:fora_de_horario].label = "Fora de Horário"
-    conf.columns = [:aluno, :data, :horario, :pontualidade, :presenca, :reposicao, :fora_de_horario, :justificativa_de_falta]
+    conf.columns[:tem_direito_a_reposicao].label = "Tem Direito à Reposição?"
+    conf.columns = [:aluno, :data, :horario, :pontualidade, :presenca, :reposicao, :fora_de_horario, :tem_direito_a_reposicao,:justificativa_de_falta]
     conf.columns[:aluno].form_ui = :select
     conf.columns[:justificativa_de_falta].allow_add_existing = false
     conf.actions.swap :search, :field_search

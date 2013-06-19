@@ -76,6 +76,7 @@ module AlunosHelper
       conteudo << "<td>" << ( (presenca.presenca) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.reposicao) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.fora_de_horario) ? inputEnabled : inputDisabled ) << "</td>"
+      conteudo << "<td>" << ( (presenca.tem_direito_a_reposicao) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? get_link(presenca) : presenca.justificativa_de_falta.descricao ) << "</td>"
       conteudo << "</tr>"
       even_record = !even_record
@@ -91,6 +92,7 @@ module AlunosHelper
              <th>Presença</th>
              <th>Reposição</th>
              <th>Fora de Horário</th>
+             <th>Tem Direito à Reposição?</th>
              <th>Justificativa de Falta</th>
            </tr>
          </thead>
@@ -119,7 +121,9 @@ module AlunosHelper
                   <p>Horário<p>
                   <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
                   <p>Justificativa</p>
-                  <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>"
+                  <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>
+                  <p>Tem Direito à Reposição
+                  #{inputEnabled}</p>"
 
     input = "<br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />"
 
