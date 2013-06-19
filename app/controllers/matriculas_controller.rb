@@ -12,10 +12,11 @@ class MatriculasController < ApplicationController
     conf.columns[:aluno].form_ui = :select
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
+    #conf.field_search.default_params = {:data_fim => {"from" => Time.now.strftime("%Y-%m-%d"), "to" => "", "opt" => ">="}}
   end
 
   protected
     def custom_finder_options
-       {:reorder => "alunos.nome ASC"}
+      {:reorder => "alunos.nome ASC"}
     end
 end
