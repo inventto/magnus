@@ -116,12 +116,6 @@ module AlunosHelper
 
     horario = proximo_horario_de_aula["horario"]
 
-    presencas_com_direito_a_reposicao = Presenca.where(:aluno_id => aluno_id, :tem_direito_a_reposicao => true).order("data DESC")
-    options = ""
-    presencas_com_direito_a_reposicao.each do |p|
-      options << "<option value='#{p.id}'>#{p.data.strftime("%d/%m/%Y")} - #{p.horario}</option>"
-    end
-
     next_class = "<div style='float: left; margin-right: 65px;'>
                     <br /><h4>Próxima Aula</h4>
                     <p>Data</p>
@@ -133,21 +127,6 @@ module AlunosHelper
                     <p>Tem Direito à Reposição
                     #{inputEnabled}</p>
                     <br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />
-                  </div>"
-     reposicao = "<div style='float: left;'>
-                    <br /><h4>Criar Adiantamento</h4>
-                    <p>Data</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
-                    <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
-                    <p>Presença</p>
-                    <p>
-                      <select id='' class=''>
-                        <option value> - Selecione - </option>
-                        #{options}
-                      </select>
-                    </p>
-                    <br /><input type='button' id='adiantamento' value='Gravar Adiantamento' onclick='justificarFalta()' />
                   </div>"
 
     (table << next_class << reposicao << script).html_safe
