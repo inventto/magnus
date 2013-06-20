@@ -129,7 +129,7 @@ module AlunosHelper
                     <br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />
                   </div>"
 
-    (table << next_class << reposicao << script).html_safe
+    (table << next_class << script).html_safe
   end
 
   def get_data_e_horario aluno_id, data
