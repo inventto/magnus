@@ -12,7 +12,7 @@ module AlunosHelper
     script = "<script type='text/javascript'>
                  function gerarCodigoDeAcesso() {
                     var jqxhr = $.ajax({
-                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()
+                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&id='+$(\".id\").text()
                     });
                     jqxhr.always(function () {
                       codigo = jqxhr.responseText
