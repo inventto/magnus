@@ -20,28 +20,20 @@ class AgendaDoDiaController < ApplicationController
   end
 
   def load_agenda
-    agenda = consulta_agenda
+    agenda = consultar_agenda
 
-    reposicao_do_dia = consulta_reposicao
+    presencas = consultar_presencas
 
-    unir_horarios(agenda, reposicao_do_dia)
+    reposicao_do_dia = presencas.where(:reposicao => true)
+
+    fora_de_horario = presencas.where(:fora_de_horario => true)
+
+    unir_horarios(agenda, reposicao_do_dia, fora_de_horario)
 
     agrupa_e_ordena
   end
 
-  def consulta_reposicao
-    reposicao_do_dia = Presenca.select("presencas.*, EXTRACT( DOW FROM data ) AS dia_da_semana").joins(:aluno)
-
-    if @data_inicial == @data_final
-      reposicao_do_dia = reposicao_do_dia.where(:data => @data_inicial)
-    else
-      reposicao_do_dia = reposicao_do_dia.where("data >= '#{@data_inicial}' and data <= '#{@data_final}'")
-    end
-
-    reposicao_do_dia = reposicao_do_dia.where(:reposicao => true)
-  end
-
-  def consulta_agenda
+  def consultar_agenda
     agenda = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id")
 
     if @data_inicial == @data_final
@@ -52,6 +44,28 @@ class AgendaDoDiaController < ApplicationController
     agenda
   end
 
+  def consultar_presencas
+    presencas = Presenca.select("presencas.*, EXTRACT( DOW FROM data ) AS dia_da_semana").joins(:aluno)
+
+    if @data_inicial == @data_final
+      presencas = presencas.where(:data => @data_inicial)
+    else
+      presencas = presencas.where("data >= '#{@data_inicial}' and data <= '#{@data_final}'")
+    end
+
+    presencas
+  end
+
+  def unir_horarios agenda, reposicao, fora_de_horario
+    @agenda_do_dia = []
+
+    agenda.each { |a| @agenda_do_dia << a }
+
+    reposicao.each { |r| @agenda_do_dia << r }
+
+    fora_de_horario.each { |f| @agenda_do_dia << f }
+  end
+
   def agrupa_e_ordena
     @agenda_do_dia = @agenda_do_dia.group_by{ |a| a.dia_da_semana.to_i }
 
@@ -59,18 +73,6 @@ class AgendaDoDiaController < ApplicationController
 
     @agenda_do_dia.each do |k, agenda|
       agenda.sort! {|x, y| (x.horario[0..1].to_i * 3600 + x.horario[1..2].to_i * 60) <=> (y.horario[0..1].to_i * 3600 + y.horario[1..2].to_i * 60)}
-    end
-  end
-
-  def unir_horarios agenda, reposicao
-    @agenda_do_dia = []
-
-    agenda.each do |a|
-      @agenda_do_dia << a
-    end
-
-    reposicao.each do |r|
-      @agenda_do_dia << r
     end
   end
 end
