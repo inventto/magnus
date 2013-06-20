@@ -49,6 +49,10 @@ class AlunosController < ApplicationController
   end
 
   def codigo_existe?(codigo)
-    Aluno.find_by_codigo_de_acesso(codigo)
+    if id = params[:id] and not id.blank?
+      Aluno.where("id <> ?", id.to_i).find_by_codigo_de_acesso(codigo)
+    else
+     Aluno.find_by_codigo_de_acesso(codigo)
+    end
   end
 end
