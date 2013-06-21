@@ -75,7 +75,7 @@ module AlunosHelper
       conteudo << "<td>" << presenca.horario << "</td>"
       conteudo << "<td>" << presenca.pontualidade.to_s << "</td>"
       conteudo << "<td>" << ( (presenca.presenca) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.reposicao) ? inputEnabled : inputDisabled ) << "</td>"
+      conteudo << "<td>" << ( (presenca.realocacao) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.fora_de_horario) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.tem_direito_a_reposicao) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? get_link(presenca) : presenca.justificativa_de_falta.descricao ) << "</td>"

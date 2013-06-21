@@ -25,6 +25,9 @@ class RegistroPresencaController < ApplicationController
         return
       else
         @aluno = Aluno.joins(:matricula).find_by_codigo_de_acesso(params[:codigo])
+        if not @aluno
+          raise ""
+        end
       end
     rescue
       flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
@@ -51,7 +54,7 @@ class RegistroPresencaController < ApplicationController
       flash[:error] = "Hoje não é seu dia normal de aula!"
       return
     end
-    if @aluno.aula_de_reposicao?
+    if @aluno.aula_de_realocacao?
       @mensagem_sonora = "Hoje é sua Aula de Reposição!"
       notice << "Hoje é sua Aula de Reposição!"
     end
@@ -99,15 +102,16 @@ class RegistroPresencaController < ApplicationController
   end
 
   def hoje_eh_feriado?
-    current_date = Date.today
+    current_date = (Time.now + Time.zone.utc_offset)
     feriado = Feriado.where(:dia => current_date.day).where(:mes => current_date.month)
+    ok = false
     if not feriado.blank?
       feriado = feriado[0]
       if feriado.repeticao_anual or feriado.ano == current_date.year
-        return true
+        ok = true
       end
     end
-    false
+    ok
   end
 
   def registro_android
@@ -142,7 +146,7 @@ class RegistroPresencaController < ApplicationController
       flash[:error] = "Hoje não é seu dia normal de aula!"
       render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
     end
-    if @aluno.aula_de_reposicao?
+    if @aluno.aula_de_realocacao?
       @mensagem_sonora = "aula_de_reposicao|"
       notice << "Hoje é sua aula de reposição!"
     end

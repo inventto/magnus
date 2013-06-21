@@ -1,10 +1,10 @@
 #coding: utf-8
 module ApplicationHelper
   def status_presenca agenda, dia_atual
-    begin
+    if agenda.instance_of? HorarioDeAula
       aluno_id = agenda.matricula.aluno.id
       presenca_id = ""
-    rescue
+    else # será uma instancia de Presença
       aluno_id = agenda.aluno.id
       presenca_id = agenda.id
     end
@@ -14,7 +14,7 @@ module ApplicationHelper
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 
     if presenca_id.blank?
-      presenca = presenca.where(:aluno_id => aluno_id).where("reposicao is null or reposicao = false")
+      presenca = presenca.where(:aluno_id => aluno_id).where("realocacao is null or realocacao = false")
     else
       presenca = presenca.where(:id => presenca_id)
     end
@@ -22,13 +22,11 @@ module ApplicationHelper
     if not presenca.blank?
       presenca = presenca[0]
 
-#      return aniversario.html_safe if not chk_horarios?(agenda.horario, presenca.horario)
-
       retorno = ""
       if presenca.presenca
         retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
-        if presenca.reposicao
-          retorno << "<img class='reposicao' src='/assets/reposicao.png' title='Reposição' />"
+        if presenca.realocacao
+          retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
         end
         if presenca.fora_de_horario
           retorno = "<img src='/assets/fora_de_horario.png' title='Fora de Horario' />"
@@ -41,14 +39,14 @@ module ApplicationHelper
         else
           retorno = "<img src='/assets/falta_justif.png' title='Falta Justificada' />"
         end
-        if presenca.reposicao
+        if presenca.realocacao
           hora_atual = get_in_seconds()
           hora_presenca = get_in_seconds(presenca.horario)
 
-          if (presenca.data == Date.today) and ( (hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600)) )
-            retorno = "<img class='reposicao' src='/assets/reposicao.png' title='Reposição' />"
+          if (presenca.data == (Time.now + Time.zone.utc_offset).to_date) and ( (hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600)) )
+            retorno = "<img class='realocacao' src='/assets/realocacao.png' title='Reposição' />"
           else
-            retorno << "<img class='reposicao' src='/assets/reposicao.png' title='Reposição' />"
+            retorno << "<img class='realocacao' src='/assets/realocacao.png' title='Reposição' />"
           end
         end
         retorno = (aniversario << retorno)
@@ -57,6 +55,17 @@ module ApplicationHelper
     else
       return aniversario.html_safe # mesmo que não haja presença deve se retornar a imagem de aniversário
     end
+  end
+
+  def get_title_realocacao aluno_id, dia_atual, presenca
+    title = ""
+    if presenca.presenca? and presenca.realocacao? and not presenca.data_de_realocacao.blank? and not presenca.tem_direito_a_reposicao?
+      p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :data => presenca.data_de_realocacao).where("justificativas_de_falta.descricao ilike '%adiantado%'")
+      if not p.blank?
+        title = "Adiantamento do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário #{p[0].horario}"
+      end
+    end
+      #p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :data => dia_atual).where("justificativas_de_falta.descricao ilike '%adiantado%'")
   end
 
   def get_in_seconds(hour = "")
@@ -77,12 +86,18 @@ module ApplicationHelper
     retorno
   end
 
-=begin  def chk_horarios?(horario_agenda, horario_presenca)
-    agenda = Time.strptime(horario_agenda, "%H:%M").seconds_since_midnight
-    presenca = Time.strptime(horario_presenca, "%H:%M").seconds_since_midnight
+  def nao_mostrar_repetido?(agenda, dia_atual)
+    aluno_id = agenda.matricula.aluno.id
 
-    (presenca >= (agenda - 900)) && (presenca <= (agenda + 3600))
-=end  end
+    presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
+
+    presenca = presenca.where(:aluno_id => aluno_id)
+
+    if not presenca.blank?
+      presenca = presenca.first
+      return (presenca.fora_de_horario? or presenca.realocacao?)
+    end
+  end
 
   def final_do_horario horario
     (Time.strptime(horario,"%H:%M") + 3600).strftime("%H:%M")
@@ -113,7 +128,7 @@ module ApplicationHelper
           ok = false
         end
       else
-        if p.reposicao? # caso exista presença e a mesma for reposição
+        if p.realocacao? # caso exista presença e a mesma for reposição
           if p.data != dia_atual # e a data da reposição for diferente do dia em questão
             ok = false
           end

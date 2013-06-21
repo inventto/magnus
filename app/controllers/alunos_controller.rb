@@ -29,7 +29,7 @@ class AlunosController < ApplicationController
       render :text => error and return
     end
 
-    presenca = Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :horario => params[:horario], :presenca => false, :reposicao => false, :fora_de_horario => false, :tem_direito_a_reposicao => true)
+    presenca = Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :horario => params[:horario], :presenca => false, :realocacao => false, :fora_de_horario => false, :tem_direito_a_reposicao => true)
     JustificativaDeFalta.create(:descricao => params[:justificativa], :presenca_id => presenca.id)
 
     render :text => error
