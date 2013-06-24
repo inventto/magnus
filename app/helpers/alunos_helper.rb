@@ -69,6 +69,7 @@ module AlunosHelper
     inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
     conteudo = ""
     even_record = false
+
     record.presencas.order("data desc").order("horario desc").limit(5).each do |presenca|
       conteudo << ( (even_record) ? "<tr class='record even-record'>" : "<tr class='record'>" )
       conteudo << "<td>" << presenca.data.strftime("%d/%m/%Y") << "</td>"
@@ -83,6 +84,78 @@ module AlunosHelper
       even_record = !even_record
     end
 
+    table = get_tabela_de_presencas(conteudo)
+
+    aluno_id = record.id
+    hora_certa = Time.now + Time.zone.utc_offset
+
+    proximo_horario_de_aula = get_data_e_horario(aluno_id, hora_certa)
+    data = proximo_horario_de_aula["data"]
+
+    while not Presenca.where(:aluno_id => aluno_id).where(:data => data).blank?
+      proximo_horario_de_aula = get_data_e_horario(aluno_id, data)
+      data = proximo_horario_de_aula["data"]
+    end
+
+    horario = proximo_horario_de_aula["horario"]
+
+    # Próxima Aula
+    next_class = get_next_class(data, horario, inputEnabled)
+
+    # Reposição
+    reposicao = get_reposicao(aluno_id)
+
+    # Adiantamento
+    adiantamento = get_adiantamento(data)
+
+    (table << next_class << reposicao << adiantamento << script).html_safe
+  end
+
+  def get_reposicao aluno_id
+    presenca = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").order("id DESC")
+    p = presenca[0] if not presenca.blank?
+    reposicao = "<div style='float: left; margin-right: 65px;'>
+                    <br /><h4>Criar Reposição</h4>
+                    <p>Data</p>
+                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='' /></p>
+                    <p>Horário<p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value=''><p>
+                    <p>Data Referente ao Horário do Dia</p>
+                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{p.data.to_date}' /></p>
+                    <br /><input type='button' id='repor' value='Gravar' onclick='gravarReposicao()' />
+                  </div>"
+
+  end
+
+  def get_adiantamento data
+    adiantamento = "<div style='float: left;'>
+                    <br /><h4>Adiantar Aula</h4>
+                    <p>Data</p>
+                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='' /></p>
+                    <p>Horário<p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value=''><p>
+                    <p>Data Referente ao Horário do Dia</p>
+                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
+                    <br /><input type='button' id='adiantar' value='Adiantar aula' onclick='adiantarAula()' />
+                  </div>"
+  end
+
+  def get_next_class data, horario, inputEnabled
+    next_class = "<div style='float: left; margin-right: 65px;'>
+                    <br /><h4>Próxima Aula</h4>
+                    <p>Data</p>
+                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
+                    <p>Horário<p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
+                    <p>Justificativa</p>
+                    <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>
+                    <p>Tem Direito à Reposição
+                    #{inputEnabled}</p>
+                    <br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />
+                  </div>"
+  end
+
+  def get_tabela_de_presencas conteudo
     table = "<div id='presencas_table' class='active-scaffold'>
        <table>
          <thead>
@@ -102,34 +175,6 @@ module AlunosHelper
          </tdboy>
        </table>
      </div>"
-
-    aluno_id = record.id
-    hora_certa = Time.now + Time.zone.utc_offset
-
-    proximo_horario_de_aula = get_data_e_horario(aluno_id, hora_certa)
-    data = proximo_horario_de_aula["data"]
-
-    while not Presenca.where(:aluno_id => aluno_id).where(:data => data).blank?
-      proximo_horario_de_aula = get_data_e_horario(aluno_id, data)
-      data = proximo_horario_de_aula["data"]
-    end
-
-    horario = proximo_horario_de_aula["horario"]
-
-    next_class = "<div style='float: left; margin-right: 65px;'>
-                    <br /><h4>Próxima Aula</h4>
-                    <p>Data</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
-                    <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
-                    <p>Justificativa</p>
-                    <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>
-                    <p>Tem Direito à Reposição
-                    #{inputEnabled}</p>
-                    <br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />
-                  </div>"
-
-    (table << next_class << script).html_safe
   end
 
   def get_data_e_horario aluno_id, data
