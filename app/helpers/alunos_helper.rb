@@ -52,6 +52,7 @@ module AlunosHelper
       conteudo << "<td>" << presenca.pontualidade.to_s << "</td>"
       conteudo << "<td>" << ( (presenca.presenca) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.realocacao) ? inputEnabled : inputDisabled ) << "</td>"
+      conteudo << "<td>" << ( (presenca.data_de_realocacao.nil?) ? "" : presenca.data_de_realocacao.strftime("%d/%m/%Y") ) << "</td>"
       conteudo << "<td>" << ( (presenca.fora_de_horario) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.tem_direito_a_reposicao) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? get_link(presenca) : presenca.justificativa_de_falta.descricao ) << "</td>"
@@ -95,7 +96,7 @@ module AlunosHelper
                     <p><input  class='text-input' id='data_aula_reposicao' name='data' type='date' value='' /></p>
                     <p>Horário<p>
                     <p><input autocomplete='off' class='horario-input text-input' id='record_horario_reposicao' maxlength='255' name='horario' size='30' type='text' value=''><p>
-                    <p>Data Referente ao Horário do Dia</p>
+                    <p>Data da Falta</p>
                     <p><input  class='text-input' id='data_de_realocacao_reposicao' name='data' type='date' value='#{data}' /></p>
                     <br /><input type='button' id='repor' value='Gravar' onclick='gravarReposicao()' />
                   </div>"
@@ -109,7 +110,7 @@ module AlunosHelper
                     <p><input  class='text-input' id='data_aula_adiantamento' name='data' type='date' value='' /></p>
                     <p>Horário<p>
                     <p><input autocomplete='off' class='horario-input text-input' id='record_horario_adiantamento' maxlength='255' name='horario' size='30' type='text' value=''><p>
-                    <p>Data Referente ao Horário do Dia</p>
+                    <p>Data do horário a ser Adiantado</p>
                     <p><input  class='text-input' id='data_de_realocacao_adiantamento' name='data' type='date' value='#{data.to_date}' /></p>
                     <br /><input type='button' id='adiantar' value='Adiantar aula' onclick='adiantarAula()' />
                   </div>"
@@ -139,7 +140,8 @@ module AlunosHelper
              <th>Horário</th>
              <th>Pontualidade</th>
              <th>Presença</th>
-             <th>Reposição</th>
+             <th>Realocação</th>
+             <th>Data da Falta ou do horário a ser Adiantado</th>
              <th>Fora de Horário</th>
              <th>Tem Direito à Reposição?</th>
              <th>Justificativa de Falta</th>
