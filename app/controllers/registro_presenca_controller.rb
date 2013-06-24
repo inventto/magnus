@@ -94,7 +94,7 @@ class RegistroPresencaController < ApplicationController
       horarios.each do |horario|
         aluno_id = horario.matricula.aluno.id
         if Presenca.where(:aluno_id => aluno_id).where(:data => hora_certa).blank?
-          Presenca.create(:aluno_id => aluno_id, :data => hora_certa, :horario => horario.horario, :presenca => false)
+          Presenca.create(:aluno_id => aluno_id, :data => hora_certa, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
         end
       end
     end

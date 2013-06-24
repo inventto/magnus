@@ -121,7 +121,7 @@ module ApplicationHelper
 
     if not presenca.blank?
       presenca = presenca.first
-      return (presenca.fora_de_horario? or presenca.realocacao?)
+      return ( (presenca.fora_de_horario? or presenca.realocacao?) and (agenda.horario == presenca.horario) )
     end
   end
 

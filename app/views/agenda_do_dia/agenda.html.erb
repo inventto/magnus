@@ -67,7 +67,7 @@
                         <% if not horario.instance_of? HorarioDeAula or not nao_mostrar_repetido?(horario, dia_atual) %>
                           <div class='nome_do_aluno' onclick="window.location='<%= aluno_path(aluno) %>'">
                             <%= aluno.primeiro_nome %> <span><%= aluno.segundo_nome %></span>
-                            <span style="float: right;"><%= status_presenca(horario, dia_atual) %></span>
+                            <span class='status_presenca'><%= status_presenca(horario, dia_atual) %></span>
                           </div>
                         <% end %>
                       <% end %>
