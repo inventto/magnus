@@ -40,31 +40,6 @@ module AlunosHelper
   end
 
   def presencas_column(record, column)
-    script = "<script type='text/javascript'>
-                 $(document).ready(function() {
-                    $('#record_horario').mask('99:99');
-                 });
-                 function justificarFalta() {
-                    var jqxhr = $.ajax({
-                      url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula').val()+'&horario='+$('#record_horario').val()+'&justificativa='+$('#justificativa_de_falta').val()
-                    });
-                    jqxhr.always(function () {
-                      var error = jqxhr.responseText
-                      if (error != '') {
-                        if (error.search(/aula/i) >= 0) {
-                            $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        if (error.search(/justif/i) >= 0) {
-                            $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        jAlert(error, 'Atenção');
-                      } else {
-                        window.location.href = '/alunos';
-                      }
-                    });
-                 }
-              </script>"
-
     inputDisabled = "<input type='checkbox' disabled='disabled' />"
     inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
     conteudo = ""
@@ -108,20 +83,20 @@ module AlunosHelper
     # Adiantamento
     adiantamento = get_adiantamento(data)
 
-    (table << next_class << reposicao << adiantamento << script).html_safe
+    (table << next_class << reposicao << adiantamento << get_script).html_safe
   end
 
   def get_reposicao aluno_id
     presenca = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").order("id DESC")
-    p = presenca[0] if not presenca.blank?
+    (p.blank?) ? data = "" : data = p[0].data.to_date
     reposicao = "<div style='float: left; margin-right: 65px;'>
                     <br /><h4>Criar Reposição</h4>
                     <p>Data</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='' /></p>
+                    <p><input  class='text-input' id='data_aula_reposicao' name='data' type='date' value='' /></p>
                     <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value=''><p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_reposicao' maxlength='255' name='horario' size='30' type='text' value=''><p>
                     <p>Data Referente ao Horário do Dia</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{p.data.to_date}' /></p>
+                    <p><input  class='text-input' id='data_de_realocacao_reposicao' name='data' type='date' value='#{data}' /></p>
                     <br /><input type='button' id='repor' value='Gravar' onclick='gravarReposicao()' />
                   </div>"
 
@@ -131,11 +106,11 @@ module AlunosHelper
     adiantamento = "<div style='float: left;'>
                     <br /><h4>Adiantar Aula</h4>
                     <p>Data</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='' /></p>
+                    <p><input  class='text-input' id='data_aula_adiantamento' name='data' type='date' value='' /></p>
                     <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value=''><p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_adiantamento' maxlength='255' name='horario' size='30' type='text' value=''><p>
                     <p>Data Referente ao Horário do Dia</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
+                    <p><input  class='text-input' id='data_de_realocacao_adiantamento' name='data' type='date' value='#{data.to_date}' /></p>
                     <br /><input type='button' id='adiantar' value='Adiantar aula' onclick='adiantarAula()' />
                   </div>"
   end
@@ -175,6 +150,84 @@ module AlunosHelper
          </tdboy>
        </table>
      </div>"
+  end
+
+  def get_script
+    script = "<script type='text/javascript'>
+                 $(document).ready(function() {
+                   $('#record_horario').mask('99:99');
+                   $('#record_horario_reposicao').mask('99:99');
+                   $('#record_horario_adiantamento').mask('99:99');
+                   $('#justificativa_de_falta').css('width', '300px');
+                   $('#record_horario').css('width', '90px');
+                   $('#record_horario_reposicao').css('width', '90px');
+                   $('#record_horario_adiantamento').css('width', '90px');
+                 });
+                 function justificarFalta() {
+                    var jqxhr = $.ajax({
+                      url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula').val()+'&horario='+$('#record_horario').val()+'&justificativa='+$('#justificativa_de_falta').val()
+                    });
+                    jqxhr.always(function () {
+                      var error = jqxhr.responseText
+                      if (error != '') {
+                        if (error.search(/aula/i) >= 0) {
+                            $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        if (error.search(/justif/i) >= 0) {
+                          $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        jAlert(error, 'Atenção');
+                      } else {
+                        window.location.href = '/alunos';
+                      }
+                    });
+                 }
+                 function gravarReposicao() {
+                    var jqxhr = $.ajax({
+                      url: '/gravar_reposicao?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula_reposicao').val()+'&horario='+$('#record_horario_reposicao').val()+'&data_de_realocacao_reposicao='+$('#data_de_realocacao_reposicao').val()
+                    });
+                    jqxhr.always(function () {
+                      var error = jqxhr.responseText
+                      if (error != '') {
+                        if (error.search(/campo/i) >= 0) {
+                            $('#data_aula_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        if (error.search(/aula/i) >= 0) {
+                          $('#record_horario_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        if (error.search(/referente/i) >= 0) {
+                          $('#data_de_realocacao_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        jAlert(error, 'Atenção');
+                      } else {
+                        window.location.href = '/alunos';
+                      }
+                    });
+                 }
+                 function adiantarAula() {
+                    var jqxhr = $.ajax({
+                      url: '/adiantar_aula?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula_adiantamento').val()+'&horario='+$('#record_horario_adiantamento').val()+'&data_de_realocacao_adiantamento='+$('#data_de_realocacao_adiantamento').val()
+                    });
+                    jqxhr.always(function () {
+                      var error = jqxhr.responseText
+                      if (error != '') {
+                         if (error.search(/campo/i) >= 0) {
+                            $('#data_aula_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        if (error.search(/aula/i) >= 0) {
+                          $('#record_horario_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        if (error.search(/referente/i) >= 0) {
+                          $('#data_de_realocacao_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                        }
+                        jAlert(error, 'Atenção');
+                      } else {
+                        window.location.href = '/alunos';
+                      }
+                    });
+                 }
+
+              </script>"
   end
 
   def get_data_e_horario aluno_id, data

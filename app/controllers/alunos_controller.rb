@@ -16,6 +16,61 @@ class AlunosController < ApplicationController
     conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento]
   end
 
+  def adiantar_aula
+    error = ""
+
+    if params[:data].blank?
+      error << "<strong>Campo Data</strong> não pode ficar vazio!\n"
+    end
+    if params[:horario].blank?
+      error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
+    end
+    if params[:data_de_realocacao_adiantamento].blank?
+      error << "<strong>Data Referente ao Horário do Dia</strong> não pode ficar vazio!\n"
+    end
+    if not error.blank?
+      render :text => error and return
+    end
+
+    aluno_id = params[:aluno_id].to_i
+
+    # Criar a falta
+    horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, Date.parse(params[:data_de_realocacao_adiantamento]).wday)
+
+    if horario_de_aula.nil?
+      error << "Aluno não possui horario cadastrado para as #{Date::DAYNAMES[params[:data_de_realocacao_adiantamento].wday]}"
+    end
+
+    p = Presenca.create(:aluno_id => aluno_id, :data => params[:data_de_realocacao_adiantamento], :presenca => false, :horario => horario_de_aula[0].horario)
+    JustificativaDeFalta.create(:presenca_id => p.id, :descricao => "adiantado para o dia #{Date.parse(params[:data]).strftime("%d/%m/%Y")} às #{params[:horario]}")
+
+    # Criar o adiantamento
+    Presenca.create(:aluno_id => aluno_id, :data => params[:data], :realocacao => true, :data_de_realocacao => params[:data_de_realocacao_adiantamento], :horario => params[:horario])
+
+    render :text => error
+  end
+
+  def gravar_reposicao
+    error = ""
+
+    if params[:data].blank?
+      error << "<strong>Campo Data</strong> não pode ficar vazio!\n"
+    end
+    if params[:horario].blank?
+      error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
+    end
+    if params[:data_de_realocacao_reposicao].blank?
+      error << "<strong>Data Referente ao Horário do Dia</strong> não pode ficar vazio!\n"
+    end
+    if not error.blank?
+      render :text => error and return
+    end
+
+    Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :data_de_realocacao => params[:data_de_realocacao_reposicao], :horario => params[:horario], :realocacao => true)
+
+    render :text => error
+  end
+
   def justificar_falta
     error = ""
 

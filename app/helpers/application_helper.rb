@@ -61,12 +61,13 @@ module ApplicationHelper
 
   def get_title_realocacao aluno_id, dia_atual, presenca
     title = ""
-    if presenca.presenca? and presenca.realocacao? and not presenca.data_de_realocacao.blank? and not presenca.tem_direito_a_reposicao?
+    if presenca.realocacao? and not presenca.data_de_realocacao.blank? and not presenca.tem_direito_a_reposicao?
       p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :data => presenca.data_de_realocacao).where("justificativas_de_falta.descricao ilike '%adiantado%'")
       if not p.blank?
         title = "Adiantamento do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
       else
-        title = "Realocação"
+        p = Presenca.where(:aluno_id => aluno_id, :data => presenca.data_de_realocacao)
+        title = "Reposição do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
       end
     elsif not presenca.presenca? and presenca.data_de_realocacao.blank? and not presenca.justificativa_de_falta.nil?
         p = Presenca.order("id DESC").find_by_data_de_realocacao_and_aluno_id(presenca.data, aluno_id) #em ordem descrescente pois caso haja mais de uma realocação para esse dia
@@ -81,7 +82,7 @@ module ApplicationHelper
               title = "Falta Justificada com Reposição Agendada para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
             end
           elsif presenca.data > p.data # adiantamento
-              title = "Falta Justificada com Adiantado para o dia #{presenca.data.strftime("%d/%m/%Y")} às #{horario}"
+              title = "Falta Justificada com Adiantamento para o dia #{presenca.data.strftime("%d/%m/%Y")} às #{horario}"
           else # reposicao
               title = "Falta Justificada com Reposição Agendada para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
           end
@@ -89,7 +90,7 @@ module ApplicationHelper
           title = "Falta Justificada"
         end
     else
-        title = "Reposição Referente à Falta do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}"
+      title = "Reposição Referente à Falta do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}"
     end
     title
   end
