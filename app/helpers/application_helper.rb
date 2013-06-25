@@ -45,7 +45,7 @@ module ApplicationHelper
           hora_atual = get_in_seconds()
           hora_presenca = get_in_seconds(presenca.horario)
 
-          if (presenca.data == @hora_certa.to_date) and ( (hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600)) )
+          if (presenca.data == @hora_certa.to_date) and ( ((hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600))) or (hora_atual < hora_presenca) )
             retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           else
             retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
@@ -74,7 +74,7 @@ module ApplicationHelper
         if not p.nil?
           m = presenca.justificativa_de_falta.descricao.match(/\d{1,2}:\d{1,2}/)
           (not m.nil?) ? horario = m[0] : ""
-
+          puts "==Presenca.data #{presenca.data}, p.data #{p.data}"
           if presenca.data == p.data # ainda pode ser reposição ou adiantamento, depende do horario
             if get_in_seconds(presenca.horario) > get_in_seconds(p.horario) # adiantamento
               title = "Falta Justificada com Adiantamento para o dia #{presenca.data.strftime("%d/%m/%Y")} às #{horario}"
@@ -82,7 +82,7 @@ module ApplicationHelper
               title = "Falta Justificada com Reposição Agendada para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
             end
           elsif presenca.data > p.data # adiantamento
-              title = "Falta Justificada com Adiantamento para o dia #{presenca.data.strftime("%d/%m/%Y")} às #{horario}"
+              title = "Falta Justificada com Adiantamento para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
           else # reposicao
               title = "Falta Justificada com Reposição Agendada para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
           end
