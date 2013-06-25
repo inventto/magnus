@@ -90,7 +90,11 @@ module ApplicationHelper
           title = "Falta Justificada"
         end
     else
-      title = "Reposição Referente à Falta do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}"
+      if presenca.data_de_realocacao.nil?
+        title = "Reposição"
+      else
+        title = "Reposição Referente à Falta do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}"
+      end
     end
     title
   end
