@@ -24,6 +24,8 @@ class AlunosController < ApplicationController
     end
     if params[:horario].blank?
       error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
+    elsif not hora_valida?(params[:horario])
+      error << "<strong>Horário da Aula</strong> Inválido!\n"
     end
     if params[:data_de_realocacao_adiantamento].blank?
       error << "<strong>Data Referente ao Horário do Dia</strong> não pode ficar vazio!\n"
@@ -58,6 +60,8 @@ class AlunosController < ApplicationController
     end
     if params[:horario].blank?
       error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
+    elsif not hora_valida?(params[:horario])
+      error << "<strong>Horário da Aula</strong> Inválido!\n"
     end
     if params[:data_de_realocacao_reposicao].blank?
       error << "<strong>Data Referente ao Horário do Dia</strong> não pode ficar vazio!\n"
@@ -76,6 +80,8 @@ class AlunosController < ApplicationController
 
     if params[:horario].blank?
       error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
+    elsif not hora_valida?(params[:horario])
+      error << "<strong>Horário da Aula</strong> Inválido!\n"
     end
     if params[:justificativa].blank?
       error << "<strong>Justificativa</strong> não pode ficar vazio!"
@@ -108,6 +114,17 @@ class AlunosController < ApplicationController
       Aluno.where("id <> ?", id.to_i).find_by_codigo_de_acesso(codigo)
     else
      Aluno.find_by_codigo_de_acesso(codigo)
+    end
+  end
+
+  def hora_valida?(hora)
+    hour, min = hora.split(":")
+    hour = hour.to_i
+    min = min.to_i
+    if ((hour >= 0 and hour < 24) and (min >= 0 and min < 60))
+      return true
+    else
+      return false
     end
   end
 end

@@ -185,7 +185,7 @@ module AlunosHelper
                         window.location.href = '/alunos';
                       }
                     });
-                 }
+                  }
                  function gravarReposicao() {
                     var jqxhr = $.ajax({
                       url: '/gravar_reposicao?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula_reposicao').val()+'&horario='+$('#record_horario_reposicao').val()+'&data_de_realocacao_reposicao='+$('#data_de_realocacao_reposicao').val()
