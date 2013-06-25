@@ -64,10 +64,12 @@
                       <% aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id %>
                       <% if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual) %> <!-- Se o aluno é válido, ou seja, se a matricula dele é válida e se o horario de aula também for. -->
                         <% aluno = horario.matricula.aluno rescue aluno = horario.aluno %>
-                        <div class='nome_do_aluno' onclick="window.location='<%= aluno_path(aluno) %>'">
-                          <%= aluno.primeiro_nome %> <span><%= aluno.segundo_nome %></span>
-                          <span style="float: right;"><%= status_presenca(horario, dia_atual) %></span>
-                        </div>
+                        <% if not horario.instance_of? HorarioDeAula or not nao_mostrar_repetido?(horario, dia_atual) %>
+                          <div class='nome_do_aluno' onclick="window.location='<%= aluno_path(aluno) %>'">
+                            <%= aluno.primeiro_nome %> <span><%= aluno.segundo_nome %></span>
+                            <span class='status_presenca'><%= status_presenca(horario, dia_atual) %></span>
+                          </div>
+                        <% end %>
                       <% end %>
                     <% end %>
                   </td>

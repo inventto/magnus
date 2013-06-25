@@ -43,15 +43,15 @@ class Aluno < ActiveRecord::Base
     end
 
     p = Presenca.where(:aluno_id => self.id).where(:data => data_atual)
-    horario_na_reposicao = 0
+    horario_na_realocacao = 0
     if not p.blank?
       p.each do |presenca|
         p = presenca
         next if not hora_esta_contida_em_horario?(hora_atual, presenca.horario)
-        if presenca.reposicao
-          horario_na_reposicao = presenca.horario
-          if not horario_na_reposicao.blank?
-            horario_na_reposicao = horario_na_reposicao[0..1].to_i * 3600 + horario_na_reposicao[1..2].to_i * 60
+        if presenca.realocacao
+          horario_na_realocacao = presenca.horario
+          if not horario_na_realocacao.blank?
+            horario_na_realocacao = horario_na_realocacao[0..1].to_i * 3600 + horario_na_realocacao[1..2].to_i * 60
           end
         elsif presenca.presenca
           return presenca
@@ -62,15 +62,15 @@ class Aluno < ActiveRecord::Base
     hora_atual = txt_to_seg(hora_atual)
 
     dif_hora_matricula = 0
-    dif_hora_reposicao = 0
+    dif_hora_realocacao = 0
 
     dif_hora_matricula = hora_atual - horario_na_matricula if horario_na_matricula > 0
-    dif_hora_reposicao = hora_atual - horario_na_reposicao if horario_na_reposicao > 0
+    dif_hora_realocacao = hora_atual - horario_na_realocacao if horario_na_realocacao > 0
 
     dif_hora_matricula = dif_hora_matricula * -1 if dif_hora_matricula < 0
-    dif_hora_reposicao = dif_hora_reposicao * -1 if horario_na_reposicao < 0
+    dif_hora_realocacao = dif_hora_realocacao * -1 if horario_na_realocacao < 0
 
-    if not p.blank? and dif_hora_reposicao < dif_hora_matricula
+    if not p.blank? and dif_hora_realocacao < dif_hora_matricula
       return p
     else
       return nil
@@ -107,13 +107,13 @@ class Aluno < ActiveRecord::Base
       end
       presenca.save
     elsif not @presenca.presenca?
-      if not @presenca.reposicao?
+      if not @presenca.realocacao?
         @presenca.horario = hora_atual
-        @presenca.pontualidade = get_pontualidade(hora_atual)
         if esta_fora_de_horario?
           @presenca.fora_de_horario = true
         end
       end
+      @presenca.pontualidade = get_pontualidade(hora_atual)
       @presenca.presenca = true
       @presenca.save
     end
@@ -135,8 +135,8 @@ class Aluno < ActiveRecord::Base
     end
   end
 
-  def aula_de_reposicao?
-    if not @presenca.nil? and @presenca.reposicao?
+  def aula_de_realocacao?
+    if not @presenca.nil? and @presenca.realocacao?
       @hora_da_aula = Time.strptime(@presenca.horario, "%H:%M")
       return true
     end
@@ -164,7 +164,7 @@ class Aluno < ActiveRecord::Base
 
   def esta_no_dia_errado?
     if @horario_de_aula.nil?
-      if not aula_de_reposicao?
+      if not aula_de_realocacao?
         return true
       end
     end

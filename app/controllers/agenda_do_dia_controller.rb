@@ -24,11 +24,11 @@ class AgendaDoDiaController < ApplicationController
 
     presencas = consultar_presencas
 
-    reposicao_do_dia = presencas.where(:reposicao => true)
+    realocacao_do_dia = presencas.where(:realocacao => true)
 
     fora_de_horario = presencas.where(:fora_de_horario => true)
 
-    unir_horarios(agenda, reposicao_do_dia, fora_de_horario)
+    unir_horarios(agenda, realocacao_do_dia, fora_de_horario)
 
     agrupa_e_ordena
   end
@@ -56,12 +56,12 @@ class AgendaDoDiaController < ApplicationController
     presencas
   end
 
-  def unir_horarios agenda, reposicao, fora_de_horario
+  def unir_horarios agenda, realocacao, fora_de_horario
     @agenda_do_dia = []
 
     agenda.each { |a| @agenda_do_dia << a }
 
-    reposicao.each { |r| @agenda_do_dia << r }
+    realocacao.each { |r| @agenda_do_dia << r }
 
     fora_de_horario.each { |f| @agenda_do_dia << f }
   end

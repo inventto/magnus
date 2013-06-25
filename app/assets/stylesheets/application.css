@@ -211,7 +211,6 @@ i{
 }
 .status_presenca {
   float: right;
-  margin: -10px;
 }
 .filtros {
   margin: 0 auto;
@@ -278,7 +277,7 @@ i{
   margin-right: 20px;
   margin-left: -20px;
 }
-#horarios table img.reposicao {
+#horarios table img.realocacao {
   margin-right: 0;
 }
 #horarios.compact table span,
