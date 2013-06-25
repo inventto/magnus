@@ -2,7 +2,7 @@
 class Aluno < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
 
-  scope :de_aniversario_no_mes, lambda { |mes| where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :id).order("extract(day from data_nascimento)") }
+  scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.aluno_id=alunos.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"alunos.id").order("extract(day from data_nascimento)") }
 
   before_save :chk_codigo_de_acesso
 

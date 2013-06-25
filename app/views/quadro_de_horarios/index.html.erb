@@ -22,14 +22,14 @@
               <% if dia == 6 and hora > 12 %>
                 <% break %>
               <% end %>
-              <% @horarios[dia].each do |horario| %>
+              <% @horarios[dia].each do |hour, schedules| %>
                 <% achou = false %>
-                <% if horario[0][0..1].to_i == hora %>
+                <% if hour[0..1].to_i == hora %>
                   <% achou = true %>
-                  <% if  horario[1][0].matricula.vip? %>
+                  <% if schedules.first.matricula.vip? %>
                     <td class="vip">* Vip *</td>
                   <% else %>
-                    <% if (qtd = horario[1].count) < 4 %>
+                    <% if (qtd = schedules.count) < 4 %>
                       <td class="horario_disponivel">Disponível(<%= 4 - qtd %>)</td>
                     <% else %>
                       <td class="horario_ocupado">Ocupado</td>
