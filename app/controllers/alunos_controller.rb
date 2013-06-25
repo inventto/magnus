@@ -1,4 +1,4 @@
-#coding: utf-8
+  #coding: utf-8
 class AlunosController < ApplicationController
   active_scaffold :aluno do |conf|
     conf.columns[:endereco].label = "Endereço"
@@ -28,7 +28,7 @@ class AlunosController < ApplicationController
       error << "<strong>Horário da Aula</strong> Inválido!\n"
     end
     if params[:data_de_realocacao_adiantamento].blank?
-      error << "<strong>Data Referente ao Horário do Dia</strong> não pode ficar vazio!\n"
+      error << "<strong>Data do Horário a ser Adiantado</strong> não pode ficar vazio!\n"
     end
     if not error.blank?
       render :text => error and return
@@ -64,7 +64,7 @@ class AlunosController < ApplicationController
       error << "<strong>Horário da Aula</strong> Inválido!\n"
     end
     if params[:data_de_realocacao_reposicao].blank?
-      error << "<strong>Data Referente ao Horário do Dia</strong> não pode ficar vazio!\n"
+      error << "<strong>Data da Falta</strong> não pode ficar vazio!\n"
     end
     if not error.blank?
       render :text => error and return

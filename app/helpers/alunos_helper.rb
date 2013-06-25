@@ -89,7 +89,7 @@ module AlunosHelper
 
   def get_reposicao aluno_id
     #p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").order("id DESC")
-    p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").where("data not in (select p2.data_de_realocacao from presencas p2 where p2.data_de_realocacao = presencas.data and p2.aluno_id=presencas.aluno_id)").order("id DESC") # traz a última data com falta justificada e que tem direito a reposição mas que ainda não possua uma data de realocação
+    p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.aluno_id=presencas.aluno_id)").order("id DESC") # traz a última data com falta justificada e que tem direito a reposição mas que ainda não possua uma data de realocação
 
     (p.blank?) ? data = "" : data = p[0].data.to_date
     reposicao = "<div style='float: left; margin-right: 65px;'>
@@ -199,7 +199,7 @@ module AlunosHelper
                         if (error.search(/aula/i) >= 0) {
                           $('#record_horario_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                         }
-                        if (error.search(/referente/i) >= 0) {
+                        if (error.search(/falta/i) >= 0) {
                           $('#data_de_realocacao_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                         }
                         jAlert(error, 'Atenção');
@@ -221,7 +221,7 @@ module AlunosHelper
                         if (error.search(/aula/i) >= 0) {
                           $('#record_horario_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                         }
-                        if (error.search(/referente/i) >= 0) {
+                        if (error.search(/adiantado/i) >= 0) {
                           $('#data_de_realocacao_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                         }
                         jAlert(error, 'Atenção');
