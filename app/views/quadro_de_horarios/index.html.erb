@@ -33,7 +33,11 @@
                   <% if schedules.first.matricula.vip? %>
                     <td class="vip">
                       <span class="status">* Vip *</span>
-                      <span class="alunos"><%= schedules.first.matricula.aluno.primeiro_nome %></span>
+                      <% ultimo_nome = []
+                         ultimo_nome = schedules.first.matricula.aluno.segundo_nome.split(" ")
+                         ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
+                      %>
+                      <span class="alunos"><%= schedules.first.matricula.aluno.primeiro_nome %> <%= ultimo_nome %>.</span>
                     </td>
                   <% else %>
                     <% if (qtd = schedules.count) < 4 %>
@@ -41,7 +45,11 @@
                         <span class="status">Disponível(<%= 4 - qtd %>)</span>
                         <span class="alunos">
                           <% schedules.each do |schedule| %>
-                            <%= schedule.matricula.aluno.primeiro_nome %><br/>
+                            <% ultimo_nome = []
+                               ultimo_nome = schedule.matricula.aluno.segundo_nome.split(" ")
+                               ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
+                             %>
+                            <%= schedule.matricula.aluno.primeiro_nome %> <%= ultimo_nome %>.<br/>
                           <% end %>
                         </span>
                       </td>
@@ -50,7 +58,11 @@
                         <span class="status">Ocupado</span>
                         <span class="alunos">
                           <% schedules.each do |schedule| %>
-                            <%= schedule.matricula.aluno.primeiro_nome %><br/>
+                            <% ultimo_nome = []
+                               ultimo_nome = schedule.matricula.aluno.segundo_nome.split(" ")
+                               ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
+                             %>
+                            <%= schedule.matricula.aluno.primeiro_nome %> <%= ultimo_nome %>.<br/>
                           <% end %>
                         </span>
                       </td>
