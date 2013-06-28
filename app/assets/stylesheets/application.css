@@ -296,10 +296,11 @@ i{
 #horarios table td {
   vertical-align: top;
 }
-.periodo .data, #compactar_nomes {
+.periodo .data, #compactar_nomes, #display_names {
   vertical-align: middle;
   margin: 0px;
 }
+#quadro_de_horarios #displayN,
 .periodo #compactar {
   cursor: pointer;
 }
@@ -314,4 +315,14 @@ i{
 .nome_do_aluno:hover {
   text-decoration: underline;
   cursor: pointer;
+}
+#quadro_de_horarios .alunos {
+  display: none;
+}
+#quadro_de_horarios .alunos.exibir {
+  display: block;
+  font-style: italic;
+}
+#quadro_de_horarios .status.exibir {
+  display: none;
 }

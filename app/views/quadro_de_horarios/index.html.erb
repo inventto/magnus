@@ -1,5 +1,9 @@
 <div id="quadro_de_horarios">
   <h2>Personal Training</h2>
+  <p>
+    <input type="checkbox" name="display_names" value="Exibir Nomes" id="display_names" onclick="displayNames();" />
+    <label for="display_names" id="displayN">Exibir Nomes</label>
+  </p>
   <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
     <h4><%= title %></h4>
     <table>
@@ -22,17 +26,34 @@
               <% if dia == 6 and hora > 12 %>
                 <% break %>
               <% end %>
-              <% @horarios[dia].each do |horario| %>
+              <% @horarios[dia].each do |hour, schedules| %>
                 <% achou = false %>
-                <% if horario[0][0..1].to_i == hora %>
+                <% if hour[0..1].to_i == hora %>
                   <% achou = true %>
-                  <% if  horario[1][0].matricula.vip? %>
-                    <td class="vip">* Vip *</td>
+                  <% if schedules.first.matricula.vip? %>
+                    <td class="vip">
+                      <span class="status">* Vip *</span>
+                      <span class="alunos"><%= schedules.first.matricula.aluno.primeiro_nome %></span>
+                    </td>
                   <% else %>
-                    <% if (qtd = horario[1].count) < 4 %>
-                      <td class="horario_disponivel">Disponível(<%= 4 - qtd %>)</td>
+                    <% if (qtd = schedules.count) < 4 %>
+                      <td class="horario_disponivel">
+                        <span class="status">Disponível(<%= 4 - qtd %>)</span>
+                        <span class="alunos">
+                          <% schedules.each do |schedule| %>
+                            <%= schedule.matricula.aluno.primeiro_nome %><br/>
+                          <% end %>
+                        </span>
+                      </td>
                     <% else %>
-                      <td class="horario_ocupado">Ocupado</td>
+                      <td class="horario_ocupado">
+                        <span class="status">Ocupado</span>
+                        <span class="alunos">
+                          <% schedules.each do |schedule| %>
+                            <%= schedule.matricula.aluno.primeiro_nome %><br/>
+                          <% end %>
+                        </span>
+                      </td>
                     <% end %>
                   <% end %>
                   <% break %>
@@ -48,3 +69,9 @@
     </table>
   <% end %>
 </div>
+<script type="text/javascript">
+  function displayNames() {
+    $("#quadro_de_horarios").find(".alunos").toggleClass('exibir');
+    $("#quadro_de_horarios").find(".status").toggleClass('exibir');
+  }
+</script>
