@@ -260,6 +260,9 @@ module AlunosHelper
       proximo_horario_de_aula = horarios_de_aula.first
     else
       proximo_horario_de_aula = horarios_de_aula.where("dia_da_semana > ?", data.wday).order(:dia_da_semana).limit(1)[0]
+      if proximo_horario_de_aula.nil?
+        proximo_horario_de_aula = horarios_de_aula.where("dia_da_semana < ?", data.wday).order(:dia_da_semana).limit(1)[0]
+      end
     end
 
     proximo_horario_de_aula
