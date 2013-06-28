@@ -88,10 +88,9 @@ module AlunosHelper
   end
 
   def get_reposicao aluno_id
-    #p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").order("id DESC")
     p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.aluno_id=presencas.aluno_id)").order("id DESC") # traz a última data com falta justificada e que tem direito a reposição mas que ainda não possua uma data de realocação
 
-    (p.blank?) ? data = "" : data = p[0].data.to_date
+    data = (p.blank?) ? "" : p.last.data.to_date
     reposicao = "<div style='float: left; margin-right: 65px;'>
                     <br /><h4>Criar Reposição</h4>
                     <p>Data</p>
