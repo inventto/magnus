@@ -45,7 +45,7 @@ module ApplicationHelper
           hora_atual = get_in_seconds()
           hora_presenca = get_in_seconds(presenca.horario)
 
-          if (presenca.data == @hora_certa.to_date) and ( ((hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600))) or (hora_atual < hora_presenca) )
+          if (presenca.data == @hora_certa.to_date) and not ((hora_atual > (hora_presenca + 300)) or (hora_atual < hora_presenca)) #(((hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600))) or (hora_atual < hora_presenca))
             retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           else
             retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
