@@ -38,8 +38,7 @@ class Aluno < ActiveRecord::Base
     matricula =  HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)
     horario_na_matricula = 0
     if not matricula.blank?
-      horario = matricula[0].horario
-      horario_na_matricula = horario[0..1].to_i * 3600 + horario[1..2].to_i * 60
+      horario_na_matricula = txt_to_seg(matricula[0].horario)
     end
 
     p = Presenca.where(:aluno_id => self.id).where(:data => data_atual)
@@ -51,7 +50,7 @@ class Aluno < ActiveRecord::Base
         if presenca.realocacao
           horario_na_realocacao = presenca.horario
           if not horario_na_realocacao.blank?
-            horario_na_realocacao = horario_na_realocacao[0..1].to_i * 3600 + horario_na_realocacao[1..2].to_i * 60
+            horario_na_realocacao = txt_to_seg(horario_na_realocacao)
           end
         elsif presenca.presenca
           return presenca
@@ -68,7 +67,7 @@ class Aluno < ActiveRecord::Base
     dif_hora_realocacao = hora_atual - horario_na_realocacao if horario_na_realocacao > 0
 
     dif_hora_matricula = dif_hora_matricula * -1 if dif_hora_matricula < 0
-    dif_hora_realocacao = dif_hora_realocacao * -1 if horario_na_realocacao < 0
+    dif_hora_realocacao = dif_hora_realocacao * -1 if dif_hora_realocacao < 0
 
     if not p.blank? and dif_hora_realocacao < dif_hora_matricula
       return p
@@ -86,6 +85,16 @@ class Aluno < ActiveRecord::Base
     nil
   end
 
+  def get_pontualidade_da_realocacao hora_atual
+    if @presenca.data_de_realocacao.blank? # caso apenas esteja atrasado
+      return get_pontualidade(hora_atual)
+    else # se não se for um adiantamento ou uma reposição
+      horario_de_aula = txt_to_seg(@presenca.horario)
+      hora_atual = txt_to_seg(hora_atual)
+      return ((horario_de_aula - hora_atual) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
+    end
+  end
+
   def registrar_presenca time_millis
     if time_millis.nil?
       @hora_certa = (Time.now + Time.zone.utc_offset)
@@ -96,9 +105,9 @@ class Aluno < ActiveRecord::Base
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-#    @hora_certa =Time.now  #--> variáveis para teste local
-#    hora_atual = @hora_certa.strftime("%H:%M")
-#    data_atual = Date.today
+    @hora_certa =Time.now  #--> variáveis para teste local
+    hora_atual = @hora_certa.strftime("%H:%M")
+    data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true, :pontualidade => get_pontualidade(hora_atual))
@@ -113,7 +122,7 @@ class Aluno < ActiveRecord::Base
           @presenca.fora_de_horario = true
         end
       end
-      @presenca.pontualidade = get_pontualidade(hora_atual)
+      @presenca.pontualidade = get_pontualidade_da_realocacao(hora_atual)
       @presenca.presenca = true
       @presenca.save
     end
