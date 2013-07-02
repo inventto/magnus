@@ -74,7 +74,7 @@ module ApplicationHelper
         if not p.nil?
           m = presenca.justificativa_de_falta.descricao.match(/\d{1,2}:\d{1,2}/)
           (not m.nil?) ? horario = m[0] : ""
-          puts "==Presenca.data #{presenca.data}, p.data #{p.data}"
+
           if presenca.data == p.data # ainda pode ser reposição ou adiantamento, depende do horario
             if get_in_seconds(presenca.horario) > get_in_seconds(p.horario) # adiantamento
               title = "Falta Justificada com Adiantamento para o dia #{presenca.data.strftime("%d/%m/%Y")} às #{horario}"
