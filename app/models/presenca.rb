@@ -11,6 +11,14 @@ class Presenca < ActiveRecord::Base
   validates_presence_of :data
   validates_presence_of :horario
 
+  validates_each :data_de_realocacao do |model, attr, value|
+    if not value.blank?
+      if HorarioDeAula.do_aluno_pelo_dia_da_semana(model.aluno_id, value.wday).blank?
+        model.errors.add(attr, ": Aluno não possui horário de aula na(o) #{Date::DAYNAMES[value.wday].humanize}")
+      end
+    end
+  end
+
   def label
     "presença de " << aluno.nome
   end
