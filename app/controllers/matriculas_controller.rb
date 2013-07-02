@@ -18,6 +18,6 @@ class MatriculasController < ApplicationController
 
   protected
     def custom_finder_options
-      {:reorder => "alunos.nome ASC, horarios_de_aula.dia_da_semana ASC"}
+      {:reorder => "alunos.nome ASC"}
     end
 end
