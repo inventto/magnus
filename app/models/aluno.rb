@@ -105,9 +105,9 @@ class Aluno < ActiveRecord::Base
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-    @hora_certa =Time.now  #--> variáveis para teste local
-    hora_atual = @hora_certa.strftime("%H:%M")
-    data_atual = Date.today
+    #@hora_certa =Time.now  #--> variáveis para teste local
+    #hora_atual = @hora_certa.strftime("%H:%M")
+    #data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual)
     if @presenca.nil?
       presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true, :pontualidade => get_pontualidade(hora_atual))
