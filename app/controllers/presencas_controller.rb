@@ -13,7 +13,15 @@ class PresencasController < ApplicationController
     conf.columns[:justificativa_de_falta].allow_add_existing = false
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
-    conf.field_search.columns = [:aluno, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :fora_de_horario, :tem_direito_a_reposicao]
+    conf.field_search.columns = [:aluno, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :fora_de_horario, :tem_direito_a_reposicao, :justificativa_de_falta]
     list.sorting = [{:data => 'DESC'}, {:horario => 'DESC'}]
+  end
+
+  def self.condition_for_justificativa_de_falta_column(column, value, like_pattern)
+    if value.include? "Não"
+      "justificativas_de_falta.id is null"
+    else
+      "justificativas_de_falta.id is not null"
+    end
   end
 end
