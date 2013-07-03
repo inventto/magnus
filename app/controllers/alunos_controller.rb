@@ -7,6 +7,8 @@ class AlunosController < ApplicationController
     conf.columns[:codigo_de_acesso].label = "Código de Acesso"
     conf.columns = [:id, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :codigo_de_acesso, :foto, :endereco, :telefones]
     conf.show.columns << :presencas
+    conf.show.columns << :pontualidade
+    conf.show.columns << :estatisticas
     conf.columns[:data_nascimento].options[:format] = :default
     conf.columns[:sexo].form_ui = :select
     conf.columns[:sexo].options = {:options => Aluno::SEX.map(&:to_sym)}

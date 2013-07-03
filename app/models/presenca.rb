@@ -46,8 +46,4 @@ class Presenca < ActiveRecord::Base
       falta = Presenca.create(:aluno_id => self.aluno_id, :data => self.data_de_realocacao, :presenca => false, :horario => horario_de_aula[0].horario)
       JustificativaDeFalta.create(:presenca_id => falta.id, :descricao => "adiantado para o dia #{Date.parse(self.data.to_s).strftime("%d/%m/%Y")} às #{self.horario}")
     end
-
-    def get_in_seconds hour
-      Time.strptime(hour, "%H:%M").seconds_since_midnight
-    end
 end
