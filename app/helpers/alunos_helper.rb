@@ -84,7 +84,7 @@ module AlunosHelper
 
   def pontualidade_column(record, column)
     if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
-      total_de_presencas = record.presencas.count
+      total_de_presencas = record.presencas.where(:presenca => true).count
 
       countBetweenZeroAndTen = 0
       countBetweenTenAndTwenty = 0
@@ -166,7 +166,9 @@ module AlunosHelper
                            });
                          </script>".html_safe
 
-      table << script
+      return (table << script)
+    else
+      return record.pontualidade
     end
   end
 
