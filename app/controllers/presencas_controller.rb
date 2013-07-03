@@ -20,7 +20,7 @@ class PresencasController < ApplicationController
   def self.condition_for_justificativa_de_falta_column(column, value, like_pattern)
     if value.include? "Não"
       "justificativas_de_falta.id is null"
-    else
+    elsif value == "Possui"
       "justificativas_de_falta.id is not null"
     end
   end
