@@ -39,6 +39,49 @@ module AlunosHelper
     end.join "<br/>")
   end
 
+  def estatisticas_column(record, column)
+    if record.instance_of?(Aluno)
+      count_presencas = 0
+      count_faltas_justificadas = 0
+      count_faltas_sem_justificativa = 0
+      count_realocacoes = 0
+
+      record.presencas.each do |presenca|
+        if presenca.presenca?
+          count_presencas += 1
+        elsif presenca.justificativa_de_falta.nil?
+          count_faltas_sem_justificativa += 1
+        else
+          count_faltas_justificadas += 1
+        end
+        if presenca.realocacao?
+          count_realocacoes += 1
+        end
+      end
+
+      table = "<div id='estatisticas_table' class='active-scaffold'>
+                 <table>
+                   <thead>
+                     <tr>
+                       <th>Presenças</th>
+                       <th>Faltas Justificadas</th>
+                       <th>Faltas Sem Justificativa</th>
+                       <th>Reposições/Adiantamentos</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr>
+                       <td>#{count_presencas}</td>
+                       <td>#{count_faltas_justificadas}</td>
+                       <td>#{count_faltas_sem_justificativa}</td>
+                       <td>#{count_realocacoes}</td>
+                     </tr>
+                   </tbody>
+                 </table>
+               </div>".html_safe
+    end
+  end
+
   def pontualidade_column(record, column)
     if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
       total_de_presencas = record.presencas.count

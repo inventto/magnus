@@ -269,6 +269,10 @@ i{
 #presencas_table table tr td {
   padding: 4px;
 }
+#estatisticas_table table thead tr th {
+  color: white;
+  font-size: 12px;
+}
 #pontualidade_table table thead tr th {
   color: white;
   font-size: 12px;
@@ -351,4 +355,3 @@ i{
 #pontualidade_table table tr td.tip_trigger:hover {
   cursor: pointer;
 }
-
