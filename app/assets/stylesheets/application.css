@@ -269,6 +269,10 @@ i{
 #presencas_table table tr td {
   padding: 4px;
 }
+#pontualidade_table table thead tr th {
+  color: white;
+  font-size: 12px;
+}
 #presencas_table table thead tr th {
   color: white;
   font-size: 12px;
@@ -326,3 +330,25 @@ i{
 #quadro_de_horarios .status.exibir {
   display: none;
 }
+#pontualidade_table table tr td .tip {
+  border: 1px solid rgba(0,31, 255, 0.8);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 31, 255, 0.6);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 31, 255, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 31, 255, 0.6);
+  color: #000;
+  background: #FFF;
+  display: none; /*--Hides by default--*/
+  padding: 10px;
+  position: absolute;
+  z-index: 1000;
+  border-radius: 4px 4px 4px 4px;
+  max-width: 500px;
+}
+#pontualidade_table table tr td .tip_trigger{
+   max-width: 236px;
+   margin-left: 35%;
+}
+#pontualidade_table table tr td.tip_trigger:hover {
+  cursor: pointer;
+}
+

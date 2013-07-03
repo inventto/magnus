@@ -39,6 +39,98 @@ module AlunosHelper
     end.join "<br/>")
   end
 
+  def pontualidade_column(record, column)
+    if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
+      total_de_presencas = record.presencas.count
+
+      countBetweenZeroAndTen = 0
+      countBetweenTenAndTwenty = 0
+      countBetweenZeroAndMinusTen = 0
+      countBetweenMinusTenAndMinusTwenty = 0
+      countZero = 0
+
+      record.presencas.each do |presenca|
+        if presenca.presenca? and not presenca.pontualidade.nil?
+          pontualidade = presenca.pontualidade
+
+          if (pontualidade  < 21 and pontualidade > 10)
+            countBetweenTenAndTwenty += 1
+          elsif (pontualidade < 11 and pontualidade > 0)
+            countBetweenZeroAndTen += 1
+          elsif (pontualidade < 0 and pontualidade > -11)
+            countBetweenZeroAndMinusTen += 1
+          elsif (pontualidade < -12 and pontualidade > -21)
+            countBetweenMinusTenAndMinusTwenty += 1
+          elsif (pontualidade == 0)
+            countZero += 1
+          end
+        end
+      end
+
+      table = "<div id='pontualidade_table' class='active-scaffold'>
+                 <table>
+                   <thead>
+                     <tr>
+                       <th>Intervalo de Pontualidade</th>
+                       <th>Percentual</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     <tr>
+                       <td>-20</td>
+                       <td class='tip_trigger'>
+                         #{calcular_pontualidade(countBetweenMinusTenAndMinusTwenty, total_de_presencas)}%
+                         <span class='tip'>Percentual de Atraso entre 11 e 20 minutos.</span>
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>-10</td>
+                       <td class='tip_trigger'>
+                         #{calcular_pontualidade(countBetweenZeroAndMinusTen, total_de_presencas)}%
+                         <span class='tip'>Percentual de Atraso entre 1 e 10 minutos.</span>
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>0</td>
+                       <td class='tip_trigger'>
+                         #{calcular_pontualidade(countZero, total_de_presencas)}%
+                         <span class='tip'>Percentual de Presença Pontual.</span>
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>10</td>
+                       <td class='tip_trigger'>
+                         #{calcular_pontualidade(countBetweenZeroAndTen, total_de_presencas)}%
+                         <span class='tip'>Percentual de Adiantamento entre 1 e 10 minutos.</span>
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>20</td>
+                       <td class='tip_trigger'>
+                         #{calcular_pontualidade(countBetweenTenAndTwenty, total_de_presencas)}%
+                         <span class='tip'>Percentual de Adiantamento entre 11 e 20 minutos.</span>
+                       </td>
+                     </tr>
+                     <tr>
+                       <td>Total de Presenças</td><td>#{total_de_presencas}</td>
+                     </tr>
+                   </tdboy>
+                 </table>
+               </div>".html_safe
+               script = "<script type='text/javascript'>
+                           $(document).ready(function(){
+                             tooltips();
+                           });
+                         </script>".html_safe
+
+      table << script
+    end
+  end
+
+  def calcular_pontualidade quantidade, total
+    ((quantidade.to_f / total) * 100).round(2)
+  end
+
   def presencas_column(record, column)
     inputDisabled = "<input type='checkbox' disabled='disabled' />"
     inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
