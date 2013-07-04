@@ -44,7 +44,7 @@ module AlunosHelper
       count_presencas = 0
       count_faltas_justificadas = 0
       count_faltas_sem_justificativa = 0
-      count_realocacoes = 0
+      count_adiantamentos = 0
 
       record.presencas.each do |presenca|
         if presenca.presenca?
@@ -54,10 +54,26 @@ module AlunosHelper
         else
           count_faltas_justificadas += 1
         end
-        if presenca.realocacao?
-          count_realocacoes += 1
+        if presenca.realocacao? and not presenca.data_de_realocacao.nil?
+          count_adiantamentos += 1
         end
       end
+
+      count_adiantamentos = record.presencas.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao ilike 'adiantado%'").count
+
+      hoje = (Time.now + Time.zone.utc_offset).to_date
+
+      count_faltas_justificadas_com_direito_a_reposicao = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:presenca => false, :tem_direito_a_reposicao => true).count
+
+      sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
+      sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
+
+      count_aulas_repostas = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:realocacao => true, :presenca => true)
+      count_aulas_repostas = count_aulas_repostas.where("data_de_realocacao IN (#{sub_query})").count
+
+      count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas
+
+      total_de_aulas = record.presencas.count
 
       table = "<div id='estatisticas_table' class='active-scaffold'>
                  <table>
@@ -66,19 +82,48 @@ module AlunosHelper
                        <th>Presenças</th>
                        <th>Faltas Justificadas</th>
                        <th>Faltas Sem Justificativa</th>
-                       <th>Reposições/Adiantamentos</th>
+                       <th>Tem direito à Reposição</th>
+                       <th>Aulas realocadas</th>
+                       <th>Aulas a repor</th>
+                       <th>Total de aulas</th>
                      </tr>
                    </thead>
                    <tbody>
                      <tr>
-                       <td>#{count_presencas}</td>
-                       <td>#{count_faltas_justificadas}</td>
-                       <td>#{count_faltas_sem_justificativa}</td>
-                       <td>#{count_realocacoes}</td>
+                       <td class='tip_trigger'>
+                         #{count_presencas}
+                         <span class='tip'>#{calcular_percentual(count_presencas, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_faltas_justificadas}
+                         <span class='tip'>#{calcular_percentual(count_faltas_justificadas, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_faltas_sem_justificativa}
+                         <span class='tip'>#{calcular_percentual(count_faltas_sem_justificativa, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{reposicoes = (count_aulas_repostas + count_aulas_a_repor)}
+                         <span class='tip'>#{calcular_percentual(reposicoes, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{(reposicoes = count_aulas_repostas + count_adiantamentos)}
+                         <span class='tip'>
+                           <p>Aulas repostas: #{count_aulas_repostas}</p>
+                           <p>Aulas adiantadas: #{count_adiantamentos}</p>
+                           #{calcular_percentual(reposicoes, total_de_aulas)}%
+                         </span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_aulas_a_repor}
+                         <span class='tip'>#{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%</span>
+                       </td>
+                       <td>#{total_de_aulas}</td>
                      </tr>
                    </tbody>
                  </table>
                </div>".html_safe
+
     end
   end
 
@@ -121,35 +166,35 @@ module AlunosHelper
                      <tr>
                        <td>-15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(count_menor_que_menos_quinze, total_de_presencas)}%
+                         #{calcular_percentual(count_menor_que_menos_quinze, total_de_presencas)}%
                          <span class='tip'>Percentual de Atraso maior que 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
                        <td>-5 a -15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(count_maior_que_menos_quinze, total_de_presencas)}%
+                         #{calcular_percentual(count_maior_que_menos_quinze, total_de_presencas)}%
                          <span class='tip'>Percentual de Atraso entre 5 e 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
                        <td>-5 a 5</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(count_maior_que_menos_cinco, total_de_presencas)}%
+                         #{calcular_percentual(count_maior_que_menos_cinco, total_de_presencas)}%
                          <span class='tip'>Percentual do intervalo entre 4 minutos de Atraso e 4 minutos Adiantado.</span>
                        </td>
                      </tr>
                      <tr>
                        <td>5 a 15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(count_maior_que_cinco, total_de_presencas)}%
+                         #{calcular_percentual(count_maior_que_cinco, total_de_presencas)}%
                          <span class='tip'>Percentual de Adiantamento entre 5 e 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
                        <td>15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(count_maior_que_quinze, total_de_presencas)}%
+                         #{calcular_percentual(count_maior_que_quinze, total_de_presencas)}%
                          <span class='tip'>Percentual de Adiantamento maior que 15 minutos.</span>
                        </td>
                      </tr>
@@ -168,7 +213,7 @@ module AlunosHelper
     end
   end
 
-  def calcular_pontualidade quantidade, total
+  def calcular_percentual quantidade, total
     ((quantidade.to_f / total) * 100).round(2)
   end
 
@@ -252,7 +297,7 @@ module AlunosHelper
 
   def get_next_class data, horario, inputEnabled
     next_class = "<div style='float: left; margin-right: 65px;'>
-                    <br /><h4>Próxima Aula</h4>
+                    <br /><h4>Justificar Próxima Aula</h4>
                     <p>Data</p>
                     <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
                     <p>Horário<p>

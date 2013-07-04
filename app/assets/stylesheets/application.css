@@ -265,6 +265,10 @@ i{
 .horario_disponivel, .horario_ocupado, .vip {
   text-align: center;
 }
+#pontualidade_table th,
+#pontualidade_table table tr td,
+#estatisticas_table th,
+#estatisticas_table table tr td,
 #presencas_table th,
 #presencas_table table tr td {
   padding: 4px;
@@ -334,7 +338,8 @@ i{
 #quadro_de_horarios .status.exibir {
   display: none;
 }
-#pontualidade_table table tr td .tip {
+
+.tip {
   border: 1px solid rgba(0,31, 255, 0.8);
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 31, 255, 0.6);
   -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 31, 255, 0.6);
@@ -347,11 +352,14 @@ i{
   z-index: 1000;
   border-radius: 4px 4px 4px 4px;
   max-width: 500px;
+  opacity: 0.8;
 }
-#pontualidade_table table tr td .tip_trigger{
+
+.tip_trigger{
    max-width: 236px;
    margin-left: 35%;
 }
-#pontualidade_table table tr td.tip_trigger:hover {
+
+.tip_trigger:hover {
   cursor: pointer;
 }
