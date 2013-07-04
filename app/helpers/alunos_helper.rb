@@ -84,30 +84,29 @@ module AlunosHelper
 
   def pontualidade_column(record, column)
     if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
-      total_de_presencas = record.presencas.where(:presenca => true).count
+      presencas = record.presencas.where(:presenca => true)
+      total_de_presencas = presencas.count
 
-      countBetweenZeroAndTen = 0
-      countBetweenTenAndTwenty = 0
-      countBetweenZeroAndMinusTen = 0
-      countBetweenMinusTenAndMinusTwenty = 0
-      countZero = 0
+      count_maior_que_quinze = 0
+      count_maior_que_cinco = 0
+      count_maior_que_menos_cinco = 0
+      count_maior_que_menos_quinze = 0
+      count_menor_que_menos_quinze = 0
 
-      record.presencas.each do |presenca|
-        if presenca.presenca? and not presenca.pontualidade.nil?
-          pontualidade = presenca.pontualidade
+      presencas.each do |presenca|
+          pontualidade = (presenca.pontualidade.nil?) ? 0 : presenca.pontualidade
 
-          if (pontualidade  < 21 and pontualidade > 10)
-            countBetweenTenAndTwenty += 1
-          elsif (pontualidade < 11 and pontualidade > 0)
-            countBetweenZeroAndTen += 1
-          elsif (pontualidade < 0 and pontualidade > -11)
-            countBetweenZeroAndMinusTen += 1
-          elsif (pontualidade < -12 and pontualidade > -21)
-            countBetweenMinusTenAndMinusTwenty += 1
-          elsif (pontualidade == 0)
-            countZero += 1
+          if pontualidade > 15
+            count_maior_que_quinze += 1
+          elsif pontualidade > 4
+            count_maior_que_cinco += 1
+          elsif pontualidade > -5
+            count_maior_que_menos_cinco += 1
+          elsif pontualidade > -15
+            count_maior_que_menos_quinze += 1
+          else # menor que -15
+            count_menor_que_menos_quinze += 1
           end
-        end
       end
 
       table = "<div id='pontualidade_table' class='active-scaffold'>
@@ -120,42 +119,39 @@ module AlunosHelper
                    </thead>
                    <tbody>
                      <tr>
-                       <td>-20</td>
+                       <td>-15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenMinusTenAndMinusTwenty, total_de_presencas)}%
-                         <span class='tip'>Percentual de Atraso entre 11 e 20 minutos.</span>
+                         #{calcular_pontualidade(count_menor_que_menos_quinze, total_de_presencas)}%
+                         <span class='tip'>Percentual de Atraso maior que 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>-10</td>
+                       <td>-5 a -15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenZeroAndMinusTen, total_de_presencas)}%
-                         <span class='tip'>Percentual de Atraso entre 1 e 10 minutos.</span>
+                         #{calcular_pontualidade(count_maior_que_menos_quinze, total_de_presencas)}%
+                         <span class='tip'>Percentual de Atraso entre 5 e 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>0</td>
+                       <td>-5 a 5</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countZero, total_de_presencas)}%
-                         <span class='tip'>Percentual de Presença Pontual.</span>
+                         #{calcular_pontualidade(count_maior_que_menos_cinco, total_de_presencas)}%
+                         <span class='tip'>Percentual do intervalo entre 4 minutos de Atraso e 4 minutos Adiantado.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>10</td>
+                       <td>5 a 15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenZeroAndTen, total_de_presencas)}%
-                         <span class='tip'>Percentual de Adiantamento entre 1 e 10 minutos.</span>
+                         #{calcular_pontualidade(count_maior_que_cinco, total_de_presencas)}%
+                         <span class='tip'>Percentual de Adiantamento entre 5 e 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>20</td>
+                       <td>15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenTenAndTwenty, total_de_presencas)}%
-                         <span class='tip'>Percentual de Adiantamento entre 11 e 20 minutos.</span>
+                         #{calcular_pontualidade(count_maior_que_quinze, total_de_presencas)}%
+                         <span class='tip'>Percentual de Adiantamento maior que 15 minutos.</span>
                        </td>
-                     </tr>
-                     <tr>
-                       <td>Total de Presenças</td><td>#{total_de_presencas}</td>
                      </tr>
                    </tdboy>
                  </table>
