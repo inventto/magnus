@@ -39,6 +39,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/gravar_reposicao", to: "alunos#gravar_reposicao"
 
+  match "/gravar_realocacao", to: "alunos#gravar_realocacao"
+
   match "/aniversariantes", to: "aniversariantes_do_mes#aniversariantes"
 
   get "/agenda_do_dia/filtrar"

@@ -338,7 +338,6 @@ i{
 #quadro_de_horarios .status.exibir {
   display: none;
 }
-
 .tip {
   border: 1px solid rgba(0,31, 255, 0.8);
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 31, 255, 0.6);
@@ -354,12 +353,10 @@ i{
   max-width: 500px;
   opacity: 0.8;
 }
-
 .tip_trigger{
    max-width: 236px;
    margin-left: 35%;
 }
-
 .tip_trigger:hover {
   cursor: pointer;
 }
