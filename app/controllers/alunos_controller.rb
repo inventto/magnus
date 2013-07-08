@@ -165,14 +165,7 @@ class AlunosController < ApplicationController
   end
 
   def hora_valida?(hora)
-    hour, min = hora.split(":")
-    hour = hour.to_i
-    min = min.to_i
-    if ((hour >= 0 and hour < 24) and (min >= 0 and min < 60))
-      return true
-    else
-      return false
-    end
+    Time.strptime(hora, "%H:%M") rescue false
   end
 
   def txt_to_seg hour
