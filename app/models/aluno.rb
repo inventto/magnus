@@ -95,6 +95,16 @@ class Aluno < ActiveRecord::Base
     end
   end
 
+  def get_hora_fora_de_horario hora
+    seconds = txt_to_seg hora
+    min_in_secs = seconds % 3600
+    if min_in_secs > 1800 # se maior que 30 minutos
+      return Time.at((seconds - min_in_secs) + 3600).gmtime.strftime("%R:%S")[0..4]
+    else
+      return Time.at(seconds - min_in_secs).gmtime.strftime("%R:%S")[0..4]
+    end
+  end
+
   def registrar_presenca time_millis
     if time_millis.nil?
       @hora_certa = (Time.now + Time.zone.utc_offset)
@@ -105,14 +115,20 @@ class Aluno < ActiveRecord::Base
       hora_atual = data_hora.strftime("%H:%M")
       data_atual = data_hora.to_date
     end
-    #@hora_certa =Time.now  #--> variáveis para teste local
+    #@hora_certa = Time.now  #--> variáveis para teste local
     #hora_atual = @hora_certa.strftime("%H:%M")
     #data_atual = Date.today
     @presenca = get_presenca(data_atual, hora_atual)
     if @presenca.nil?
-      presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :horario => hora_atual, :presenca => true, :pontualidade => get_pontualidade(hora_atual))
+      presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :presenca => true)
       if esta_fora_de_horario? || esta_no_dia_errado?
         presenca.fora_de_horario = true
+        hora_da_aula = get_hora_fora_de_horario(hora_atual)
+        presenca.horario = hora_da_aula
+        presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(hora_atual)) / 60).round
+      else
+        presenca.horario = @horario_de_aula.horario
+        presenca.pontualidade = get_pontualidade(hora_atual)
       end
       presenca.save
     elsif not @presenca.presenca?
