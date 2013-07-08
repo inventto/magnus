@@ -480,7 +480,11 @@ module AlunosHelper
                  #{get_function_gravar_realocacao}
 
                  function sugerirData(data) {
-                   $('#data_de_realocacao').val(data);
+                   var data_sugerida = $('#data_de_realocacao').val(data);
+                   var radios = $('[name=\"tipo_realocacao\"]');
+                   if (data_sugerida.val() == '' && radios[1].checked) {
+                     jAlert('<strong>Não exisite Aula a Repor!</strong>', 'Atenção');
+                   }
                  }
               </script>"
   end
