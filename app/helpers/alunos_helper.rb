@@ -30,7 +30,7 @@ module AlunosHelper
                  }
               </script>"
     script << "<input autocomplete='off' class='codigo_de_acesso-input text-input' id='record_codigo_de_acesso_#{record.id}' maxlength='255' name='record[codigo_de_acesso]' size='30' type='text' value='#{record.codigo_de_acesso}' >
-     <input type='button' id='gerar_codigo_de_acesso' value='Gerar Código de Acesso' onclick='gerarCodigoDeAcesso()' />".html_safe
+    <input type='button' id='gerar_codigo_de_acesso' value='Gerar Código de Acesso' onclick='gerarCodigoDeAcesso()' />".html_safe
   end
 
   def telefones_column(record, column)
@@ -44,7 +44,7 @@ module AlunosHelper
       count_presencas = 0
       count_faltas_justificadas = 0
       count_faltas_sem_justificativa = 0
-      count_realocacoes = 0
+      count_adiantamentos = 0
 
       record.presencas.each do |presenca|
         if presenca.presenca?
@@ -54,10 +54,26 @@ module AlunosHelper
         else
           count_faltas_justificadas += 1
         end
-        if presenca.realocacao?
-          count_realocacoes += 1
+        if presenca.realocacao? and not presenca.data_de_realocacao.nil?
+          count_adiantamentos += 1
         end
       end
+
+      count_adiantamentos = record.presencas.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao ilike 'adiantado%'").count
+
+      hoje = (Time.now + Time.zone.utc_offset).to_date
+
+      count_faltas_justificadas_com_direito_a_reposicao = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:presenca => false, :tem_direito_a_reposicao => true).count
+
+      sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
+      sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
+
+      count_aulas_repostas = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:realocacao => true, :presenca => true)
+      count_aulas_repostas = count_aulas_repostas.where("data_de_realocacao IN (#{sub_query})").count
+
+      count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas
+
+      total_de_aulas = record.presencas.count
 
       table = "<div id='estatisticas_table' class='active-scaffold'>
                  <table>
@@ -66,48 +82,76 @@ module AlunosHelper
                        <th>Presenças</th>
                        <th>Faltas Justificadas</th>
                        <th>Faltas Sem Justificativa</th>
-                       <th>Reposições/Adiantamentos</th>
+                       <th>Tem direito à Reposição</th>
+                       <th>Aulas realocadas</th>
+                       <th>Aulas a repor</th>
+                       <th>Total de aulas</th>
                      </tr>
                    </thead>
                    <tbody>
                      <tr>
-                       <td>#{count_presencas}</td>
-                       <td>#{count_faltas_justificadas}</td>
-                       <td>#{count_faltas_sem_justificativa}</td>
-                       <td>#{count_realocacoes}</td>
+                       <td class='tip_trigger'>
+                         #{count_presencas}
+                         <span class='tip'>#{calcular_percentual(count_presencas, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_faltas_justificadas}
+                         <span class='tip'>#{calcular_percentual(count_faltas_justificadas, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_faltas_sem_justificativa}
+                         <span class='tip'>#{calcular_percentual(count_faltas_sem_justificativa, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{reposicoes = (count_aulas_repostas + count_aulas_a_repor)}
+                         <span class='tip'>#{calcular_percentual(reposicoes, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{(reposicoes = count_aulas_repostas + count_adiantamentos)}
+                         <span class='tip'>
+                           <p>Aulas repostas: #{count_aulas_repostas}</p>
+                           <p>Aulas adiantadas: #{count_adiantamentos}</p>
+                           #{calcular_percentual(reposicoes, total_de_aulas)}%
+                         </span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_aulas_a_repor}
+                         <span class='tip'>#{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%</span>
+                       </td>
+                       <td>#{total_de_aulas}</td>
                      </tr>
                    </tbody>
                  </table>
                </div>".html_safe
+
     end
   end
 
   def pontualidade_column(record, column)
     if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
-      total_de_presencas = record.presencas.where(:presenca => true).count
+      presencas = record.presencas.where(:presenca => true)
+      total_de_presencas = presencas.count
 
-      countBetweenZeroAndTen = 0
-      countBetweenTenAndTwenty = 0
-      countBetweenZeroAndMinusTen = 0
-      countBetweenMinusTenAndMinusTwenty = 0
-      countZero = 0
+      count_maior_que_quinze = 0
+      count_maior_que_cinco = 0
+      count_maior_que_menos_cinco = 0
+      count_maior_que_menos_quinze = 0
+      count_menor_que_menos_quinze = 0
 
-      record.presencas.each do |presenca|
-        if presenca.presenca? and not presenca.pontualidade.nil?
-          pontualidade = presenca.pontualidade
+      presencas.each do |presenca|
+          pontualidade = (presenca.pontualidade.nil?) ? 0 : presenca.pontualidade
 
-          if (pontualidade  < 21 and pontualidade > 10)
-            countBetweenTenAndTwenty += 1
-          elsif (pontualidade < 11 and pontualidade > 0)
-            countBetweenZeroAndTen += 1
-          elsif (pontualidade < 0 and pontualidade > -11)
-            countBetweenZeroAndMinusTen += 1
-          elsif (pontualidade < -12 and pontualidade > -21)
-            countBetweenMinusTenAndMinusTwenty += 1
-          elsif (pontualidade == 0)
-            countZero += 1
+          if pontualidade > 15
+            count_maior_que_quinze += 1
+          elsif pontualidade > 4
+            count_maior_que_cinco += 1
+          elsif pontualidade > -5
+            count_maior_que_menos_cinco += 1
+          elsif pontualidade > -15
+            count_maior_que_menos_quinze += 1
+          else # menor que -15
+            count_menor_que_menos_quinze += 1
           end
-        end
       end
 
       table = "<div id='pontualidade_table' class='active-scaffold'>
@@ -120,42 +164,39 @@ module AlunosHelper
                    </thead>
                    <tbody>
                      <tr>
-                       <td>-20</td>
+                       <td>-15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenMinusTenAndMinusTwenty, total_de_presencas)}%
-                         <span class='tip'>Percentual de Atraso entre 11 e 20 minutos.</span>
+                         #{calcular_percentual(count_menor_que_menos_quinze, total_de_presencas)}%
+                         <span class='tip'>Percentual de Atraso maior que 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>-10</td>
+                       <td>-5 a -15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenZeroAndMinusTen, total_de_presencas)}%
-                         <span class='tip'>Percentual de Atraso entre 1 e 10 minutos.</span>
+                         #{calcular_percentual(count_maior_que_menos_quinze, total_de_presencas)}%
+                         <span class='tip'>Percentual de Atraso entre 5 e 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>0</td>
+                       <td>-5 a 5</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countZero, total_de_presencas)}%
-                         <span class='tip'>Percentual de Presença Pontual.</span>
+                         #{calcular_percentual(count_maior_que_menos_cinco, total_de_presencas)}%
+                         <span class='tip'>Percentual do intervalo entre 4 minutos de Atraso e 4 minutos Adiantado.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>10</td>
+                       <td>5 a 15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenZeroAndTen, total_de_presencas)}%
-                         <span class='tip'>Percentual de Adiantamento entre 1 e 10 minutos.</span>
+                         #{calcular_percentual(count_maior_que_cinco, total_de_presencas)}%
+                         <span class='tip'>Percentual de Adiantamento entre 5 e 15 minutos.</span>
                        </td>
                      </tr>
                      <tr>
-                       <td>20</td>
+                       <td>15</td>
                        <td class='tip_trigger'>
-                         #{calcular_pontualidade(countBetweenTenAndTwenty, total_de_presencas)}%
-                         <span class='tip'>Percentual de Adiantamento entre 11 e 20 minutos.</span>
+                         #{calcular_percentual(count_maior_que_quinze, total_de_presencas)}%
+                         <span class='tip'>Percentual de Adiantamento maior que 15 minutos.</span>
                        </td>
-                     </tr>
-                     <tr>
-                       <td>Total de Presenças</td><td>#{total_de_presencas}</td>
                      </tr>
                    </tdboy>
                  </table>
@@ -172,7 +213,7 @@ module AlunosHelper
     end
   end
 
-  def calcular_pontualidade quantidade, total
+  def calcular_percentual quantidade, total
     ((quantidade.to_f / total) * 100).round(2)
   end
 
@@ -213,17 +254,45 @@ module AlunosHelper
     horario = proximo_horario_de_aula["horario"]
 
     # Próxima Aula
-    next_class = get_next_class(data, horario, inputEnabled)
+    justify_next_class = get_next_class(data, horario, inputEnabled)
+
+    # realocacao
+    realocacao = get_realocacao(aluno_id, data)
 
     # Reposição
-    reposicao = get_reposicao(aluno_id)
+    #reposicao = get_reposicao(aluno_id)
 
     # Adiantamento
-    adiantamento = get_adiantamento(data)
+    #adiantamento = get_adiantamento(data)
 
-    (table << next_class << reposicao << adiantamento << get_script).html_safe
+    (table << justify_next_class << realocacao << get_script).html_safe
   end
 
+  def get_realocacao aluno_id, data
+    presenca = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true)
+    presenca = presenca.where("justificativas_de_falta.descricao <> ''")
+    presenca = presenca.where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.aluno_id=presencas.aluno_id)").order("id")
+
+    data_reposicao = (presenca.blank?) ? "" : presenca.first.data.to_date
+
+    realocacao = "<div style='float: left; margin-right: 65px;'>
+                    <br /><h4>Gerar Reposição/Adiantamento</h4>
+                    <p>Data</p>
+                    <p><input  class='text-input' id='data_aula_realocacao' name='data' type='date' value='' /></p>
+                    <p>Horário<p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_realocacao' maxlength='255' name='horario' size='30' type='text' value=''><p>
+                    <p>Data da Falta/Horário a ser Adiantado</p>
+                    <p><input  class='text-input' id='data_de_realocacao' name='data' type='date' value='#{data}' /></p>
+                    <p>Sugerir Data para:</p>
+                    <p>
+                      <input type='radio' name='tipo_realocacao' onclick='sugerirData(\"#{data}\");' value='adiantamento' checked /> Adiantamento
+                      <input type='radio' name='tipo_realocacao' onclick='sugerirData(\"#{data_reposicao}\");' value='reposicao' /> Reposição
+                    </p>
+                    <br />
+                    <input type='button' id='repor' value='Gerar' onclick='gravarRealocacao();' />
+                  </div>"
+  end
+=begin
   def get_reposicao aluno_id
     p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.aluno_id=presencas.aluno_id)").order("id DESC") # traz a última data com falta justificada e que tem direito a reposição mas que ainda não possua uma data de realocação
 
@@ -252,11 +321,11 @@ module AlunosHelper
                     <p><input  class='text-input' id='data_de_realocacao_adiantamento' name='data' type='date' value='#{data.to_date}' /></p>
                     <br /><input type='button' id='adiantar' value='Adiantar aula' onclick='adiantarAula()' />
                   </div>"
-  end
+=end
 
   def get_next_class data, horario, inputEnabled
     next_class = "<div style='float: left; margin-right: 65px;'>
-                    <br /><h4>Próxima Aula</h4>
+                    <br /><h4>Justificar Próxima Aula</h4>
                     <p>Data</p>
                     <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
                     <p>Horário<p>
@@ -292,81 +361,131 @@ module AlunosHelper
      </div>"
   end
 
-  def get_script
-    script = "<script type='text/javascript'>
-                 $(document).ready(function() {
-                   $('#record_horario').mask('99:99');
-                   $('#record_horario_reposicao').mask('99:99');
-                   $('#record_horario_adiantamento').mask('99:99');
-                   $('#justificativa_de_falta').css('width', '300px');
-                   $('#record_horario').css('width', '90px');
-                   $('#record_horario_reposicao').css('width', '90px');
-                   $('#record_horario_adiantamento').css('width', '90px');
-                 });
-                 function justificarFalta() {
-                    var jqxhr = $.ajax({
-                      url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula').val()+'&horario='+$('#record_horario').val()+'&justificativa='+$('#justificativa_de_falta').val()
-                    });
-                    jqxhr.always(function () {
-                      var error = jqxhr.responseText
-                      if (error != '') {
-                        if (error.search(/aula/i) >= 0) {
-                            $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+  def get_function_justificar_falta
+    function = "function justificarFalta() {
+                  var jqxhr = $.ajax({
+                    url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula').val()+'&horario='+$('#record_horario').val()+'&justificativa='+$('#justificativa_de_falta').val()
+                   });
+                   jqxhr.always(function () {
+                     var error = jqxhr.responseText
+                     if (error != '') {
+                       if (error.search(/aula/i) >= 0) {
+                         $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                         }
                         if (error.search(/justif/i) >= 0) {
                           $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                         }
                         jAlert(error, 'Atenção');
-                      } else {
-                        window.location.href = '/alunos';
-                      }
-                    });
-                  }
-                 function gravarReposicao() {
-                    var jqxhr = $.ajax({
-                      url: '/gravar_reposicao?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula_reposicao').val()+'&horario='+$('#record_horario_reposicao').val()+'&data_de_realocacao_reposicao='+$('#data_de_realocacao_reposicao').val()
-                    });
-                    jqxhr.always(function () {
+                     } else {
+                       window.location.href = '/alunos';
+                     }
+                   });
+                }"
+
+  end
+
+  def get_response_of_ajax_request
+    response_ajax ="jqxhr.always(function () {
                       var error = jqxhr.responseText
                       if (error != '') {
                         if (error.search(/campo/i) >= 0) {
-                            $('#data_aula_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        if (error.search(/aula/i) >= 0) {
-                          $('#record_horario_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        if (error.search(/falta/i) >= 0) {
-                          $('#data_de_realocacao_reposicao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        jAlert(error, 'Atenção');
+                          $('#data_aula_realocacao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                         }
+                         if (error.search(/aula/i) >= 0) {
+                           $('#record_horario_realocacao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                         }
+                         if ((error.search(/adiantado/i) >= 0) || (error.search(/falta/i) >= 0) || (error.search(/cadastrado/i) >= 0)) {
+                           $('#data_de_realocacao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                         }
+                         jAlert(error, 'Atenção');
                       } else {
                         window.location.href = '/alunos';
                       }
-                    });
-                 }
-                 function adiantarAula() {
-                    var jqxhr = $.ajax({
-                      url: '/adiantar_aula?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula_adiantamento').val()+'&horario='+$('#record_horario_adiantamento').val()+'&data_de_realocacao_adiantamento='+$('#data_de_realocacao_adiantamento').val()
-                    });
-                    jqxhr.always(function () {
-                      var error = jqxhr.responseText
-                      if (error != '') {
-                         if (error.search(/campo/i) >= 0) {
-                            $('#data_aula_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        if (error.search(/aula/i) >= 0) {
-                          $('#record_horario_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        if (error.search(/adiantado/i) >= 0) {
-                          $('#data_de_realocacao_adiantamento').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        jAlert(error, 'Atenção');
-                      } else {
-                        window.location.href = '/alunos';
-                      }
-                    });
-                 }
+                    });"
 
+  end
+
+  def get_ajax_request_gravar_adiantamento
+    adiantamento = "var jqxhr = $.ajax({
+                      url: '/gravar_realocacao?aluno_id='+$('.id-view').text().trim()+'&data='+data+'&horario='+$('#record_horario_realocacao').val()+'&data_de_realocacao='+data_sugerida+'&tipo_realocacao=A'
+                    });
+                    #{get_response_of_ajax_request}"
+
+  end
+
+  def get_ajax_request_gravar_reposicao
+    reposicao = "var jqxhr = $.ajax({
+                   url: '/gravar_realocacao?aluno_id='+$('.id-view').text().trim()+'&data='+data+'&horario='+$('#record_horario_realocacao').val()+'&data_de_realocacao='+data_sugerida+'&tipo_realocacao=R'
+                 });
+                 #{get_response_of_ajax_request}"
+
+  end
+
+  def set_css_to_date_fields_realocacao
+    validations = "$('#data_aula_realocacao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                   $('#data_de_realocacao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});"
+
+  end
+
+  def get_function_gravar_realocacao
+    realocacao= "function gravarRealocacao() {
+                   var data = $('#data_aula_realocacao').val();
+                   if (data != '') {
+                     var data_sugerida = $('#data_de_realocacao').val();
+                     var data_sug = data_sugerida.split('-');
+                     data_sug = new Date(data_sug[0], data_sug[1], data_sug[2]);
+
+                     var data_aula = data.split('-');
+                     data_aula = new Date(data_aula[0], data_aula[1], data_aula[2]);
+
+                     var radios = $('[name=\"tipo_realocacao\"]');
+                     if (radios[0].checked) { // adiantamento
+                       if (data_aula <= data_sug) {
+                         #{get_ajax_request_gravar_adiantamento}
+                       } else {
+                         #{set_css_to_date_fields_realocacao}
+                         jAlert('<strong>Data</strong> deve ser menor ou igual a Data do Horário a ser Adiantado', 'Atenção');
+                       }
+                     } else {                 // reposição
+                       if (data_aula >= data_sug) {
+                         #{get_ajax_request_gravar_reposicao}
+                       } else if(data_sugerida == '') {
+                         #{set_css_to_date_fields_realocacao}
+                         jAlert('Não existe Falta Justificada com Direito à Reposição para Repor!', 'Atenção');
+                       } else {
+                         #{set_css_to_date_fields_realocacao}
+                         jAlert('<strong>Data</strong> deve ser maior ou igual a Data do Horário a ser Adiantado', 'Atenção');
+                       }
+                     }
+                   } else {
+                     $('#data_aula_realocacao').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                     jAlert('Campo <strong>Data</strong> deve ser preenchido!', 'Atenção');
+                   }
+                 }"
+
+  end
+
+  def get_script
+    script = "<script type='text/javascript'>
+                 $(document).ready(function() {
+                   $('#record_horario').mask('99:99');
+                   $('#record_horario_realocacao').mask('99:99');
+                   $('#justificativa_de_falta').css('width', '300px');
+                   $('#record_horario').css('width', '90px');
+                   $('#record_horario_realocacao').css('width', '90px');
+                 });
+
+                 #{get_function_justificar_falta}
+
+                 #{get_function_gravar_realocacao}
+
+                 function sugerirData(data) {
+                   var data_sugerida = $('#data_de_realocacao').val(data);
+                   var radios = $('[name=\"tipo_realocacao\"]');
+                   if (data_sugerida.val() == '' && radios[1].checked) {
+                     jAlert('<strong>Não exisite Aula a Repor!</strong>', 'Atenção');
+                   }
+                 }
               </script>"
   end
 
