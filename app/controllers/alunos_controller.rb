@@ -120,11 +120,6 @@ class AlunosController < ApplicationController
   def justificar_falta
     error = ""
 
-    if params[:horario].blank?
-      error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
-    elsif not hora_valida?(params[:horario])
-      error << "<strong>Horário da Aula</strong> Inválido!\n"
-    end
     if params[:justificativa].blank?
       error << "<strong>Justificativa</strong> não pode ficar vazio!"
     end
@@ -132,8 +127,18 @@ class AlunosController < ApplicationController
       render :text => error and return
     end
 
-    presenca = Presenca.create(:aluno_id => params[:aluno_id].to_i, :data => params[:data], :horario => params[:horario], :presenca => false, :realocacao => false, :fora_de_horario => false, :tem_direito_a_reposicao => true)
-    JustificativaDeFalta.create(:descricao => params[:justificativa], :presenca_id => presenca.id)
+    data = Date.parse(params[:data_da_falta])
+    data_fim =  (params[:data_da_falta_fim].blank?) ? data : Date.parse(params[:data_da_falta_fim])
+    aluno_id = params[:aluno_id].to_i
+    while (data <= data_fim)
+      aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data.wday)
+      if not aula.blank?
+        aula = aula[0]
+        presenca = Presenca.create(:aluno_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :fora_de_horario => false, :tem_direito_a_reposicao => true)
+        JustificativaDeFalta.create( :presenca_id => presenca.id, :descricao => params[:justificativa])
+      end
+      data += 1.day
+    end
 
     render :text => error
   end

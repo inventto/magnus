@@ -360,3 +360,15 @@ i{
 .tip_trigger:hover {
   cursor: pointer;
 }
+#justify_next_class,
+#gerar_realocacao {
+  float: left;
+  margin-right: 65px;
+}
+#gerar_realocacao label {
+  font: bold 13px verdana !important;
+  color: #312323;
+}
+#gerar_realocacao label:hover {
+  cursor: pointer;
+}

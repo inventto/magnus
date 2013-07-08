@@ -243,27 +243,17 @@ module AlunosHelper
     aluno_id = record.id
     hora_certa = Time.now + Time.zone.utc_offset
 
-    proximo_horario_de_aula = get_data_e_horario(aluno_id, hora_certa)
-    data = proximo_horario_de_aula["data"]
+    data = get_data(aluno_id, hora_certa)
 
     while not Presenca.where(:aluno_id => aluno_id).where(:data => data).blank?
-      proximo_horario_de_aula = get_data_e_horario(aluno_id, data)
-      data = proximo_horario_de_aula["data"]
+      data = get_data(aluno_id, data)
     end
 
-    horario = proximo_horario_de_aula["horario"]
-
     # Próxima Aula
-    justify_next_class = get_next_class(data, horario, inputEnabled)
+    justify_next_class = get_next_class(data, inputEnabled)
 
     # realocacao
     realocacao = get_realocacao(aluno_id, data)
-
-    # Reposição
-    #reposicao = get_reposicao(aluno_id)
-
-    # Adiantamento
-    #adiantamento = get_adiantamento(data)
 
     (table << justify_next_class << realocacao << get_script).html_safe
   end
@@ -275,7 +265,7 @@ module AlunosHelper
 
     data_reposicao = (presenca.blank?) ? "" : presenca.first.data.to_date
 
-    realocacao = "<div style='float: left; margin-right: 65px;'>
+    realocacao = "<div id='gerar_realocacao'>
                     <br /><h4>Gerar Reposição/Adiantamento</h4>
                     <p>Data</p>
                     <p><input  class='text-input' id='data_aula_realocacao' name='data' type='date' value='' /></p>
@@ -285,51 +275,25 @@ module AlunosHelper
                     <p><input  class='text-input' id='data_de_realocacao' name='data' type='date' value='#{data}' /></p>
                     <p>Sugerir Data para:</p>
                     <p>
-                      <input type='radio' name='tipo_realocacao' onclick='sugerirData(\"#{data}\");' value='adiantamento' checked /> Adiantamento
-                      <input type='radio' name='tipo_realocacao' onclick='sugerirData(\"#{data_reposicao}\");' value='reposicao' /> Reposição
+                      <input type='radio' id='radio_adiantamento' name='tipo_realocacao' onclick='sugerirData(\"#{data}\");' value='adiantamento' checked />
+                      <label for='radio_adiantamento'>Adiantamento</label>
+                      <input type='radio' id='radio_reposicao' name='tipo_realocacao' onclick='sugerirData(\"#{data_reposicao}\");' value='reposicao' />
+                      <label for='radio_reposicao'>Reposição</label>
                     </p>
                     <br />
                     <input type='button' id='repor' value='Gerar' onclick='gravarRealocacao();' />
                   </div>"
   end
-=begin
-  def get_reposicao aluno_id
-    p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao <> ''").where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.aluno_id=presencas.aluno_id)").order("id DESC") # traz a última data com falta justificada e que tem direito a reposição mas que ainda não possua uma data de realocação
 
-    data = (p.blank?) ? "" : p.last.data.to_date
-    reposicao = "<div style='float: left; margin-right: 65px;'>
-                    <br /><h4>Criar Reposição</h4>
-                    <p>Data</p>
-                    <p><input  class='text-input' id='data_aula_reposicao' name='data' type='date' value='' /></p>
-                    <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_reposicao' maxlength='255' name='horario' size='30' type='text' value=''><p>
-                    <p>Data da Falta</p>
-                    <p><input  class='text-input' id='data_de_realocacao_reposicao' name='data' type='date' value='#{data}' /></p>
-                    <br /><input type='button' id='repor' value='Gravar' onclick='gravarReposicao()' />
-                  </div>"
-
-  end
-
-  def get_adiantamento data
-    adiantamento = "<div style='float: left;'>
-                    <br /><h4>Adiantar Aula</h4>
-                    <p>Data</p>
-                    <p><input  class='text-input' id='data_aula_adiantamento' name='data' type='date' value='' /></p>
-                    <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_adiantamento' maxlength='255' name='horario' size='30' type='text' value=''><p>
-                    <p>Data do horário a ser Adiantado</p>
-                    <p><input  class='text-input' id='data_de_realocacao_adiantamento' name='data' type='date' value='#{data.to_date}' /></p>
-                    <br /><input type='button' id='adiantar' value='Adiantar aula' onclick='adiantarAula()' />
-                  </div>"
-=end
-
-  def get_next_class data, horario, inputEnabled
-    next_class = "<div style='float: left; margin-right: 65px;'>
+  def get_next_class data, inputEnabled
+    next_class = "<div id='justify_next_class'>
                     <br /><h4>Justificar Próxima Aula</h4>
-                    <p>Data</p>
-                    <p><input  class='text-input' id='data_aula' name='data' type='date' value='#{data.to_date}' /></p>
-                    <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario' maxlength='255' name='horario' size='30' type='text' value='#{horario}'><p>
+                    <p>
+                      Data
+                      <span style='margin-left: 107px;'>Data Final</span>
+                    </p>
+                    <input class='text-input' id='data_da_falta' name='data' type='date' value='#{data.to_date}' />
+                    <input class='text-input' id='data_da_falta_fim' name='data_fim' type='date' />
                     <p>Justificativa</p>
                     <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>
                     <p>Tem Direito à Reposição
@@ -363,23 +327,34 @@ module AlunosHelper
 
   def get_function_justificar_falta
     function = "function justificarFalta() {
-                  var jqxhr = $.ajax({
-                    url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data='+$('#data_aula').val()+'&horario='+$('#record_horario').val()+'&justificativa='+$('#justificativa_de_falta').val()
-                   });
-                   jqxhr.always(function () {
-                     var error = jqxhr.responseText
-                     if (error != '') {
-                       if (error.search(/aula/i) >= 0) {
-                         $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        if (error.search(/justif/i) >= 0) {
-                          $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                        }
-                        jAlert(error, 'Atenção');
-                     } else {
-                       window.location.href = '/alunos';
-                     }
-                   });
+                  var data_da_falta = $('#data_da_falta').val();
+                  var data_da_falta_fim = $('#data_da_falta_fim').val();
+                  data_inicio = data_da_falta.split('-');
+                  data_fim = data_da_falta_fim.split('-');
+                  data_inicio = new Date(data_inicio[0], data_inicio[1], data_inicio[2]);
+                  data_fim = new Date(data_fim[0], data_fim[1], data_fim[2]);
+                  if (data_da_falta_fim == '' || data_inicio < data_fim) {
+                    var jqxhr = $.ajax({
+                      url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+data_da_falta+'&data_da_falta_fim='+data_da_falta_fim+'&justificativa='+$('#justificativa_de_falta').val()
+                    });
+                    jqxhr.always(function () {
+                      var error = jqxhr.responseText
+                      if (error != '') {
+                        if (error.search(/aula/i) >= 0) {
+                          $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                         }
+                         if (error.search(/justif/i) >= 0) {
+                           $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                         }
+                         jAlert(error, 'Atenção');
+                      } else {
+                         window.location.href = '/alunos';
+                      }
+                    });
+                  } else if (data_da_falta_fim != '') {
+                    $('#data_da_falta_fim').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                    jAlert('<strong>Data Final</strong> deve ser maior que a <strong>Data</strong>!','Atenção');
+                  }
                 }"
 
   end
@@ -471,7 +446,6 @@ module AlunosHelper
                    $('#record_horario').mask('99:99');
                    $('#record_horario_realocacao').mask('99:99');
                    $('#justificativa_de_falta').css('width', '300px');
-                   $('#record_horario').css('width', '90px');
                    $('#record_horario_realocacao').css('width', '90px');
                  });
 
@@ -489,17 +463,14 @@ module AlunosHelper
               </script>"
   end
 
-  def get_data_e_horario aluno_id, data
-    data_e_horario = {}
+  def get_data aluno_id, data
     proximo_horario_de_aula = get_proximo_horario_de_aula(aluno_id, data)
     dia = proximo_horario_de_aula.dia_da_semana - data.wday
     data = (data + dia.day).to_date
     if dia < 0
       data = data + 7.day
     end
-    data_e_horario["data"] = data
-    data_e_horario["horario"] = proximo_horario_de_aula.horario
-    data_e_horario
+    data
   end
 
   def get_proximo_horario_de_aula aluno_id, data
