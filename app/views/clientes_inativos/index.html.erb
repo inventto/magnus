@@ -30,7 +30,7 @@
         <td><%= matricula.motivo_da_interrupcao %></td>
         <td><%= matricula.data_inicio %></td>
         <td><%= matricula.data_fim %></td>
-        <td><%= ((matricula.data_fim - matricula.data_inicio).to_i / 30.0).ceil %></td>
+        <td><%= distance_of_time_in_words(matricula.data_fim, matricula.data_inicio) %></td>
         <td><%= matricula.horario_de_aula.count %></td>
         <td><%= matricula.percentual_de_faltas * 100 %>%</td>
       </tr>
