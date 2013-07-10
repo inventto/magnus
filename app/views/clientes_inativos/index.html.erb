@@ -27,7 +27,7 @@
         <td><%= matricula.hora_da_aula 4 %></td>
         <td><%= matricula.hora_da_aula 5 %></td>
         <td><%= matricula.hora_da_aula 6 %></td>
-        <td></td>
+        <td><%= matricula.motivo_da_interrupcao %></td>
         <td><%= matricula.data_inicio %></td>
         <td><%= matricula.data_fim %></td>
         <td><%= ((matricula.data_fim - matricula.data_inicio).to_i / 30.0).ceil %></td>
