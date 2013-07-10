@@ -59,7 +59,14 @@ module AlunosHelper
         end
       end
 
-      count_adiantamentos = record.presencas.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao ilike 'adiantado%'").count
+      sub_query =  "SELECT p2.data FROM presencas p2 JOIN justificativas_de_falta j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao "
+      sub_query << "AND (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null) "
+      sub_query << "AND ( ((cast(substr(p2.horario, 1, 2) as int4) * 3600) + (cast(substr(p2.horario, 4, 2) as int4) * 60)) > "
+      sub_query << "((cast(substr(presencas.horario, 1, 2) as int4) * 3600) + (cast(substr(presencas.horario, 4, 2)as int4) * 60)) )"
+      sub_query << "AND presencas.aluno_id=p2.aluno_id"
+
+      count_adiantamentos = record.presencas.where(:realocacao => true).where("data_de_realocacao is not null")
+      count_adiantamentos = count_adiantamentos.where("data_de_realocacao IN (#{sub_query}) AND (presencas.data <= presencas.data_de_realocacao)").count
 
       hoje = (Time.now + Time.zone.utc_offset).to_date
 
