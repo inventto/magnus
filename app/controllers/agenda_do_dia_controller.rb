@@ -38,9 +38,6 @@ class AgendaDoDiaController < ApplicationController
     if @data_inicial == @data_final
       dia_da_semana = @data_inicial.wday
       agenda = agenda.where(:"horarios_de_aula.dia_da_semana" => dia_da_semana)
-#      agenda = agenda.where("matriculas.data_inicio <= '#{@data_inicial}' and (matriculas.data_fim >= '#{@data_inicial}' or matriculas.data_fim is null)")
- #   else
-  #    agenda = agenda.where("matriculas.data_inicio <= '#{@data_inicial}' and (matriculas.data_fim >= '#{@data_final}' or matriculas.data_fim is null)")
     end
 
     agenda
