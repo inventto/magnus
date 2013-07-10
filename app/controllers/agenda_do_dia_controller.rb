@@ -34,7 +34,7 @@ class AgendaDoDiaController < ApplicationController
   end
 
   def consultar_agenda
-    agenda = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id")
+    agenda = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where("matriculas.data_fim is null OR matriculas.data_fim >= NOW()")
     if @data_inicial == @data_final
       dia_da_semana = @data_inicial.wday
       agenda = agenda.where(:"horarios_de_aula.dia_da_semana" => dia_da_semana)
