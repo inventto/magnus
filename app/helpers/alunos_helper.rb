@@ -45,17 +45,19 @@ module AlunosHelper
       count_faltas_justificadas = 0
       count_faltas_sem_justificativa = 0
       count_adiantamentos = 0
+      count_presencas_fora_de_horario = 0
 
       record.presencas.each do |presenca|
         if presenca.presenca?
-          count_presencas += 1
+          if presenca.fora_de_horario?
+            count_presencas_fora_de_horario += 1
+          else
+            count_presencas += 1
+          end
         elsif presenca.justificativa_de_falta.nil?
           count_faltas_sem_justificativa += 1
         else
           count_faltas_justificadas += 1
-        end
-        if presenca.realocacao? and not presenca.data_de_realocacao.nil?
-          count_adiantamentos += 1
         end
       end
 
@@ -87,6 +89,7 @@ module AlunosHelper
                    <thead>
                      <tr>
                        <th>Presenças</th>
+                       <th>Presenças Fora de Horário</th>
                        <th>Faltas Justificadas</th>
                        <th>Faltas Sem Justificativa</th>
                        <th>Tem direito à Reposição</th>
@@ -100,6 +103,10 @@ module AlunosHelper
                        <td class='tip_trigger'>
                          #{count_presencas}
                          <span class='tip'>#{calcular_percentual(count_presencas, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_presencas_fora_de_horario}
+                         <span class='tip'>#{calcular_percentual(count_presencas_fora_de_horario, total_de_aulas)}%</span>
                        </td>
                        <td class='tip_trigger'>
                          #{count_faltas_justificadas}
