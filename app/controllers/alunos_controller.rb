@@ -93,13 +93,14 @@ class AlunosController < ApplicationController
     JustificativaDeFalta.create(:presenca_id => p.id, :descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
 
     # Criar o adiantamento
-    Presenca.create(:aluno_id => aluno_id, :data => params[:data], :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
+    Presenca.create(:aluno_id => aluno_id, :presenca => false, :data => data, :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
 
     render :text => error
   end
 
   def gravar_reposicao
     error = ""
+    note = ""
     horario_valido = true
 
     aluno_id = params[:aluno_id].to_i
@@ -114,16 +115,22 @@ class AlunosController < ApplicationController
       horario_valido = false
       error << "<strong>Horário da Aula</strong> Inválido!\n"
     end
-    if params[:data_de_realocacao].blank?
-      error << "<strong>Data da Falta</strong> não pode ficar vazio!\n"
-    else
-      data_de_realocacao = params[:data_de_realocacao].to_date
+
+    data = params[:data].to_date
+    data_de_realocacao = (params[:data_de_realocacao].blank?) ? nil : params[:data_de_realocacao].to_date
+    if not data_de_realocacao.nil?
       falta = Presenca.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao <> ''")
       falta = falta.find_all_by_aluno_id_and_data_and_presenca_and_tem_direito_a_reposicao(aluno_id, data_de_realocacao, false, true)[0]
       if falta.nil?
-        error << "Aluno não possui falta com direito à reposicao no dia #{data_de_realocacao.strftime("%d/%m/%Y")}!"
+        horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data_de_realocacao.wday)[0]
+        if not horario_de_aula.nil?
+          falta_justificada = Presenca.create(:aluno_id => aluno_id, :data => data_de_realocacao, :presenca => false, :tem_direito_a_reposicao => true, :horario => horario_de_aula.horario)
+          JustificativaDeFalta.create(:presenca_id => falta_justificada.id, :descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
+        else
+          note = "Não pôde ser criada a Falta para o dia #{data_de_realocacao.strftime("%d/%m/%Y")}, pois aluno não possui aula nesse dia."
+        end
       elsif horario_valido
-        if params[:data].to_date == data_de_realocacao
+        if data == data_de_realocacao
           horario_a_ser_reposto = txt_to_seg(falta.horario)
           horario = txt_to_seg(params[:horario])
           if horario <= horario_a_ser_reposto
@@ -136,8 +143,9 @@ class AlunosController < ApplicationController
       render :text => error and return
     end
 
-    Presenca.create(:aluno_id => aluno_id, :data => params[:data], :data_de_realocacao => params[:data_de_realocacao], :horario => params[:horario], :realocacao => true)
+    Presenca.create(:aluno_id => aluno_id, :data => data, :presenca => false, :data_de_realocacao => data_de_realocacao, :horario => params[:horario], :realocacao => true)
 
+    error << note
     render :text => error
   end
 

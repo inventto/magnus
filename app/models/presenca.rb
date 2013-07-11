@@ -27,15 +27,14 @@ class Presenca < ActiveRecord::Base
     def gerar_realocacao
       if not self.data_de_realocacao.blank?
         p = Presenca.order("id DESC").find_by_data_and_aluno_id(self.data_de_realocacao, self.aluno_id) #em ordem descrescente pois caso haja mais de uma realocação para esse dia
-
-        if self.data == self.data_de_realocacao
-          if p.nil? # não existe registro de presença, logo, é um adiantamento
+        if p.nil?
+          if self.data == self.data_de_realocacao
+            criar_adiantamento
+          elsif self.data < self.data_de_realocacao # adiantamento
             criar_adiantamento
           end
-        elsif self.data < self.data_de_realocacao # adiantamento
-          criar_adiantamento
+          self.realocacao = true
         end
-        self.realocacao = true
       end
     end
 
