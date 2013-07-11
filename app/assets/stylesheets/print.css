@@ -43,4 +43,7 @@
     float: none;
     margin: 0 auto !important;
   }
+  .aluno-column a{
+    white-space: nowrap;
+  }
 }

@@ -85,6 +85,14 @@ ActiveRecord::Schema.define(:version => 20130624132229) do
     t.datetime "updated_at",  :null => false
   end
 
+  create_table "logradouros", :force => true do |t|
+    t.string   "nome"
+    t.string   "cep"
+    t.integer  "bairro_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "matriculas", :force => true do |t|
     t.integer  "aluno_id"
     t.string   "objetivo"
