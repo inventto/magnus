@@ -62,12 +62,12 @@ module AlunosHelper
 
       hoje = (Time.now + Time.zone.utc_offset).to_date
 
-      count_faltas_justificadas_com_direito_a_reposicao = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:presenca => false, :tem_direito_a_reposicao => true).count
+      count_faltas_justificadas_com_direito_a_reposicao = record.presencas.where("data > ?", 2.month.ago).where(:presenca => false, :tem_direito_a_reposicao => true).count
 
       sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
       sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
 
-      count_aulas_repostas = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje + 2.month).where(:realocacao => true, :presenca => true)
+      count_aulas_repostas = record.presencas.where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => true)
       count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
 
       count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas
