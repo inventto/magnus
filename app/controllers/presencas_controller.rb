@@ -7,7 +7,7 @@ class PresencasController < ApplicationController
     conf.columns[:realocacao].label = "Realocação de Horário"
     conf.columns[:fora_de_horario].label = "Fora de Horário"
     conf.columns[:tem_direito_a_reposicao].label = "Tem Direito à Reposição?"
-    conf.columns[:data_de_realocacao].label = "Data da Falta ou do horário a ser Adiantado"
+    conf.columns[:data_de_realocacao].label = "Realocado de"
     conf.columns = [:aluno, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :fora_de_horario, :tem_direito_a_reposicao, :justificativa_de_falta]
     conf.columns[:aluno].form_ui = :select
     conf.columns[:justificativa_de_falta].allow_add_existing = false

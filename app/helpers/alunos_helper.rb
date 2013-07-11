@@ -42,10 +42,9 @@ module AlunosHelper
   def estatisticas_column(record, column)
     if record.instance_of?(Aluno)
       count_presencas = 0
-      count_faltas_justificadas = 0
-      count_faltas_sem_justificativa = 0
-      count_adiantamentos = 0
       count_presencas_fora_de_horario = 0
+      count_faltas_sem_justificativa = 0
+      count_faltas_justificadas = 0
 
       record.presencas.each do |presenca|
         if presenca.presenca?
@@ -61,15 +60,6 @@ module AlunosHelper
         end
       end
 
-      sub_query =  "SELECT p2.data FROM presencas p2 JOIN justificativas_de_falta j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao "
-      sub_query << "AND (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null) "
-      sub_query << "AND ( ((cast(substr(p2.horario, 1, 2) as int4) * 3600) + (cast(substr(p2.horario, 4, 2) as int4) * 60)) > "
-      sub_query << "((cast(substr(presencas.horario, 1, 2) as int4) * 3600) + (cast(substr(presencas.horario, 4, 2)as int4) * 60)) )"
-      sub_query << "AND presencas.aluno_id=p2.aluno_id"
-
-      count_adiantamentos = record.presencas.where(:realocacao => true).where("data_de_realocacao is not null")
-      count_adiantamentos = count_adiantamentos.where("data_de_realocacao IN (#{sub_query}) AND (presencas.data <= presencas.data_de_realocacao)").count
-
       hoje = (Time.now + Time.zone.utc_offset).to_date
 
       count_faltas_justificadas_com_direito_a_reposicao = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:presenca => false, :tem_direito_a_reposicao => true).count
@@ -77,10 +67,12 @@ module AlunosHelper
       sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
       sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
 
-      count_aulas_repostas = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje).where(:realocacao => true, :presenca => true)
-      count_aulas_repostas = count_aulas_repostas.where("data_de_realocacao IN (#{sub_query})").count
+      count_aulas_repostas = record.presencas.where("data BETWEEN ? AND ?", 2.month.ago, hoje + 2.month).where(:realocacao => true, :presenca => true)
+      count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
 
       count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas
+
+      count_aulas_realocadas = record.presencas.where(:realocacao => true).count
 
       total_de_aulas = record.presencas.count
 
@@ -117,16 +109,12 @@ module AlunosHelper
                          <span class='tip'>#{calcular_percentual(count_faltas_sem_justificativa, total_de_aulas)}%</span>
                        </td>
                        <td class='tip_trigger'>
-                         #{reposicoes = (count_aulas_repostas + count_aulas_a_repor)}
-                         <span class='tip'>#{calcular_percentual(reposicoes, total_de_aulas)}%</span>
+                         #{count_faltas_justificadas_com_direito_a_reposicao}
+                         <span class='tip'>#{calcular_percentual(count_faltas_justificadas_com_direito_a_reposicao, total_de_aulas)}%</span>
                        </td>
                        <td class='tip_trigger'>
-                         #{(reposicoes = count_aulas_repostas + count_adiantamentos)}
-                         <span class='tip'>
-                           <p>Aulas repostas: #{count_aulas_repostas}</p>
-                           <p>Aulas adiantadas: #{count_adiantamentos}</p>
-                           #{calcular_percentual(reposicoes, total_de_aulas)}%
-                         </span>
+                         #{count_aulas_realocadas}
+                         <span class='tip'>#{calcular_percentual(count_aulas_realocadas, total_de_aulas)}%</span>
                        </td>
                        <td class='tip_trigger'>
                          #{count_aulas_a_repor}
@@ -436,14 +424,11 @@ module AlunosHelper
                          jAlert('<strong>Data</strong> deve ser menor ou igual a Data do Horário a ser Adiantado', 'Atenção');
                        }
                      } else {                 // reposição
-                       if (data_aula >= data_sug) {
+                       if ((data_sugerida == '') || (data_sugerida != '' && data_aula >= data_sug)) {
                          #{get_ajax_request_gravar_reposicao}
-                       } else if(data_sugerida == '') {
-                         #{set_css_to_date_fields_realocacao}
-                         jAlert('Não existe Falta Justificada com Direito à Reposição para Repor!', 'Atenção');
                        } else {
                          #{set_css_to_date_fields_realocacao}
-                         jAlert('<strong>Data</strong> deve ser maior ou igual a Data do Horário a ser Adiantado', 'Atenção');
+                         jAlert('<strong>Data</strong> deve ser maior ou igual a Data a Repor', 'Atenção');
                        }
                      }
                    } else {
