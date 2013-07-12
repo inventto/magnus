@@ -60,20 +60,30 @@ class Aluno < ActiveRecord::Base
 
     hora_atual = txt_to_seg(hora_atual)
 
-    dif_hora_matricula = 0
-    dif_hora_realocacao = 0
+    dif_hora_matricula = nil
+    dif_hora_realocacao = nil
 
     dif_hora_matricula = hora_atual - horario_na_matricula if horario_na_matricula > 0
     dif_hora_realocacao = hora_atual - horario_na_realocacao if horario_na_realocacao > 0
 
-    dif_hora_matricula = dif_hora_matricula * -1 if dif_hora_matricula < 0
-    dif_hora_realocacao = dif_hora_realocacao * -1 if dif_hora_realocacao < 0
+    dif_hora_matricula = dif_hora_matricula * -1 if not dif_hora_matricula.nil? and dif_hora_matricula < 0
+    dif_hora_realocacao = dif_hora_realocacao * -1 if not dif_hora_realocacao.nil? and dif_hora_realocacao < 0
 
-    if not p.blank? and dif_hora_realocacao < dif_hora_matricula
-      return p
+    if not p.blank? and not dif_hora_realocacao.nil?
+      if (not dif_hora_matricula.nil? and dif_hora_realocacao < dif_hora_matricula) or dif_hora_matricula.nil?
+        return p
+      else
+        return nil
+      end
     else
       return nil
     end
+
+    #if (not p.blank? and not dif_hora_realocacao.nil? and (not dif_hora_matricula.nil? and dif_hora_realocacao < dif_hora_matricula))
+    #  return p
+    #else
+    #  return nil
+    #end
   end
 
   def get_pontualidade hora_atual
@@ -86,7 +96,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def get_pontualidade_da_realocacao hora_atual
-    if @presenca.data_de_realocacao.blank? # caso apenas esteja atrasado
+    if not @presenca.realocacao? and @presenca.data_de_realocacao.blank? # caso apenas esteja atrasado
       return get_pontualidade(hora_atual)
     else # se não se for um adiantamento ou uma reposição
       horario_de_aula = txt_to_seg(@presenca.horario)
@@ -177,13 +187,19 @@ class Aluno < ActiveRecord::Base
   def esta_fora_de_horario?
     @hora_registrada = @hora_certa
     @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0]
-    if not @horario_de_aula.nil?
-      hora_da_aula = @horario_de_aula[:horario]
-      if not hora_esta_contida_em_horario?(@hora_registrada.strftime("%H:%M"), hora_da_aula)
-        return true
-      end
-      @hora_da_aula = Time.strptime(hora_da_aula, "%H:%M")
+
+    if not @presenca.nil? and @presenca.realocacao # se for reposição, adiantamento
+      hora_da_aula = @presenca.horario
+      @horario_de_aula = @presenca
+    elsif not @horario_de_aula.nil?
+      hora_da_aula = @horario_de_aula.horario
+    else
+      return false # se não for um adiantamento, nem uma reposição nem uma falta é uma presença fora de horário, logo não tem hora de aula
     end
+    if not hora_esta_contida_em_horario?(@hora_registrada.strftime("%H:%M"), hora_da_aula)
+      return true
+    end
+    @hora_da_aula = Time.strptime(hora_da_aula, "%H:%M")
     false
   end
 
@@ -211,14 +227,38 @@ class Aluno < ActiveRecord::Base
   end
 
   def primeira_aula?
-    @horario_de_aula.matricula.data_inicio == @hora_certa.to_date
+    if @horario_de_aula.instance_of?(HorarioDeAula) # pois a váriavel pode ser uma instancia de Presenca, ver no método esta_fora_de_horario?
+      @horario_de_aula.matricula.data_inicio == @hora_certa.to_date
+    end
   end
 
-  def faltou_aula_passada_sem_justificativa?
-    presenca = Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:aluno_id => self.id).where("data <> current_date")
-    if not presenca.blank?
-      return (not presenca.last.presenca and presenca.last.justificativa_de_falta.nil?)
+  def get_falta_da_ultima_aula
+    presencas = get_ultimas_aulas
+    if not presencas.blank?
+      aula = presencas.first
+      if not aula.justificativa_de_falta.nil? and not aula.justificativa_de_falta.descricao.match(/adiantado/).nil? # se for um adiantamento
+        aula = presencas[1] # presencas[1] para retornar o segundo registro já que o primeiro é um adiantamento
+      end
     end
+    aula
+  end
+
+  def faltou_aula_passada_e_justificou?
+    aula = get_falta_da_ultima_aula
+    if not aula.blank?
+      return (not aula.presenca and not aula.justificativa_de_falta.nil? and aula.tem_direito_a_reposicao)
+    end
+  end
+
+  def faltou_aula_passada_e_nao_justificou?
+    aula = get_falta_da_ultima_aula
+    if not aula.blank?
+      return (not aula.presenca and aula.justificativa_de_falta.nil? and not aula.tem_direito_a_reposicao)
+    end
+  end
+
+  def get_ultimas_aulas
+    Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:aluno_id => self.id).where("data < ?", @hora_certa.to_date).order("data DESC").order("horario DESC")
   end
 
   def txt_to_seg hora
