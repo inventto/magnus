@@ -79,39 +79,15 @@ class RegistroPresencaController < ApplicationController
       @mensagem_sonora << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-    if @aluno.faltou_aula_passada_sem_justificativa?
+     if @aluno.faltou_aula_passada_e_nao_justificou?
       @mensagem_sonora << "Você faltou aula passada e não justificou."
       error << "Você faltou aula passada e não justificou."
+    elsif @aluno.faltou_aula_passada_e_justificou?
+      @mensagem_sonora << "justificou_aula_passada|"
+      notice << "Você faltou aula passada e justificou."
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
-  end
-
-  def marcar_falta
-    if not hoje_eh_feriado?
-      hora_certa = (Time.now + Time.zone.utc_offset)
-      horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => hora_certa.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", hora_certa.hour, hora_certa.min)
-      horarios.each do |horario|
-        aluno_id = horario.matricula.aluno.id
-        if Presenca.where(:aluno_id => aluno_id).where(:data => hora_certa).blank?
-          Presenca.create(:aluno_id => aluno_id, :data => hora_certa, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
-        end
-      end
-    end
-    render :nothing => true
-  end
-
-  def hoje_eh_feriado?
-    current_date = (Time.now + Time.zone.utc_offset)
-    feriado = Feriado.where(:dia => current_date.day).where(:mes => current_date.month)
-    ok = false
-    if not feriado.blank?
-      feriado = feriado[0]
-      if feriado.repeticao_anual or feriado.ano == current_date.year
-        ok = true
-      end
-    end
-    ok
   end
 
   def registro_android
@@ -171,13 +147,43 @@ class RegistroPresencaController < ApplicationController
       @mensagem_sonora << "bem_vindo|"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-    if @aluno.faltou_aula_passada_sem_justificativa?
-      @mensagem_sonora << "voce_faltou|"
+    if @aluno.faltou_aula_passada_e_nao_justificou?
+      @mensagem_sonora << "Você faltou aula passada e não justificou."
       error << "Você faltou aula passada e não justificou."
+    elsif @aluno.faltou_aula_passada_e_justificou?
+      @mensagem_sonora << "justificou_aula_passada|"
+      notice << "Você faltou aula passada e justificou."
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
 
     render :text => [@saudacao, @aluno.nome, @aluno.foto, flash[:notice], flash[:error], @mensagem_sonora].join(";") and return
+  end
+
+  def marcar_falta
+    if not hoje_eh_feriado?
+      hora_certa = (Time.now + Time.zone.utc_offset)
+      horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => hora_certa.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", hora_certa.hour, hora_certa.min)
+      horarios.each do |horario|
+        aluno_id = horario.matricula.aluno.id
+        if Presenca.where(:aluno_id => aluno_id).where(:data => hora_certa).blank?
+          Presenca.create(:aluno_id => aluno_id, :data => hora_certa, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
+        end
+      end
+    end
+    render :nothing => true
+  end
+
+  def hoje_eh_feriado?
+    current_date = (Time.now + Time.zone.utc_offset)
+    feriado = Feriado.where(:dia => current_date.day).where(:mes => current_date.month)
+    ok = false
+    if not feriado.blank?
+      feriado = feriado[0]
+      if feriado.repeticao_anual or feriado.ano == current_date.year
+        ok = true
+      end
+    end
+    ok
   end
 end
