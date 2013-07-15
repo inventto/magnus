@@ -329,30 +329,37 @@ module AlunosHelper
 
   def get_function_justificar_falta
     function = "function justificarFalta() {
-                  var data_da_falta = $('#data_da_falta').val();
-                  var data_da_falta_fim = $('#data_da_falta_fim').val();
-                  data_inicio = data_da_falta.split('-');
-                  data_fim = data_da_falta_fim.split('-');
-                  data_inicio = new Date(data_inicio[0], data_inicio[1], data_inicio[2]);
-                  data_fim = new Date(data_fim[0], data_fim[1], data_fim[2]);
-                  if (data_da_falta_fim == '' || data_inicio < data_fim) {
-                    var jqxhr = $.ajax({
-                      url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+data_da_falta+'&data_da_falta_fim='+data_da_falta_fim+'&justificativa='+$('#justificativa_de_falta').val()
-                    });
-                    jqxhr.always(function () {
-                      var error = jqxhr.responseText
-                      if (error != '') {
-                        if (error.search(/aula/i) >= 0) {
-                          $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                         }
-                         if (error.search(/justif/i) >= 0) {
-                           $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
-                         }
-                         jAlert(error, 'Atenção');
-                      } else {
-                         window.location.href = '/alunos';
-                      }
-                    });
+                  var dataDaFalta = $('#data_da_falta').val();
+                  var dataDaFaltaFim = $('#data_da_falta_fim').val();
+                  dataInicio = dataDaFalta.split('-');
+                  dataFim = dataDaFaltaFim.split('-');
+                  dataInicio = new Date(dataInicio[0], dataInicio[1], dataInicio[2]);
+                  dataFim = new Date(dataFim[0], dataFim[1], dataFim[2]);
+                  if (dataDaFaltaFim == '' || dataInicio < dataFim) {
+                    hoje = new Date();
+                    dataDaquiSeisMeses = new Date(hoje.getUTCFullYear(), (hoje.getUTCMonth() + 6), hoje.getUTCDate());
+                    if (dataFim <= dataDaquiSeisMeses) {
+                      var jqxhr = $.ajax({
+                        url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+data_da_falta+'&data_da_falta_fim='+data_da_falta_fim+'&justificativa='+$('#justificativa_de_falta').val()
+                      });
+                      jqxhr.always(function () {
+                        var error = jqxhr.responseText
+                        if (error != '') {
+                          if (error.search(/aula/i) >= 0) {
+                            $('#record_horario').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                           }
+                           if (error.search(/justif/i) >= 0) {
+                             $('#justificativa_de_falta').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                           }
+                           jAlert(error, 'Atenção');
+                        } else {
+                           window.location.href = '/alunos';
+                        }
+                      });
+                    } else {
+                      $('#data_da_falta_fim').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+                      jAlert('<strong>Data Final</strong> deve ser no máximo até o dia ' + dataDaquiSeisMeses.toLocaleDateString(),'Atenção');
+                    }
                   } else if (data_da_falta_fim != '') {
                     $('#data_da_falta_fim').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
                     jAlert('<strong>Data Final</strong> deve ser maior que a <strong>Data</strong>!','Atenção');
