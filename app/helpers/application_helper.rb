@@ -138,7 +138,7 @@ module ApplicationHelper
     exibir = false
     horarios_de_aula.each do |horario|
       aluno_id = (horario.instance_of?(HorarioDeAula)) ? horario.matricula.aluno.id : horario.aluno.id
-      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario.id) # se pelo menos um aluno for válido
+      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario) # se pelo menos um aluno for válido
         exibir = true
         break
       end
@@ -146,7 +146,7 @@ module ApplicationHelper
     exibir
   end
 
-  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_id
+  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_de_aula
     ok = true
     mat = Matricula.where("data_inicio <= '#{dia_atual}' and (data_fim >= '#{dia_atual}' or data_fim is null)").where(:aluno_id => aluno_id)
     if mat.blank?
@@ -154,8 +154,9 @@ module ApplicationHelper
     else
       p = Presenca.where(:aluno_id => aluno_id, :data => dia_atual)[0]
       if p.blank? # se a presença ainda não tiver sido lançada
-        hor = mat.joins(:horario_de_aula).where(:"horarios_de_aula.id" => horario_id, :"horarios_de_aula.dia_da_semana" => dia_atual.wday)
-        if hor.blank? # se não existir horário de aula para o dia da semana tal com matricula válida, pois podem existir mais de uma matrícula para o mesmo aluno, mas somente uma válida
+        hor = mat.joins(:horario_de_aula).where(:"horarios_de_aula.id" => horario_de_aula.id, :"horarios_de_aula.dia_da_semana" => dia_atual.wday)
+        # se não existir horário de aula para o dia da semana tal com matricula válida, pois podem existir mais de uma matrícula para o mesmo aluno, mas somente uma válida
+        if hor.blank? or (horario_de_aula.instance_of?(Presenca) and dia_atual != horario_de_aula.data)
           ok = false
         end
       else
