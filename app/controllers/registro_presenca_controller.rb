@@ -50,7 +50,7 @@ class RegistroPresencaController < ApplicationController
       return
     end
     if @aluno.esta_no_dia_errado?
-      @mensagem_sonora = "dia_errado|"
+      @mensagem_sonora = "Hoje não é seu dia normal de aula!"
       flash[:error] = "Hoje não é seu dia normal de aula!"
       return
     end
@@ -83,7 +83,7 @@ class RegistroPresencaController < ApplicationController
       @mensagem_sonora << "Você faltou aula passada e não justificou."
       error << "Você faltou aula passada e não justificou."
     elsif @aluno.faltou_aula_passada_e_justificou?
-      @mensagem_sonora << "justificou_aula_passada|"
+      @mensagem_sonora << "Você faltou aula passada e justificou."
       notice << "Você faltou aula passada e justificou."
     end
     flash[:notice] = notice.join("<br/><br/>").html_safe
@@ -148,7 +148,7 @@ class RegistroPresencaController < ApplicationController
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
     if @aluno.faltou_aula_passada_e_nao_justificou?
-      @mensagem_sonora << "Você faltou aula passada e não justificou."
+      @mensagem_sonora << "voce_faltou|"
       error << "Você faltou aula passada e não justificou."
     elsif @aluno.faltou_aula_passada_e_justificou?
       @mensagem_sonora << "justificou_aula_passada|"

@@ -1,25 +1,19 @@
 #coding: utf-8
 module ApplicationHelper
-  def status_presenca agenda, dia_atual
+  def status_presenca horario_da_aula, dia_atual
     @hora_certa = (Time.now + Time.zone.utc_offset)
-
-    if agenda.instance_of? HorarioDeAula
-      aluno_id = agenda.matricula.aluno.id
-      presenca_id = ""
-    else # será uma instancia de Presença
-      aluno_id = agenda.aluno.id
-      presenca_id = agenda.id
-    end
-
-    aniversario = get_aluno_de_aniversario(aluno_id, dia_atual)
 
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 
-    if presenca_id.blank?
+    if horario_da_aula.instance_of? HorarioDeAula
+      aluno_id = horario_da_aula.matricula.aluno.id
       presenca = presenca.where(:aluno_id => aluno_id).where("realocacao is null or realocacao = false")
-    else
-      presenca = presenca.where(:id => presenca_id)
+    else # será uma instancia de Presença
+      aluno_id = horario_da_aula.aluno.id
+      presenca = presenca.where(:id => horario_da_aula.id)
     end
+
+    aniversario = get_aluno_de_aniversario(aluno_id, dia_atual)
 
     if not presenca.blank?
       presenca = presenca[0]
@@ -138,7 +132,7 @@ module ApplicationHelper
     exibir = false
     horarios_de_aula.each do |horario|
       aluno_id = (horario.instance_of?(HorarioDeAula)) ? horario.matricula.aluno.id : horario.aluno.id
-      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario) # se pelo menos um aluno for válido
+      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario, horarios_de_aula) # se pelo menos um aluno for válido
         exibir = true
         break
       end
@@ -146,7 +140,20 @@ module ApplicationHelper
     exibir
   end
 
-  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_de_aula
+  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_de_aula, agenda
+    # begin - Bloco para evitar a duplicação dos alunos na agenda do dia
+    if horario_de_aula.instance_of? HorarioDeAula
+      presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
+      presenca = presenca.where(:aluno_id => aluno_id).where("realocacao is null or realocacao = false")
+      if not presenca.blank?
+        agenda.each do |horario_da_aula|
+          if horario_da_aula.id == presenca.first.id
+            return false
+          end
+        end
+      end
+    end
+    # end
     if horario_de_aula.instance_of?(Presenca)
       if horario_de_aula.data != dia_atual # para evitar que exiba as presenças que não são do dia
         return false
