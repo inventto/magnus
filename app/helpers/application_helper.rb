@@ -132,7 +132,7 @@ module ApplicationHelper
     exibir = false
     horarios_de_aula.each do |horario|
       aluno_id = (horario.instance_of?(HorarioDeAula)) ? horario.matricula.aluno.id : horario.aluno.id
-      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario, horarios_de_aula) # se pelo menos um aluno for válido
+      if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario) # se pelo menos um aluno for válido
         exibir = true
         break
       end
@@ -140,8 +140,8 @@ module ApplicationHelper
     exibir
   end
 
-  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_de_aula, agenda
-    # begin - Bloco para evitar a duplicação dos alunos na agenda do dia
+  def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_de_aula
+=begin - Bloco para evitar a duplicação dos alunos na agenda do dia
     if horario_de_aula.instance_of? HorarioDeAula
       presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
       presenca = presenca.where(:aluno_id => aluno_id).where("realocacao is null or realocacao = false")
@@ -153,7 +153,7 @@ module ApplicationHelper
         end
       end
     end
-    # end
+=end
     if horario_de_aula.instance_of?(Presenca)
       if horario_de_aula.data != dia_atual # para evitar que exiba as presenças que não são do dia
         return false
