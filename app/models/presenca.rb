@@ -1,6 +1,6 @@
 #coding: utf-8
 class Presenca < ActiveRecord::Base
-  attr_accessible :aluno_id, :data, :horario, :justificativa_de_falta, :presenca, :realocacao, :fora_de_horario, :pontualidade, :tem_direito_a_reposicao, :data_de_realocacao
+  attr_accessible :aluno_id, :data, :horario, :justificativa_de_falta, :presenca, :realocacao, :pontualidade, :tem_direito_a_reposicao, :data_de_realocacao
 
   before_create :gerar_realocacao
 
