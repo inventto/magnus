@@ -70,7 +70,10 @@ module AlunosHelper
       count_aulas_repostas = record.presencas.where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => true)
       count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
 
-      count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas
+      count_faltas_de_realocacoes_sem_direito_a_repos = record.presencas.where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => false, :tem_direito_a_reposicao => false)
+      count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
+
+      count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas - count_faltas_de_realocacoes_sem_direito_a_repos
 
       count_aulas_realocadas = record.presencas.where(:realocacao => true).count
 
@@ -338,9 +341,9 @@ module AlunosHelper
                   if (dataDaFaltaFim == '' || dataInicio < dataFim) {
                     hoje = new Date();
                     dataDaquiSeisMeses = new Date(hoje.getUTCFullYear(), (hoje.getUTCMonth() + 6), hoje.getUTCDate());
-                    if (dataFim <= dataDaquiSeisMeses) {
+                    if (dataDaFaltaFim == '' || dataFim <= dataDaquiSeisMeses) {
                       var jqxhr = $.ajax({
-                        url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+data_da_falta+'&data_da_falta_fim='+data_da_falta_fim+'&justificativa='+$('#justificativa_de_falta').val()
+                        url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+dataDaFalta+'&data_da_falta_fim='+dataDaFaltaFim+'&justificativa='+$('#justificativa_de_falta').val()
                       });
                       jqxhr.always(function () {
                         var error = jqxhr.responseText

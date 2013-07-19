@@ -276,7 +276,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def criar_falta_com_justificativa_de_adiantamento data_da_aula_realocada, data_do_dia, hora_da_aula_registrada, horario_da_aula_da_matricula
-    falta = Presenca.create(:aluno_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula)
+    falta = Presenca.create(:aluno_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula, :tem_direito_a_reposicao => true)
     JustificativaDeFalta.create(:presenca_id => falta.id, :descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
   end
 

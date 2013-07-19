@@ -32,8 +32,10 @@ module ApplicationHelper
       else
         if presenca.justificativa_de_falta.nil?
           retorno = "<img src='/assets/falta_sem_justif.png' title='Falta Sem Justificativa' />"
+        elsif presenca.tem_direito_a_reposicao?
+          retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
         else
-          retorno = "<img src='/assets/falta_justif.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+          retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
         end
         if presenca.realocacao
           hora_atual = get_in_seconds()
@@ -55,7 +57,7 @@ module ApplicationHelper
 
   def get_title_realocacao aluno_id, dia_atual, presenca
     title = ""
-    if presenca.realocacao? and not presenca.data_de_realocacao.blank? and not presenca.tem_direito_a_reposicao?
+    if presenca.realocacao? and not presenca.data_de_realocacao.blank?
       p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :data => presenca.data_de_realocacao).where("justificativas_de_falta.descricao ilike '%adiantado%'")
       if not p.blank?
         title = "Adiantamento do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
@@ -81,7 +83,11 @@ module ApplicationHelper
               title = "Falta Justificada com Reposição Agendada para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
           end
         else # se houve a falta justificada mas ainda não foi criada a reposição
-          title = "Falta Justificada"
+          if presenca.tem_direito_a_reposicao?
+            title = "Falta Justificada com Direito à Reposição"
+          else
+            title = "Falta Justificada sem Direito à Reposição"
+          end
         end
     else
       if presenca.data_de_realocacao.nil?
@@ -141,19 +147,6 @@ module ApplicationHelper
   end
 
   def aluno_com_matricula_e_hora_de_aula_validos? aluno_id, dia_atual, horario_de_aula
-=begin - Bloco para evitar a duplicação dos alunos na agenda do dia
-    if horario_de_aula.instance_of? HorarioDeAula
-      presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
-      presenca = presenca.where(:aluno_id => aluno_id).where("realocacao is null or realocacao = false")
-      if not presenca.blank?
-        agenda.each do |horario_da_aula|
-          if horario_da_aula.id == presenca.first.id
-            return false
-          end
-        end
-      end
-    end
-=end
     if horario_de_aula.instance_of?(Presenca)
       if horario_de_aula.data != dia_atual # para evitar que exiba as presenças que não são do dia
         return false
