@@ -166,7 +166,7 @@ class RegistroPresencaController < ApplicationController
       horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where(:"horarios_de_aula.dia_da_semana" => hora_certa.wday).where("data_inicio <= current_date and (data_fim is null or data_fim >= current_date)").where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", hora_certa.hour, hora_certa.min)
       horarios.each do |horario|
         aluno_id = horario.matricula.aluno.id
-        if Presenca.where(:aluno_id => aluno_id).where(:data => hora_certa).blank?
+        if Presenca.where(:aluno_id => aluno_id).where(:data => hora_certa, :horario => horario.horario).blank?
           Presenca.create(:aluno_id => aluno_id, :data => hora_certa, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
         end
       end
