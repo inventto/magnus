@@ -338,9 +338,9 @@ module AlunosHelper
                   if (dataDaFaltaFim == '' || dataInicio < dataFim) {
                     hoje = new Date();
                     dataDaquiSeisMeses = new Date(hoje.getUTCFullYear(), (hoje.getUTCMonth() + 6), hoje.getUTCDate());
-                    if (dataFim <= dataDaquiSeisMeses) {
+                    if (dataDaFaltaFim == '' || dataFim <= dataDaquiSeisMeses) {
                       var jqxhr = $.ajax({
-                        url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+data_da_falta+'&data_da_falta_fim='+data_da_falta_fim+'&justificativa='+$('#justificativa_de_falta').val()
+                        url: '/justificar_falta?aluno_id='+$('.id-view').text().trim()+'&data_da_falta='+dataDaFalta+'&data_da_falta_fim='+dataDaFaltaFim+'&justificativa='+$('#justificativa_de_falta').val()
                       });
                       jqxhr.always(function () {
                         var error = jqxhr.responseText
