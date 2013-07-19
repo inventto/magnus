@@ -231,7 +231,14 @@ class Aluno < ActiveRecord::Base
         if txt_to_seg(@horario_de_aula.horario) > txt_to_seg(hora_da_aula)  # adiantamento, pois registrou a presença antes do horário da aula
           # Cria a falta justificada para o horário da aula
           criar_falta_com_justificativa_de_adiantamento(data_atual, data_atual, hora_da_aula, @horario_de_aula.horario)
-          # else não precisa fazer pois a reposição é apenas uma presença como realocação já que a falta teoricamente já é estar lançada
+        else
+          # Cria a justificativa para a aula que está sendo reposta no dia
+          falta = Presenca.find_by_aluno_id_and_data_and_presenca_and_horario(self.id, data_atual, false, @horario_de_aula.horario)
+          if not falta.nil?
+            falta.tem_direito_a_reposicao = true
+            falta.save
+            JustificativaDeFalta.create(:presenca_id => falta.id, :descricao => "aula reposta às #{hora_da_aula}")
+          end
         end
         presenca.data_de_realocacao = data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
       elsif dia_errado
@@ -251,7 +258,7 @@ class Aluno < ActiveRecord::Base
           criar_falta_com_justificativa_de_adiantamento(data, data_atual, hora_da_aula, horario_da_aula_da_matricula.first.horario)
 
           presenca.data_de_realocacao = data
-          # else não precisa fazer pois a reposição é apenas uma presença como realocação já que a falta teoricamente já é estar lançada
+          # else não precisa fazer pois a reposição é apenas uma presença como realocação já que a falta teoricamente já é para estar lançada
         end
       end
     else
