@@ -67,27 +67,6 @@ class AlunosController < ApplicationController
     data = params[:data].to_date
     data_de_realocacao = params[:data_de_realocacao].to_date
 
-    # Caso o aluno tenha adiantado o horário mas o usuário não tenha lançado no sistema, o sistema irá gerar uma presença fora de horário, após essa ocorrência caso o usuário lance um adiantamento
-    # para esse horário deve-se apenas atualizar a presença fora de horário para realocação(nesse caso adiantamento) e criar a falta com justificativa para o horário de aula do dia.
-    if data == data_de_realocacao
-      presenca_fora_de_horario = Presenca.find_by_aluno_id_and_data_and_fora_de_horario(aluno_id, data, true)
-      if not presenca_fora_de_horario.nil?
-        if not horario_de_aula.nil?
-          if txt_to_seg(presenca_fora_de_horario.horario) < txt_to_seg(horario_de_aula.horario)
-            presenca_fora_de_horario.fora_de_horario = false
-            presenca_fora_de_horario.realocacao = true
-            presenca_fora_de_horario.data_de_realocacao = data_de_realocacao
-            presenca_fora_de_horario.save
-
-            p = Presenca.create(:aluno_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario)
-            JustificativaDeFalta.create(:presenca_id => p.id, :descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{presenca_fora_de_horario.horario}")
-
-            render :text => error and return
-          end
-        end
-      end
-    end
-
     # Criar a falta
     p = Presenca.create(:aluno_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario)
     JustificativaDeFalta.create(:presenca_id => p.id, :descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
