@@ -24,7 +24,7 @@ class PresencasController < ApplicationController
       "justificativas_de_falta.id is not null"
     end
   end
-
+=begin
   def update_respond_to_html
     redirect_to redirect_page_to_index
   end
@@ -41,7 +41,7 @@ class PresencasController < ApplicationController
     url
   end
 
-=begin def update
+  def update
     do_update
 #    require "pry"
 #    binding.pry
