@@ -5,7 +5,7 @@ class Aluno < ActiveRecord::Base
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.aluno_id=alunos.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"alunos.id").order("extract(day from data_nascimento)") }
 
   before_save :chk_codigo_de_acesso
-  #after_save :send_data_to_sisagil
+  after_save :send_data_to_sisagil
 
   has_many :telefones, :dependent => :destroy
   belongs_to :endereco
@@ -42,8 +42,8 @@ class Aluno < ActiveRecord::Base
     require 'net/http'
     require 'uri'
 
-    user = 'teste'
-    password = 'teste'
+    user = 'invent.to.magnus'
+    password = '123'
 
     url = 'http://sisagil.com/service'
     url = URI.parse(url)
