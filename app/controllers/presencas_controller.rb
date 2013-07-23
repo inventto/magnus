@@ -24,41 +24,24 @@ class PresencasController < ApplicationController
       "justificativas_de_falta.id is not null"
     end
   end
-=begin
+
   def update_respond_to_html
     redirect_to redirect_page_to_index
   end
 
-  def update_respond_to_js
-    redirect_to redirect_page_to_index
-  end
-
   def redirect_page_to_index
-    length = session[:latest_pages_visited].length
-    last_page_visited = session[:latest_pages_visited][length - 2]
-    puts "===> Last Page #{last_page_visited}"
-    url = last_page_visited[:controller] == "agenda_do_dia" ? last_page_visited : presencas_path
+    url = (is_last_page_agenda_do_dia?) ? agenda_do_dia_path : presencas_path
     url
   end
 
-  def update
-    do_update
-#    require "pry"
-#    binding.pry
-    if session[:latest_pages_visited]
-      if (length = session[:latest_pages_visited].length) > 1
-        last_page_visited = session[:latest_pages_visited][length - 2]
-        url = last_page_visited[:controller] == "agenda_do_dia" ? agenda_do_dia_path : presencas_path
-        if request.xhr?
-          puts "===ACESSOU"
-          render :update do |page|
-            puts "===> Page #{page}"
-            #page << "window.location.href='#{url}'"
-          end
-        else
-          redirect_to url
-        end
-      end
-    end
-=end
+  def verifica_ultima_pagina_acessada
+    session[:latest_pages_visited].delete_at(session[:latest_pages_visited].length - 1) if is_last_page_agenda_do_dia?
+    render :nothing => true
+  end
+
+  def is_last_page_agenda_do_dia?
+    length = session[:latest_pages_visited].length
+    last_page_visited = session[:latest_pages_visited][length - 2]
+    last_page_visited[:controller] == "agenda_do_dia"
+  end
 end

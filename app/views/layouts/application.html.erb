@@ -8,11 +8,17 @@
     <%= csrf_meta_tags %>
 
     <script type="text/javascript">
+      function verificaUltimaPaginaAcessada() {
+        $.ajax({
+          url: "/verifica_ultima_pagina_acessada"
+        });
+      }
       $(document).ready(function() { // Ao redirecionar para a pg de edição de alguma presença pelo ícone da agenda do dia os campos perdiam a máscara
           $(".data-input").mask("99/99/9999");
           $(".data_de_realocacao-input").mask("99/99/9999");
           $(".horario-input").mask("99:99");
           $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
+
       });
       $(document).ajaxComplete(function(){
           $(".cpf-input").mask("999.999.999-99");
@@ -43,7 +49,7 @@
             <li><a href="/">Agenda do Dia</a></li>
             <li><a href="/alunos">Alunos</a></li>
             <li><a href="/matriculas">Matrículas</a></li>
-            <li><a href="/presencas">Presenças</a></li>
+            <li><a href="/presencas" onclick="verificaUltimaPaginaAcessada();">Presenças</a></li>
             <li><a href="/feriados">Feriados</a></li>
             <li><a href="#">Relatórios</a>
               <ul>
