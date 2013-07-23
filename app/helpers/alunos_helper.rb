@@ -45,11 +45,14 @@ module AlunosHelper
       count_presencas_fora_de_horario = 0
       count_faltas_sem_justificativa = 0
       count_faltas_justificadas = 0
+      count_aulas_extras = 0
 
       record.presencas.each do |presenca|
         if presenca.presenca?
           if presenca.fora_de_horario?
             count_presencas_fora_de_horario += 1
+          elsif presenca.aula_extra?
+            count_aulas_extras += 1
           else
             count_presencas += 1
           end
@@ -87,6 +90,7 @@ module AlunosHelper
                        <th>Presenças Fora de Horário</th>
                        <th>Faltas Justificadas</th>
                        <th>Faltas Sem Justificativa</th>
+                       <th>Aulas Extras</th>
                        <th>Tem direito à Reposição</th>
                        <th>Aulas realocadas</th>
                        <th>Aulas a repor</th>
@@ -110,6 +114,10 @@ module AlunosHelper
                        <td class='tip_trigger'>
                          #{count_faltas_sem_justificativa}
                          <span class='tip'>#{calcular_percentual(count_faltas_sem_justificativa, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger'>
+                         #{count_aulas_extras}
+                         <span class='tip'>#{calcular_percentual(count_aulas_extras, total_de_aulas)}%</span>
                        </td>
                        <td class='tip_trigger'>
                          #{count_faltas_justificadas_com_direito_a_reposicao}
@@ -244,6 +252,7 @@ module AlunosHelper
       conteudo << "<td>" << ( (presenca.data_de_realocacao.nil?) ? "" : presenca.data_de_realocacao.strftime("%d/%m/%Y") ) << "</td>"
       conteudo << "<td>" << ( (presenca.fora_de_horario) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.tem_direito_a_reposicao) ? inputEnabled : inputDisabled ) << "</td>"
+      conteudo << "<td>" << ( (presenca.aula_extra) ? inputEnabled : inputDisabled ) << "</td>"
       conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? get_link(presenca) : (presenca.justificativa_de_falta.descricao.nil?) ? "" : presenca.justificativa_de_falta.descricao ) << "</td>"
       conteudo << "</tr>"
       even_record = !even_record
@@ -326,6 +335,7 @@ module AlunosHelper
              <th>Data da Falta ou do horário a ser Adiantado</th>
              <th>Fora de Horário</th>
              <th>Tem Direito à Reposição?</th>
+             <th>Aula Extra?</th>
              <th>Justificativa de Falta</th>
            </tr>
          </thead>
