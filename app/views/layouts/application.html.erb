@@ -8,6 +8,12 @@
     <%= csrf_meta_tags %>
 
     <script type="text/javascript">
+      $(document).ready(function() { // Ao redirecionar para a pg de edição de alguma presença pelo ícone da agenda do dia os campos perdiam a máscara
+          $(".data-input").mask("99/99/9999");
+          $(".data_de_realocacao-input").mask("99/99/9999");
+          $(".horario-input").mask("99:99");
+          $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
+      });
       $(document).ajaxComplete(function(){
           $(".cpf-input").mask("999.999.999-99");
           $(".data_nascimento-input").mask("99/99/9999");

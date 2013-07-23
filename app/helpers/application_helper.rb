@@ -28,6 +28,7 @@ module ApplicationHelper
           retorno = "<img src='/assets/fora_de_horario.png' title='Fora de Horario' />"
         end
         retorno = (aniversario << retorno)
+        retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
         return retorno.html_safe
       else
         if presenca.justificativa_de_falta.nil?
@@ -41,13 +42,14 @@ module ApplicationHelper
           hora_atual = get_in_seconds()
           hora_presenca = get_in_seconds(presenca.horario)
 
-          if (((presenca.data == @hora_certa.to_date) and not (hora_atual > (hora_presenca + 300))) or (presenca.data > @hora_certa.to_date)) #(((hora_atual > hora_presenca) and (hora_atual < (hora_presenca + 3600))) or (hora_atual < hora_presenca))
+          if (((presenca.data == @hora_certa.to_date) and not (hora_atual > (hora_presenca + 300))) or (presenca.data > @hora_certa.to_date))
             retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           else
             retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           end
         end
         retorno = (aniversario << retorno)
+        retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
         return retorno.html_safe
       end
     else
