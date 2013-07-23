@@ -28,7 +28,9 @@ class AgendaDoDiaController < ApplicationController
 
     fora_de_horario = presencas.where(:fora_de_horario => true)
 
-    unir_horarios(agenda, realocacao_do_dia, fora_de_horario)
+    aula_extra = presencas.where(:aula_extra => true)
+
+    unir_horarios(agenda, realocacao_do_dia, fora_de_horario, aula_extra)
 
     agrupa_e_ordena
   end
@@ -55,12 +57,13 @@ class AgendaDoDiaController < ApplicationController
     presencas
   end
 
-  def unir_horarios agenda, realocacao, fora_de_horario
+  def unir_horarios agenda, realocacao, fora_de_horario, aula_extra
     @agenda_do_dia = []
 
     @agenda_do_dia += agenda
     @agenda_do_dia += realocacao
     @agenda_do_dia += fora_de_horario
+    @agenda_do_dia += aula_extra
   end
 
   def agrupa_e_ordena
