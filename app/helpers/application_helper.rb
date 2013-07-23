@@ -23,6 +23,8 @@ module ApplicationHelper
         retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
         if presenca.realocacao
           retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+        elsif presenca.aula_extra
+          retorno << "<img class='realocacao' src='/assets/aula_extra.png' title='Aula Extra' />"
         end
         if presenca.fora_de_horario
           retorno = "<img src='/assets/fora_de_horario.png' title='Fora de Horario' />"
