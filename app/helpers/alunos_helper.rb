@@ -482,7 +482,7 @@ module AlunosHelper
     proximo_horario_de_aula = get_proximo_horario_de_aula(aluno_id, data)
     dia = proximo_horario_de_aula.dia_da_semana - data.wday
     data = (data + dia.day).to_date
-    if dia < 0
+    if dia <= 0
       data = data + 7.day
     end
     data
