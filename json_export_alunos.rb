@@ -24,14 +24,14 @@ alunos.each do |aluno|
     "numero"=> (aluno.endereco.nil?) ? "" : aluno.endereco.numero,
     "municipio"=> param_nome_municipio,
     "estado"=> { "sigla" => (aluno.endereco.nil? or aluno.endereco.cidade.nil?) ? "" : aluno.endereco.cidade.estado.sigla },
-    "cep" => (aluno.endereco.nil?) ? "" : aluno.endereco.cep.gsub(/[.-]/,""),
+    "cep" => (aluno.endereco.nil? or aluno.endereco.cep.nil?) ? "" : aluno.endereco.cep.gsub(/[.-]/,""),
     "email" => aluno.email.to_s,
-    "fone" => begin Telefone.select("(lpad(ddd, 3, '0')||numero) as fone").order(:id).find_by_aluno_id(aluno.id)[:fone].gsub(/[\(\)\/-]/,"") rescue "" end,
+    "fone" => begin Telefone.select("(lpad(ddd, 3, '0')||numero) as fone").order(:id).find_by_aluno_id(aluno.id)[:fone].gsub(/[\(\)\/-]/,"").gsub(/\s/,"") rescue "" end,
     "celular" => "",
     "fax" => "",
     "observacoes" => "",
-    "bairro" => (aluno.endereco.nil? or aluno.endereco.bairro.nil?) ? "" : aluno.endereco.bairro.nome.upcase,
-    "complemento" => (aluno.endereco.nil?) ? "" : aluno.endereco.complemento.upcase,
+    "bairro" => (aluno.endereco.nil? or aluno.endereco.bairro.nil?) ? "" : aluno.endereco.bairro.nome.chomp.upcase,
+    "complemento" => (aluno.endereco.nil? or aluno.endereco.complemento.nil?) ? "" : aluno.endereco.complemento.upcase,
     "dataCadastro" => aluno.created_at.strftime("%d/%m/%Y"),
     "tipoCliente" => true,
     "tipoFornecedor" => false,
@@ -50,7 +50,7 @@ alunos.each do |aluno|
   url = 'http://sisagil.com/service'
   url = URI.parse(url)
   req = Net::HTTP::Post.new(url.path)
-  req.basic_auth 'teste', 'teste'
+  req.basic_auth 'invent.to.magnus', '123'
   req.set_form_data({'action'=>'save', 'entity'=>'pessoa', 'json' => json_aluno.to_json.to_s})
   res = Net::HTTP.new(url.host, url.port).start {|http| http.request(req) }
   case res
