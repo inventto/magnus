@@ -284,7 +284,7 @@ class Aluno < ActiveRecord::Base
     proximo_horario_de_aula = get_proximo_horario_de_aula(data)
     dia = proximo_horario_de_aula.dia_da_semana - data.wday
     data = (data + dia.day).to_date
-    if dia < 0
+    if dia <= 0
       data = data + 7.day
     end
     data

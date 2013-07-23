@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130624132229) do
+ActiveRecord::Schema.define(:version => 20130723170839) do
 
   create_table "alunos", :force => true do |t|
     t.string   "nome"
@@ -85,14 +85,6 @@ ActiveRecord::Schema.define(:version => 20130624132229) do
     t.datetime "updated_at",  :null => false
   end
 
-  create_table "logradouros", :force => true do |t|
-    t.string   "nome"
-    t.string   "cep"
-    t.integer  "bairro_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "matriculas", :force => true do |t|
     t.integer  "aluno_id"
     t.string   "objetivo"
@@ -111,13 +103,14 @@ ActiveRecord::Schema.define(:version => 20130624132229) do
     t.date     "data"
     t.string   "horario"
     t.boolean  "presenca"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at",                                 :null => false
+    t.datetime "updated_at",                                 :null => false
     t.boolean  "realocacao"
     t.boolean  "fora_de_horario"
     t.integer  "pontualidade"
     t.boolean  "tem_direito_a_reposicao"
     t.date     "data_de_realocacao"
+    t.boolean  "aula_extra",              :default => false
   end
 
   create_table "telefones", :force => true do |t|
