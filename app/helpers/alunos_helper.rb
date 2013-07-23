@@ -134,6 +134,7 @@ module AlunosHelper
 
   def pontualidade_column(record, column)
     if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
+
       presencas = record.presencas.where(:presenca => true)
       total_de_presencas = presencas.count
 
@@ -144,19 +145,19 @@ module AlunosHelper
       count_menor_que_menos_quinze = 0
 
       presencas.each do |presenca|
-          pontualidade = (presenca.pontualidade.nil?) ? 0 : presenca.pontualidade
+        pontualidade = (presenca.pontualidade.nil?) ? 0 : presenca.pontualidade
 
-          if pontualidade > 15
-            count_maior_que_quinze += 1
-          elsif pontualidade > 4
-            count_maior_que_cinco += 1
-          elsif pontualidade > -5
-            count_maior_que_menos_cinco += 1
-          elsif pontualidade > -15
-            count_maior_que_menos_quinze += 1
-          else # menor que -15
-            count_menor_que_menos_quinze += 1
-          end
+        if pontualidade > 15
+          count_maior_que_quinze += 1
+        elsif pontualidade > 4
+          count_maior_que_cinco += 1
+        elsif pontualidade > -5
+          count_maior_que_menos_cinco += 1
+        elsif pontualidade > -15
+          count_maior_que_menos_quinze += 1
+        else # menor que -15
+          count_menor_que_menos_quinze += 1
+        end
       end
 
       table = "<div id='pontualidade_table' class='active-scaffold'>
@@ -219,10 +220,15 @@ module AlunosHelper
   end
 
   def calcular_percentual quantidade, total
-    ((quantidade.to_f / total) * 100).round(2)
+    if total > 0
+      return ((quantidade.to_f / total) * 100).round(2)
+    else
+      return 0
+    end
   end
 
   def presencas_column(record, column)
+    return if record.presencas.blank? #caso seja aluno novo e sem registros de presenças
     inputDisabled = "<input type='checkbox' disabled='disabled' />"
     inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
     conteudo = ""
