@@ -262,7 +262,7 @@ i{
 .horario_disponivel {
   background-color: #DAFFCD;
 }
-.horario_disponivel, .horario_ocupado, .vip {
+.horario_disponivel, .horario_ocupado, .vip, #estatisticas_table {
   text-align: center;
 }
 #pontualidade_table th,
