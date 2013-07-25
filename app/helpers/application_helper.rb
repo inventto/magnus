@@ -72,8 +72,11 @@ module ApplicationHelper
     elsif not presenca.presenca? and presenca.data_de_realocacao.blank? and not presenca.justificativa_de_falta.nil?
         p = Presenca.order("id DESC").find_by_data_de_realocacao_and_aluno_id(presenca.data, aluno_id) #em ordem descrescente pois caso haja mais de uma realocação para esse dia
         if not p.nil?
-          m = presenca.justificativa_de_falta.descricao.match(/\d{1,2}:\d{1,2}/)
-          (not m.nil?) ? horario = m[0] : ""
+          horario = ""
+          if not presenca.justificativa_de_falta.nil? and not presenca.justificativa_de_falta.descricao.nil?
+            m = presenca.justificativa_de_falta.descricao.match(/\d{1,2}:\d{1,2}/)
+            horario = (not m.nil?) ?  m[0] : ""
+          end
 
           if presenca.data == p.data # ainda pode ser reposição ou adiantamento, depende do horario
             if get_in_seconds(presenca.horario) > get_in_seconds(p.horario) # adiantamento
