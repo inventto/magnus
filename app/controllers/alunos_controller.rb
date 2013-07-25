@@ -145,7 +145,7 @@ class AlunosController < ApplicationController
       aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data.wday)
       if not aula.blank?
         aula = aula[0]
-        presenca = Presenca.create(:aluno_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :fora_de_horario => false, :tem_direito_a_reposicao => true)
+        presenca = Presenca.create(:aluno_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :tem_direito_a_reposicao => true)
         JustificativaDeFalta.create( :presenca_id => presenca.id, :descricao => params[:justificativa])
       end
       data += 1.day

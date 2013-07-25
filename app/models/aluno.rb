@@ -236,8 +236,9 @@ class Aluno < ActiveRecord::Base
           falta = Presenca.find_by_aluno_id_and_data_and_presenca_and_horario(self.id, data_atual, false, @horario_de_aula.horario)
           if not falta.nil?
             falta.tem_direito_a_reposicao = true
+            falta.build_justificativa_de_falta(:descricao => "aula reposta às #{hora_da_aula}")
+            falta.justificativa_de_falta.save
             falta.save
-            JustificativaDeFalta.create(:presenca_id => falta.id, :descricao => "aula reposta às #{hora_da_aula}")
           end
         end
         presenca.data_de_realocacao = data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
@@ -276,8 +277,20 @@ class Aluno < ActiveRecord::Base
   end
 
   def criar_falta_com_justificativa_de_adiantamento data_da_aula_realocada, data_do_dia, hora_da_aula_registrada, horario_da_aula_da_matricula
-    falta = Presenca.create(:aluno_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula, :tem_direito_a_reposicao => true)
-    JustificativaDeFalta.create(:presenca_id => falta.id, :descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
+    falta = Presenca.find_by_aluno_id_and_data_and_presenca_and_horario(self.id, data_do_dia, false, horario_da_aula_da_matricula)
+    if falta.nil?
+      falta = Presenca.create(:aluno_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula, :tem_direito_a_reposicao => true)
+      falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
+    else
+      falta.tem_direito_a_reposicao = true
+      if not falta.justificativa_de_falta.nil?
+        falta.justificativa_de_falta.descricao = "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}"
+      else
+        falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
+      end
+    end
+    falta.justificativa_de_falta.save
+    falta.save
   end
 
   def get_data data
