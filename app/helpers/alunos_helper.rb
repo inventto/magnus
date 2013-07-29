@@ -59,18 +59,19 @@ module AlunosHelper
 
       hoje = (Time.now + Time.zone.utc_offset).to_date
 
-      count_faltas_sem_justificativa = presencas.where("data > ?", 2.month.ago).where(:presenca => false, :tem_direito_a_reposicao => false).count
+      count_faltas_sem_justificativa = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
 
-      count_faltas_justificadas_com_direito_a_reposicao = presencas.where("data > ?", 2.month.ago).where(:presenca => false, :tem_direito_a_reposicao => true).count
+      count_faltas_justificadas_com_direito_a_reposicao = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca,'f') = 'f'").where(:tem_direito_a_reposicao => true).count
 
       sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
       sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
 
-      count_aulas_repostas = presencas.where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => true)
+      count_aulas_repostas = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true, :presenca => true)
       count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
 
-      count_faltas_de_realocacoes_sem_direito_a_repos = presencas.where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => false, :tem_direito_a_reposicao => false)
-      count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
+      count_faltas_de_realocacoes_sem_direito_a_repos = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true)
+      count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
+#      count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
 
       count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas - count_faltas_de_realocacoes_sem_direito_a_repos
 
@@ -83,12 +84,11 @@ module AlunosHelper
                    <thead>
                      <tr>
                        <th>Presenças</th>
+                       <th>Aulas Extras</th>
                        <th>Treinamento com direito à realocação(+)</th>
                        <th>Faltas sem comunicar com antecedência e/ou expirados</th>
                        <th>Treinamentos realocados(-)</th>
                        <th>Saldo de Treinamentos para realocação(+)</th>
-                       <th>Saldo de Treinamentos para realocação \"Adiantamento\"</th>
-                       <th>Aulas Extras</th>
                        <th>Total de aulas</th>
                      </tr>
                    </thead>
@@ -97,6 +97,10 @@ module AlunosHelper
                        <td class='tip_trigger' style='background-color: green;'>
                          #{count_presencas}
                          <span class='tip'>#{calcular_percentual(count_presencas, total_de_aulas)}%</span>
+                       </td>
+                       <td class='tip_trigger' style='background-color: lightblue;'>
+                         #{count_aulas_extras}
+                         <span class='tip'>#{calcular_percentual(count_aulas_extras, total_de_aulas)}%</span>
                        </td>
                        <td class='tip_trigger' style='background-color: yellow;'>
                          #{count_faltas_justificadas_com_direito_a_reposicao}
@@ -112,15 +116,12 @@ module AlunosHelper
                        </td>
                        <td class='tip_trigger' style='background-color: white;'>
                          #{count_aulas_a_repor}
-                         <span class='tip'>#{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger' style='background-color: lightblue;'>
-                         #{0}
-                         <span class='tip'>#{calcular_percentual(0, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger'>
-                         #{count_aulas_extras}
-                         <span class='tip'>#{calcular_percentual(count_aulas_extras, total_de_aulas)}%</span>
+                         <span class='tip'>
+                           count_faltas_justificadas_com_direito_a_reposicao #{count_faltas_justificadas_com_direito_a_reposicao}
+                           count_aulas_repostas #{count_aulas_repostas}
+                           count_faltas_de_realocacoes_sem_direito_a_repos #{count_faltas_de_realocacoes_sem_direito_a_repos}
+                           #{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%
+                         </span>
                        </td>
                        <td>#{total_de_aulas}</td>
                      </tr>
