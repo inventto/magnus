@@ -1,11 +1,10 @@
 #coding: utf-8
 class Aluno < ActiveRecord::Base
-  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
+  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :enviar_dados
 
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.aluno_id=alunos.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"alunos.id").order("extract(day from data_nascimento)") }
 
   before_save :chk_codigo_de_acesso
-  after_save :send_data_to_sisagil
 
   has_many :telefones, :dependent => :destroy
   belongs_to :endereco
@@ -18,6 +17,7 @@ class Aluno < ActiveRecord::Base
   validates_format_of :email, :with => regexp, :message => 'Inválido!', :unless => "email.blank?"
   validates :cpf, :uniqueness => true, :unless => "cpf.blank?"
   validates :codigo_de_acesso, :uniqueness => true
+  validates :enviar_dados, :send_data => true
 
   validates_each :cpf do |model, attr, value|
     if not value.blank?
@@ -27,6 +27,9 @@ class Aluno < ActiveRecord::Base
 
   SEX = %w(M F)
 
+  def enviar_dados
+  end
+
   def primeiro_nome
     nome.gsub(/ .*$/, "")
   end
@@ -35,87 +38,8 @@ class Aluno < ActiveRecord::Base
     nome.gsub(/^[^ ]* /, "")
   end
 
-  def send_data_to_sisagil
-    send_data(get_json_aluno)
-  end
-
-  def send_data json_aluno
-    require 'net/http'
-    require 'uri'
-
-    user = 'invent.to.magnus'
-    password = '123'
-
-    url = 'http://sisagil.com/service'
-    url = URI.parse(url)
-
-    request = Net::HTTP::Post.new(url.path)
-    request.basic_auth user, password
-    request.set_form_data({'action'=>'save', 'entity'=>'pessoa', 'json' => json_aluno.to_json.to_s})
-
-    response = Net::HTTP.new(url.host, url.port).start {|http| http.request(request) }
-    case response
-    when Net::HTTPSuccess, Net::HTTPRedirection
-      msg = response.body
-      if msg["FAILURE"]
-        logger.warn("=== .: Erro ao enviar dados ao Sisagil - Aluno ID #{self.id}:. ===")
-        logger.warn(msg)
-      else
-        logger.info("=== .: Aluno ID #{self.id} Enviado ao Sisagil com Sucesso! :. ===")
-      end
-    else
-      puts response.error!
-    end
-  end
-
-  def get_json_aluno
-    param_nome_municipio = {}
-    if not self.endereco.nil? and not self.endereco.cidade.nil?
-      if (nome = self.endereco.cidade.nome.chomp) == 'Francisco Beltrão'
-        param_nome_municipio = {"codigoIbge" => 410840, "nome" => nome}
-      else
-        param_nome_municipio = {"nome" => nome}
-      end
-    else
-      param_nome_municipio = {"nome" => ""}
-    end
-
-    json_aluno = {
-      "codigoReferencial" => self.id.to_s,
-      "nome" => self.nome.upcase,
-      "nomeFantasia" => "",
-      "cpfCnpj" => self.cpf.to_s.gsub(/[.-]/, ""),
-      "tipo" => "F",
-      "sexo" => self.sexo,
-      "dataNascimento" => self.data_nascimento.strftime("%d/%m/%Y"),
-      "endereco" => (self.endereco.nil?) ? "" : self.endereco.logradouro.upcase,
-      "numero"=> (self.endereco.nil?) ? "" : self.endereco.numero,
-      "municipio"=> param_nome_municipio,
-      "estado"=> { "sigla" => (self.endereco.nil? or self.endereco.cidade.nil?) ? "" : self.endereco.cidade.estado.sigla },
-      "cep" => (self.endereco.nil? or self.endereco.cep.nil?) ? "" : self.endereco.cep.gsub(/[.-]/,""),
-      "email" => self.email.to_s,
-      "fone" => begin Telefone.select("(lpad(ddd, 3, '0')||numero) as fone").order(:id).find_by_self_id(self.id)[:fone].gsub(/[\(\)\/-]/,"").gsub(/\s/,"") rescue "" end,
-      "celular" => "",
-      "fax" => "",
-      "observacoes" => "",
-      "bairro" => (self.endereco.nil? or self.endereco.bairro.nil?) ? "" : self.endereco.bairro.nome.upcase,
-      "complemento" => (self.endereco.nil? or self.endereco.complemento.nil?) ? "" : self.endereco.complemento.upcase,
-      "dataCadastro" => self.created_at.strftime("%d/%m/%Y"),
-      "tipoCliente" => true,
-      "tipoFornecedor" => false,
-      "tipoFuncionario" => false,
-      "rgIc" => "",
-      "im" => "",
-      "cnae" => "",
-      "valorSalario" => 0.0,
-      "codigoPais" => 1058,
-      "nomeParaContato" => ""
-    }
-    json_aluno
-  end
-
   def get_presenca data_atual, hora_atual
-    matricula =  HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)
+    matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)
     horario_na_matricula = 0
     if not matricula.blank?
       horario_na_matricula = txt_to_seg(matricula[0].horario)
