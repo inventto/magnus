@@ -41,27 +41,26 @@ module AlunosHelper
 
   def estatisticas_column(record, column)
     if record.instance_of?(Aluno)
-      count_presencas = 0
-      count_faltas_sem_justificativa = 0
-      count_aulas_extras = 0
+      @count_presencas = 0
+      @count_aulas_extras = 0
 
       presencas = record.presencas
 
       presencas.each do |presenca|
         if presenca.presenca?
           if presenca.aula_extra?
-            count_aulas_extras += 1
+            @count_aulas_extras += 1
           else
-            count_presencas += 1
+            @count_presencas += 1
           end
         end
       end
 
       hoje = (Time.now + Time.zone.utc_offset).to_date
 
-      count_faltas_sem_justificativa = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
+      @count_faltas_sem_justificativa = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
 
-      count_faltas_justificadas_com_direito_a_reposicao = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca,'f') = 'f'").where(:tem_direito_a_reposicao => true).count
+      @count_faltas_justificadas_com_direito_a_reposicao = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca,'f') = 'f'").where(:tem_direito_a_reposicao => true).count
 
       sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
       sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
@@ -73,58 +72,111 @@ module AlunosHelper
       count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
 #      count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
 
-      count_aulas_a_repor = count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas - count_faltas_de_realocacoes_sem_direito_a_repos
+      @count_aulas_a_repor = @count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas - count_faltas_de_realocacoes_sem_direito_a_repos
 
-      count_aulas_realocadas = presencas.where(:realocacao => true).count
+      @count_aulas_realocadas = presencas.where(:realocacao => true).count
 
-      total_de_aulas = presencas.count
+      @total_de_aulas = presencas.count
 
-      table = "<div id='estatisticas_table' class='active-scaffold'>
-                 <table>
-                   <thead>
-                     <tr>
-                       <th>Presenças</th>
-                       <th>Aulas Extras</th>
-                       <th>Treinamento com direito à realocação(+)</th>
-                       <th>Faltas sem comunicar com antecedência e/ou expirados</th>
-                       <th>Treinamentos realocados(-)</th>
-                       <th>Saldo de Treinamentos para realocação(+)</th>
-                       <th>Total de aulas</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr>
-                       <td class='tip_trigger' style='background-color: green;'>
-                         #{count_presencas}
-                         <span class='tip'>#{calcular_percentual(count_presencas, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger' style='background-color: lightblue;'>
-                         #{count_aulas_extras}
-                         <span class='tip'>#{calcular_percentual(count_aulas_extras, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger' style='background-color: yellow;'>
-                         #{count_faltas_justificadas_com_direito_a_reposicao}
-                         <span class='tip'>#{calcular_percentual(count_faltas_justificadas_com_direito_a_reposicao, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger' style='background-color: red; color: black;'>
-                         #{count_faltas_sem_justificativa}
-                         <span class='tip'>#{calcular_percentual(count_faltas_sem_justificativa, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger' style='background-color: lightgreen;'>
-                         #{count_aulas_realocadas}
-                         <span class='tip'>#{calcular_percentual(count_aulas_realocadas, total_de_aulas)}%</span>
-                       </td>
-                       <td class='tip_trigger' style='background-color: white;'>
-                         #{count_aulas_a_repor}
-                         <span class='tip'>#{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%</span>
-                       </td>
-                       <td>#{total_de_aulas}</td>
-                     </tr>
-                   </tbody>
-                 </table>
-               </div>".html_safe
+      table = get_tabela_de_estatisticas
 
+      graph = get_grafico_pizza
+
+      table << graph
     end
+  end
+
+  def get_grafico_pizza
+    "<br/><div id='grafico_das_estatisticas_do_aluno' style='height: 400px; min-width: 600px'></div>
+    <script src='http://code.highcharts.com/stock/highstock.js'></script>
+    <script src='http://code.highcharts.com/stock/modules/exporting.js'></script>
+    <script>
+    $(function() {
+      new Highcharts.Chart({
+        chart: {
+          renderTo: 'grafico_das_estatisticas_do_aluno',
+          type: 'pizza'
+        },
+        title: {
+          text: 'Gráfico das Estatísticas dos Treinamentos'
+        },
+        tooltip: {
+          pointFormat: '{point.y}%'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              formatter: function() {
+                return this.point.name + ': ' + this.point.y + '%';
+              }
+            },
+            showInLegend: false
+          }
+        },
+        series: [{
+          type: 'pie',
+          name: 'Estatísticas',
+          data: [
+            ['Presenças', #{@perc_presencas + @perc_aulas_extras}],
+            ['Faltas Avisadas', #{@perc_faltas_com_direito_a_reposicao}],
+            ['Faltas não Avisadas', #{@perc_faltas_sem_direito_a_reposicao}],
+          ]
+        }]
+      });
+    });
+    </script>".html_safe
+
+  end
+
+  def get_tabela_de_estatisticas
+    table = "<div id='estatisticas_table' class='active-scaffold'>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Presenças</th>
+                    <th>Aulas Extras</th>
+                    <th>Treinamento com direito à realocação(+)</th>
+                    <th>Faltas sem comunicar com antecedência e/ou expirados</th>
+                    <th>Treinamentos realocados(-)</th>
+                    <th>Saldo de Treinamentos para realocação(+)</th>
+                    <th>Total de aulas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class='tip_trigger' style='background-color: green;'>
+                      #{@count_presencas}
+                      <span class='tip'>#{@perc_presencas = calcular_percentual(@count_presencas, @total_de_aulas)}%</span>
+                    </td>
+                    <td class='tip_trigger' style='background-color: lightblue;'>
+                      #{@count_aulas_extras}
+                      <span class='tip'>#{@perc_aulas_extras = calcular_percentual(@count_aulas_extras, @total_de_aulas)}%</span>
+                    </td>
+                    <td class='tip_trigger' style='background-color: yellow;'>
+                      #{@count_faltas_justificadas_com_direito_a_reposicao}
+                      <span class='tip'>#{@perc_faltas_com_direito_a_reposicao = calcular_percentual(@count_faltas_justificadas_com_direito_a_reposicao, @total_de_aulas)}%</span>
+                    </td>
+                    <td class='tip_trigger' style='background-color: red; color: black;'>
+                      #{@count_faltas_sem_justificativa}
+                      <span class='tip'>#{@perc_faltas_sem_direito_a_reposicao = calcular_percentual(@count_faltas_sem_justificativa, @total_de_aulas)}%</span>
+                    </td>
+                    <td class='tip_trigger' style='background-color: lightgreen;'>
+                      #{@count_aulas_realocadas}
+                      <span class='tip'>#{@perc_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_de_aulas)}%</span>
+                    </td>
+                    <td class='tip_trigger' style='background-color: white;'>
+                      #{@count_aulas_a_repor}
+                      <span class='tip'>#{perc_aulas_a_repor = calcular_percentual(@count_aulas_a_repor, @total_de_aulas)}%</span>
+                    </td>
+                    <td>#{@total_de_aulas}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>".html_safe
+
   end
 
   def pontualidade_column(record, column)
