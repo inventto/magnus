@@ -97,6 +97,7 @@ class RegistroPresencaController < ApplicationController
         raise ""
       end
     rescue
+      logger.warn("=== .: Código do Aluno Inválido/Sem Matrícula: #{params[:codigo]} às #{(Time.now + Time.zone.utc_offset)} :.")
       flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
       render :text => [flash[:error], "codigo_invalido"].join("|") and return
     end
