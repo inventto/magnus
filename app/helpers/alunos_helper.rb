@@ -116,12 +116,7 @@ module AlunosHelper
                        </td>
                        <td class='tip_trigger' style='background-color: white;'>
                          #{count_aulas_a_repor}
-                         <span class='tip'>
-                           count_faltas_justificadas_com_direito_a_reposicao #{count_faltas_justificadas_com_direito_a_reposicao}
-                           count_aulas_repostas #{count_aulas_repostas}
-                           count_faltas_de_realocacoes_sem_direito_a_repos #{count_faltas_de_realocacoes_sem_direito_a_repos}
-                           #{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%
-                         </span>
+                         <span class='tip'>#{calcular_percentual(count_aulas_a_repor, total_de_aulas)}%</span>
                        </td>
                        <td>#{total_de_aulas}</td>
                      </tr>
