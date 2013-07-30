@@ -18,7 +18,6 @@
           $(".data_de_realocacao-input").mask("99/99/9999");
           $(".horario-input").mask("99:99");
           $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
-
       });
       $(document).ajaxComplete(function(){
           $(".cpf-input").mask("999.999.999-99");
@@ -31,6 +30,9 @@
           $(".horario-input").mask("99:99");
           $(".cep-input").mask("99.999-999");
           $('.motivo_da_interrupcao-input').css('width', '500px');
+          $('.nome-input').css('width', '350px');
+          $('.email-input').css('width', '350px');
+          $('.logradouro-input').css('width', '300px');
           $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
        });
     </script>
