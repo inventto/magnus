@@ -15,15 +15,9 @@ class Aluno < ActiveRecord::Base
   validates_presence_of :nome, :data_nascimento
   regexp = /^[^\.][a-z0-9!#$\%&'*+-\/=?^_\`{|}~][a-z0-9!#$\%&'*+-\/=?^_\`{|}~.]{0,62}[a-z0-9!#$\%&'*+-\/=?^_`{|}~]?+[^\.]@([a-z0-9][a-z0-9\-]{0,61}[a-z0-9]?\.)+\w{2,4}$/i
   validates_format_of :email, :with => regexp, :message => 'Inválido!', :unless => "email.blank?"
-  validates :cpf, :uniqueness => true, :unless => "cpf.blank?"
+  validates :cpf, :uniqueness => true, :unless => "cpf.blank?", :cpf => true
   validates :codigo_de_acesso, :uniqueness => true
   validates :enviar_dados, :send_data => true
-
-  validates_each :cpf do |model, attr, value|
-    if not value.blank?
-      model.errors.add(attr, "Inválido!") unless model.valido?(value)
-    end
-  end
 
   SEX = %w(M F)
 
@@ -376,17 +370,6 @@ class Aluno < ActiveRecord::Base
     nome
   end
 
-  def valido?(value)
-    @numero = value
-    @match = @numero =~ CPF_REGEX
-    @numero_puro = $1
-    @para_verificacao = $2
-    @numero = (@match ? format_number! : nil)
-
-    return false unless @match
-    verifica_cpf
-  end
-
   private
 
   def chk_codigo_de_acesso
@@ -401,48 +384,5 @@ class Aluno < ActiveRecord::Base
 
   def codigo_existe?(codigo)
     Aluno.find_by_codigo_de_acesso(codigo)
-  end
-
-  DIVISOR = 11
-
-  CPF_LENGTH = 11
-  CPF_REGEX = /^(\d{3}\.?\d{3}\.?\d{3})-?(\d{2})$/
-  CPF_ALGS_1 = [10, 9, 8, 7, 6, 5, 4, 3, 2]
-  CPF_ALGS_2 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]
-
-  def verifica_cpf
-    limpo = @numero.gsub(/[\.\/-]/, "")
-    return false if limpo.scan(/\d/).uniq.length == 1
-    primeiro_verificador = primeiro_digito_verificador
-    segundo_verificador = segundo_digito_verificador(primeiro_verificador)
-    verif = primeiro_verificador + segundo_verificador
-    verif == @para_verificacao
-  end
-
-  def multiplica_e_soma(algs, numero_str)
-    multiplicados = []
-    numero_str.scan(/\d{1}/).each_with_index { |e, i| multiplicados[i] = e.to_i * algs[i] }
-    multiplicados.inject { |s,e| s + e }
-  end
-
-  def digito_verificador(resto)
-    resto < 2 ? 0 : DIVISOR - resto
-  end
-
-  def primeiro_digito_verificador
-    array = CPF_ALGS_1
-    soma = multiplica_e_soma(array, @numero_puro)
-    digito_verificador(soma%DIVISOR).to_s
-  end
-
-  def segundo_digito_verificador(primeiro_verificador)
-    array = CPF_ALGS_2
-    soma = multiplica_e_soma(array, @numero_puro + primeiro_verificador)
-    digito_verificador(soma%DIVISOR).to_s
-  end
-
-  def format_number!
-    @numero =~ /(\d{3})\.?(\d{3})\.?(\d{3})-?(\d{2})/
-    @numero = "#{$1}.#{$2}.#{$3}-#{$4}"
   end
 end
