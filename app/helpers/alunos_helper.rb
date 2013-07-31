@@ -141,7 +141,7 @@ module AlunosHelper
           data: [
             ['Presenças', #{@perc_presencas + @perc_aulas_extras}],
             ['Aulas Realocadas', #{@perc_de_aulas_realocadas}],
-            ['Aulas a serem Realocadas', #{@perc_aulas_a_repor}],
+            ['Aula a ser Realocada', #{@perc_aulas_a_repor}],
             ['Faltas não Avisadas', #{@perc_faltas_sem_direito_a_reposicao}],
           ]
         }]
