@@ -90,10 +90,10 @@ module AlunosHelper
 
   def get_grafico_pizza
     "<br/><div id='grafico_das_estatisticas_do_aluno' style='height: 400px; min-width: 600px'></div>
-    <script src='http://code.highcharts.com/stock/highstock.js'></script>
-    <script src='http://code.highcharts.com/stock/modules/exporting.js'></script>
-    <script>
-    $(function() {
+    <script type='text/javascript'>
+    $(document).ready(function() {graph();});
+    $(document).ajaxComplete(function(){graph();});
+    function graph() {
       colors= [
         '#109415',
         '#e0ff30',
@@ -144,7 +144,7 @@ module AlunosHelper
           ]
         }]
       });
-    });
+    }
     </script>".html_safe
 
   end
