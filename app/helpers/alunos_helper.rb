@@ -94,6 +94,21 @@ module AlunosHelper
     <script src='http://code.highcharts.com/stock/modules/exporting.js'></script>
     <script>
     $(function() {
+      colors= [
+        '#109415',
+        '#e0ff30',
+        '#f00c0c'
+      ];
+      Highcharts.getOptions().colors = Highcharts.map(colors,
+      function(color) {
+        return {
+          radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+          stops: [
+            [0, color],
+            [1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+          ]
+        };
+      });
       new Highcharts.Chart({
         chart: {
           renderTo: 'grafico_das_estatisticas_do_aluno',
@@ -111,6 +126,7 @@ module AlunosHelper
             cursor: 'pointer',
             dataLabels: {
               enabled: true,
+              color: '#000',
               formatter: function() {
                 return this.point.name + ': ' + this.point.y + '%';
               }
