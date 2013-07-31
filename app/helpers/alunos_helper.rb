@@ -95,9 +95,10 @@ module AlunosHelper
     $(document).ajaxComplete(function(){graph();});
     function graph() {
       colors= [
-        '#109415',
-        '#e0ff30',
-        '#f00c0c'
+        '#109415', // verde escuro
+        '#8fee90', // verde claro
+        '#f5e9e9',    // branco
+        '#F00C0C'  // vermelho
       ];
       Highcharts.getOptions().colors = Highcharts.map(colors,
       function(color) {
@@ -139,7 +140,8 @@ module AlunosHelper
           name: 'Estatísticas',
           data: [
             ['Presenças', #{@perc_presencas + @perc_aulas_extras}],
-            ['Faltas Avisadas', #{@perc_faltas_com_direito_a_reposicao}],
+            ['Aulas Realocadas', #{@perc_de_aulas_realocadas}],
+            ['Aulas a serem Realocadas', #{@perc_aulas_a_repor}],
             ['Faltas não Avisadas', #{@perc_faltas_sem_direito_a_reposicao}],
           ]
         }]
@@ -175,7 +177,7 @@ module AlunosHelper
                     </td>
                     <td class='tip_trigger' style='background-color: yellow;'>
                       #{@count_faltas_justificadas_com_direito_a_reposicao}
-                      <span class='tip'>#{@perc_faltas_com_direito_a_reposicao = calcular_percentual(@count_faltas_justificadas_com_direito_a_reposicao, @total_de_aulas)}%</span>
+                      <span class='tip'>#{calcular_percentual(@count_faltas_justificadas_com_direito_a_reposicao, @total_de_aulas)}%</span>
                     </td>
                     <td class='tip_trigger' style='background-color: red; color: black;'>
                       #{@count_faltas_sem_justificativa}
@@ -183,11 +185,11 @@ module AlunosHelper
                     </td>
                     <td class='tip_trigger' style='background-color: lightgreen;'>
                       #{@count_aulas_realocadas}
-                      <span class='tip'>#{@perc_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_de_aulas)}%</span>
+                      <span class='tip'>#{@perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_de_aulas)}%</span>
                     </td>
                     <td class='tip_trigger' style='background-color: white;'>
                       #{@count_aulas_a_repor}
-                      <span class='tip'>#{perc_aulas_a_repor = calcular_percentual(@count_aulas_a_repor, @total_de_aulas)}%</span>
+                      <span class='tip'>#{@perc_aulas_a_repor = calcular_percentual(@count_aulas_a_repor, @total_de_aulas)}%</span>
                     </td>
                     <td>#{@total_de_aulas}</td>
                   </tr>
