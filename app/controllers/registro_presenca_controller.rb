@@ -7,7 +7,7 @@ class RegistroPresencaController < ApplicationController
 
   def saudacao
       @saudacao = ""
-      if (hora = Time.now.hour) < 12.hours
+      if (hora = (Time.now + Time.zone.utc_offset).hour) < 12.hours
         @saudacao << "Bom Dia "
       elsif hora > 12.hours and hora < 18.hours
         @saudacao << "Boa Tarde "
