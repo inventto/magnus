@@ -1,6 +1,7 @@
 #coding: utf-8
 class PresencasController < ApplicationController
   active_scaffold :presenca do |conf|
+    #list.per_page = 64
     conf.label = "Presenças"
     conf.columns[:presenca].label = "Presença"
     conf.columns[:horario].label = "Horário"
