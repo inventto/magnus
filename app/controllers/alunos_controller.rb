@@ -15,7 +15,24 @@ class AlunosController < ApplicationController
     conf.columns[:endereco].allow_add_existing = false
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
-    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento]
+    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento, :codigo_de_acesso]
+  end
+
+  def after_update_save record
+    send_data_to_sisagil(record)
+  end
+
+  def after_create_save record
+    send_data_to_sisagil(record)
+  end
+
+  def send_data_to_sisagil aluno
+    data = SendData.new
+    if data.send(aluno)
+      flash[:info] = "Aluno #{aluno.nome} enviado ao Sisagil com sucesso!"
+    else
+      flash[:error] = "Não foi possível enviar dados ao Sisagil do aluno #{aluno.nome}: " << data.get_errors
+    end
   end
 
   def gravar_realocacao

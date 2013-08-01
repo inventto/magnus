@@ -1,10 +1,6 @@
 #coding: utf-8
-class SendDataValidator < ActiveModel::EachValidator
-  def validate_each(record, attr, value)
-    record.errors.add(attr, "ao Sisagil: " << @errors) if not send_data_to_sisagil(record)
-  end
-
-  def send_data_to_sisagil aluno
+class SendData
+  def send aluno
     if Rails.env.production?
       user = 'invent.to.magnus'
       password = '123'
@@ -42,6 +38,10 @@ class SendDataValidator < ActiveModel::EachValidator
       @errors = response.error!
     end
     @errors.blank?
+  end
+
+  def get_errors
+    return @errors
   end
 
   def get_json_aluno aluno
@@ -98,10 +98,14 @@ class SendDataValidator < ActiveModel::EachValidator
     msg_error = msg_error.gsub(/\\u0027/, "").gsub(/\\u003cbr\/\\u003e\\r\\n/, "").gsub(/[\"}]/,"")
     msg_error = msg_error.gsub(/cep /,"")
     msg_error = msg_error.split(/O.objeto.Pessoa/)
-    msg_error = msg_error.join("e")
-    msg_error = msg_error.gsub(/- /, "")
-    msg_error = msg_error.gsub(/Ex\..*/,"")
-    msg_error = msg_error.gsub(/^.e /, "")
+
+    msg_temp = ""
+    msg_error.each do |msg|
+      msg_temp << msg.gsub(/Ex\..*/,"")
+    end
+
+    msg_error = msg_temp.split("-").join("e")
+    msg_error = msg_error.gsub(/^\s*e/, "")
     msg_error
   end
 end

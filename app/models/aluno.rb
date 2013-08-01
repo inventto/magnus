@@ -17,7 +17,6 @@ class Aluno < ActiveRecord::Base
   validates_format_of :email, :with => regexp, :message => 'Inválido!', :unless => "email.blank?"
   validates :cpf, :uniqueness => true, :unless => "cpf.blank?", :cpf => true
   validates :codigo_de_acesso, :uniqueness => true
-  validates :enviar_dados, :send_data => true
 
   SEX = %w(M F)
 
