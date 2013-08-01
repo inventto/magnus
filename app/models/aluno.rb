@@ -1,6 +1,6 @@
 #coding: utf-8
 class Aluno < ActiveRecord::Base
-  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :enviar_dados
+  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
 
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.aluno_id=alunos.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"alunos.id").order("extract(day from data_nascimento)") }
 
@@ -19,9 +19,6 @@ class Aluno < ActiveRecord::Base
   validates :codigo_de_acesso, :uniqueness => true
 
   SEX = %w(M F)
-
-  def enviar_dados
-  end
 
   def primeiro_nome
     nome.gsub(/ .*$/, "")
@@ -280,8 +277,7 @@ class Aluno < ActiveRecord::Base
   def hora_esta_contida_em_horario?(hora, horario)
     hora = txt_to_seg(hora)
     horario = txt_to_seg(horario)
-
-    (hora >= (horario - 900)) && (hora <= (horario + 3600))
+    (hora >= (horario - 1740)) && (hora <= (horario + 3600)) # 1740s = 29 min
   end
 
   def esta_fora_de_horario?
