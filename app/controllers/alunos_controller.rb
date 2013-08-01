@@ -15,7 +15,7 @@ class AlunosController < ApplicationController
     conf.columns[:endereco].allow_add_existing = false
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
-    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento, :codigo_de_acesso]
+    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento]
   end
 
   def after_update_save record
