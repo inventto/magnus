@@ -24,8 +24,10 @@ class PresencasController < ApplicationController
 
   def update_config
     existe_qtd_de_registros = (params and params["search"] and not params["search"]["quantidade_de_registros"].blank?)
-    quantidade_de_registros = (existe_qtd_de_registros) ? params["search"]["quantidade_de_registros"].to_i : 15
-    active_scaffold_config.list.per_page = quantidade_de_registros
+    if existe_qtd_de_registros
+      quantidade_de_registros = params["search"]["quantidade_de_registros"].to_i
+      active_scaffold_config.list.per_page = quantidade_de_registros
+    end
   end
 
   def self.condition_for_justificativa_de_falta_column(column, value, like_pattern)
