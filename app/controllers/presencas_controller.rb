@@ -27,6 +27,8 @@ class PresencasController < ApplicationController
     if existe_qtd_de_registros
       quantidade_de_registros = params["search"]["quantidade_de_registros"].to_i
       active_scaffold_config.list.per_page = quantidade_de_registros
+    else
+      active_scaffold_config.list.per_page = 15
     end
   end
 
