@@ -85,7 +85,7 @@ module AlunosHelper
   end
 
   def get_faltas_direito_a_reposicao presencas, tem_direito_a_reposicao
-    faltas = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca,'f') = 'f'")
+    faltas = presencas.where("coalesce(presenca,'f') = 'f'")
     if tem_direito_a_reposicao
       faltas = faltas.where(:tem_direito_a_reposicao => tem_direito_a_reposicao).count
     else
@@ -100,7 +100,7 @@ module AlunosHelper
   end
 
   def get_faltas_de_realocacoes_sem_direito_a_reposicao presencas
-      faltas = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true)
+      faltas = presencas.where(:realocacao => true)
       faltas = faltas.where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
       # faltas = faltas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
   end
@@ -112,7 +112,7 @@ module AlunosHelper
       sub_query << " p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND"
       sub_query << " j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
 
-      repostas = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true, :presenca => true)
+      repostas = presencas.where(:realocacao => true, :presenca => true)
       repostas = repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
       repostas
   end
