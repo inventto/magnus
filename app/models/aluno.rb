@@ -378,6 +378,6 @@ class Aluno < ActiveRecord::Base
   end
 
   def codigo_existe?(codigo)
-    Aluno.find_by_codigo_de_acesso(codigo)
+    Aluno.where('id <> ?', self.id).find_by_codigo_de_acesso(codigo)
   end
 end
