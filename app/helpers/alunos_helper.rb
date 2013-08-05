@@ -97,10 +97,7 @@ module AlunosHelper
   end
 
   def get_amout_allowed_fault student, today
-    valid_enrollment = Matricula.where(:aluno_id => student.id).where("data_inicio <= '#{today}' and (data_fim >= '#{today}' or data_fim is null)").first
-    if valid_enrollment.nil? # caso nenhuma matrícula esteja ativa
-      valid_enrollment = Matricula.order(:id).find_all_by_aluno_id(student.id).last # pega a última cadastrada
-    end
+    valid_enrollment = Matricula.order(:id).find_all_by_aluno_id(student.id).last # pega a última cadastrada que sempre será a válida
     weekly_frequency = HorarioDeAula.find_all_by_matricula_id(valid_enrollment.id).count
     (weekly_frequency * 4) # máximo de faltas em um mês
   end
