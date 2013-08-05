@@ -56,25 +56,17 @@ module AlunosHelper
         end
       end
 
-      hoje = (Time.now + Time.zone.utc_offset).to_date
+      count_faltas_com_direto_a_repos_permitidas = get_amout_allowed_fault(record)
 
-      count_faltas_com_direto_a_repos_permitidas = get_amout_allowed_fault(record, hoje)
+      @count_faltas_sem_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, false)
 
-      @count_faltas_sem_direito_a_reposicao = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
+      @count_faltas_com_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, true)
 
-      @count_faltas_com_direito_a_reposicao = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca,'f') = 'f'").where(:tem_direito_a_reposicao => true).count
+      count_aulas_repostas = get_aulas_repostas(presencas)
 
-      sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
-      sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
+      count_faltas_de_realocacoes_sem_direito_a_repos = get_faltas_de_realocacoes_sem_direito_a_reposicao(presencas)
 
-      count_aulas_repostas = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true, :presenca => true)
-      count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
-
-      count_faltas_de_realocacoes_sem_direito_a_repos = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true)
-      count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
-      # count_faltas_de_realocacoes_sem_direito_a_repos = count_faltas_de_realocacoes_sem_direito_a_repos.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
-
-      count_faltas_de_realocacoes_com_direito_a_repos = presencas.where(:realocacao => true).where("coalesce(presenca, 'f') = 'f'").where(:tem_direito_a_reposicao => true).count
+      count_faltas_de_realocacoes_com_direito_a_repos = get_faltas_de_realocacoes_com_direito_a_reposicao(presencas)
 
       @count_aulas_a_repor = @count_faltas_com_direito_a_reposicao - count_aulas_repostas
       @count_aulas_a_repor -= get_amount_of_expired_classes(@count_aulas_a_repor, count_faltas_com_direto_a_repos_permitidas)
@@ -92,11 +84,44 @@ module AlunosHelper
     end
   end
 
+  def get_faltas_direito_a_reposicao presencas, tem_direito_a_reposicao
+    faltas = presencas.where("data >= ?", 2.month.ago).where("coalesce(presenca,'f') = 'f'")
+    if tem_direito_a_reposicao
+      faltas = faltas.where(:tem_direito_a_reposicao => tem_direito_a_reposicao).count
+    else
+      faltas = faltas.where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
+    end
+    faltas
+  end
+
+  def get_faltas_de_realocacoes_com_direito_a_reposicao presencas
+      faltas = presencas.where(:realocacao => true).where("coalesce(presenca, 'f') = 'f'")
+      faltas = faltas.where(:tem_direito_a_reposicao => true).count
+  end
+
+  def get_faltas_de_realocacoes_sem_direito_a_reposicao presencas
+      faltas = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true)
+      faltas = faltas.where("coalesce(presenca, 'f') = 'f'").where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
+      # faltas = faltas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
+  end
+
+  def get_aulas_repostas presencas
+      sub_query = "SELECT p2.data FROM presencas as p2"
+      sub_query << " JOIN justificativas_de_falta as j ON j.presenca_id=p2.id"
+      sub_query << " WHERE p2.data=presencas.data_de_realocacao AND"
+      sub_query << " p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND"
+      sub_query << " j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
+
+      repostas = presencas.where("data >= ?", 2.month.ago).where(:realocacao => true, :presenca => true)
+      repostas = repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
+      repostas
+  end
+
   def get_amount_of_expired_classes amount, amount_allowed_fault
     (amount > amount_allowed_fault) ? amount - amount_allowed_fault : 0
   end
 
-  def get_amout_allowed_fault student, today
+  def get_amout_allowed_fault student
     valid_enrollment = Matricula.order(:id).find_all_by_aluno_id(student.id).last # pega a última cadastrada que sempre será a válida
     weekly_frequency = HorarioDeAula.find_all_by_matricula_id(valid_enrollment.id).count
     (weekly_frequency * 4) # máximo de faltas em um mês
