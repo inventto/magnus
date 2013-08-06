@@ -99,9 +99,9 @@ class Aluno < ActiveRecord::Base
     seconds = txt_to_seg hora
     min_in_secs = seconds % 3600
     if min_in_secs > 1800 # se maior que 30 minutos
-      return Time.at((seconds - min_in_secs) + 3600).gmtime.strftime("%R:%S")[0..4]
+      return Time.at((seconds - min_in_secs) + 3600).gmtime.strftime("%H:%M")
     else
-      return Time.at(seconds - min_in_secs).gmtime.strftime("%R:%S")[0..4]
+      return Time.at(seconds - min_in_secs).gmtime.strftime("%H:%M")
     end
   end
 
