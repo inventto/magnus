@@ -1,11 +1,11 @@
 #coding: utf-8
 class Matricula < ActiveRecord::Base
-  attr_accessible :aluno_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :aluno, :horario_de_aula, :vip, :motivo_da_interrupcao
+  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao
 
-  belongs_to :aluno
+  belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
 
-  validates_presence_of :aluno
+  validates_presence_of :pessoa
   validates_presence_of :horario_de_aula
   validates_presence_of :data_inicio
   validates_numericality_of :numero_de_aulas_previstas, :unless => "numero_de_aulas_previstas.blank?"
@@ -17,13 +17,13 @@ class Matricula < ActiveRecord::Base
   end
 
   def validar_matricula
-    if not Matricula.where("data_fim is null and aluno_id=?", aluno_id).blank?
-      self.errors.add(:aluno, "já possui matrícula ativa.")
+    if not Matricula.where("data_fim is null and pessoa_id=?", pessoa_id).blank?
+      self.errors.add(:pessoa, "já possui matrícula ativa.")
     end
   end
 
   def label
-    aluno.nome
+    pessoa.nome
   end
 
   def hora_da_aula dia_da_semana
@@ -31,8 +31,8 @@ class Matricula < ActiveRecord::Base
   end
 
   def percentual_de_faltas
-   faltas = Presenca.count(:conditions =>["aluno_id = ? and data between ? and ? and presenca = false", aluno_id, data_inicio, data_fim])
-   presencas = Presenca.count(:conditions =>["aluno_id = ? and data between ? and ?", aluno_id, data_inicio, data_fim])
+   faltas = Presenca.count(:conditions =>["pessoa_id = ? and data between ? and ? and presenca = false", pessoa_id, data_inicio, data_fim])
+   presencas = Presenca.count(:conditions =>["pessoa_id = ? and data between ? and ?", pessoa_id, data_inicio, data_fim])
    if presencas > 0
      return faltas / presencas
    else

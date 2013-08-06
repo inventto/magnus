@@ -1,9 +1,9 @@
 #coding: utf-8
 class Telefone < ActiveRecord::Base
-  attr_accessible :aluno_id, :ddd, :descricao, :numero, :ramal, :tipo_telefone_id, :tipo_telefone
+  attr_accessible :pessoa_id, :ddd, :descricao, :numero, :ramal, :tipo_telefone_id, :tipo_telefone
 
   belongs_to :tipo_telefone
-  belongs_to :aluno
+  belongs_to :pessoa
 
   validates_presence_of :ddd, :unless => "numero.blank?"
   validates_presence_of :numero, :unless => "ddd.blank?"

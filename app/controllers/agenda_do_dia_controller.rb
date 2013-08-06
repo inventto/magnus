@@ -36,7 +36,7 @@ class AgendaDoDiaController < ApplicationController
   end
 
   def consultar_agenda
-    agenda = HorarioDeAula.joins(:matricula).joins("INNER JOIN alunos ON matriculas.aluno_id=alunos.id").where("matriculas.data_fim is null OR matriculas.data_fim >= NOW()")
+    agenda = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id").where("matriculas.data_fim is null OR matriculas.data_fim >= NOW()")
     if @data_inicial == @data_final
       dia_da_semana = @data_inicial.wday
       agenda = agenda.where(:"horarios_de_aula.dia_da_semana" => dia_da_semana)
@@ -46,7 +46,7 @@ class AgendaDoDiaController < ApplicationController
   end
 
   def consultar_presencas
-    presencas = Presenca.select("presencas.*, EXTRACT( DOW FROM data ) AS dia_da_semana").joins(:aluno)
+    presencas = Presenca.select("presencas.*, EXTRACT( DOW FROM data ) AS dia_da_semana").joins(:pessoa)
 
     if @data_inicial == @data_final
       presencas = presencas.where(:data => @data_inicial)

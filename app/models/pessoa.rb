@@ -1,8 +1,8 @@
 #coding: utf-8
-class Aluno < ActiveRecord::Base
+class Pessoa < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
 
-  scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.aluno_id=alunos.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"alunos.id").order("extract(day from data_nascimento)") }
+  scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
 
   before_save :chk_codigo_de_acesso
 
@@ -35,7 +35,7 @@ class Aluno < ActiveRecord::Base
       horario_na_matricula = txt_to_seg(matricula[0].horario)
     end
 
-    p = Presenca.where(:aluno_id => self.id).where(:data => data_atual)
+    p = Presenca.where(:pessoa_id => self.id).where(:data => data_atual)
 
     horario_na_realocacao = 0
     if not p.blank?
@@ -135,7 +135,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def verifica_e_gera_presenca_realocada data_atual, hora_atual
-    presenca = Presenca.new(:aluno_id => self.id, :data => data_atual, :presenca => true)
+    presenca = Presenca.new(:pessoa_id => self.id, :data => data_atual, :presenca => true)
     if (fora_do_horario = esta_fora_de_horario?) || (dia_errado = esta_no_dia_errado?)
       #presenca.fora_de_horario = true
       presenca.realocacao = true
@@ -148,7 +148,7 @@ class Aluno < ActiveRecord::Base
           criar_falta_com_justificativa_de_adiantamento(data_atual, data_atual, hora_da_aula, @horario_de_aula.horario)
         else
           # Cria a justificativa para a aula que está sendo reposta no dia
-          falta = Presenca.find_by_aluno_id_and_data_and_presenca_and_horario(self.id, data_atual, false, @horario_de_aula.horario)
+          falta = Presenca.find_by_pessoa_id_and_data_and_presenca_and_horario(self.id, data_atual, false, @horario_de_aula.horario)
           if not falta.nil?
             falta.tem_direito_a_reposicao = true
             falta.build_justificativa_de_falta(:descricao => "aula reposta às #{hora_da_aula}")
@@ -165,7 +165,7 @@ class Aluno < ActiveRecord::Base
           # pegar a data da próxima aula para adiantá-la
           data = get_data(@hora_certa)
 
-          while not Presenca.where(:aluno_id => self.id).where(:data => data).blank?
+          while not Presenca.where(:pessoa_id => self.id).where(:data => data).blank?
             data = get_data(data)
           end
 
@@ -192,9 +192,9 @@ class Aluno < ActiveRecord::Base
   end
 
   def criar_falta_com_justificativa_de_adiantamento data_da_aula_realocada, data_do_dia, hora_da_aula_registrada, horario_da_aula_da_matricula
-    falta = Presenca.find_by_aluno_id_and_data_and_presenca_and_horario(self.id, data_do_dia, false, horario_da_aula_da_matricula)
+    falta = Presenca.find_by_pessoa_id_and_data_and_presenca_and_horario(self.id, data_do_dia, false, horario_da_aula_da_matricula)
     if falta.nil?
-      falta = Presenca.create(:aluno_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula, :tem_direito_a_reposicao => true)
+      falta = Presenca.create(:pessoa_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula, :tem_direito_a_reposicao => true)
       falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
     else
       falta.tem_direito_a_reposicao = true
@@ -219,13 +219,13 @@ class Aluno < ActiveRecord::Base
   end
 
   def get_proximo_horario_de_aula data
-    horarios_de_aula = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => self.id).order(:dia_da_semana)
+    horarios_de_aula = HorarioDeAula.joins(:matricula).where(:"matriculas.pessoa_id" => self.id).order(:dia_da_semana)
 
     return horarios_de_aula[0] if horarios_de_aula.count == 1 # caso tenha horario de aula em somente um dia da semana
 
     aula_de_hoje = horarios_de_aula.find_by_dia_da_semana(data.wday)
 
-    if not aula_de_hoje.nil? and Presenca.where(:aluno_id => self.id).where(:data => data.to_date).blank?
+    if not aula_de_hoje.nil? and Presenca.where(:pessoa_id => self.id).where(:data => data.to_date).blank?
       proximo_horario_de_aula = aula_de_hoje
     elsif horarios_de_aula.last == aula_de_hoje
       proximo_horario_de_aula = horarios_de_aula.first
@@ -240,14 +240,14 @@ class Aluno < ActiveRecord::Base
   end
 
   def get_faltas_com_direito_a_reposicao
-    faltas = Presenca.where(:aluno_id => self.id).where("data > ?", 2.month.ago)
+    faltas = Presenca.where(:pessoa_id => self.id).where("data > ?", 2.month.ago)
     faltas.where(:presenca => false, :tem_direito_a_reposicao => true)
   end
 
   def get_aulas_repostas
     sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
-    sub_query << " AND p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
-    count_aulas_repostas = Presenca.where(:aluno_id => self.id).where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => true)
+    sub_query << " AND p2.pessoa_id=presencas.pessoa_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
+    count_aulas_repostas = Presenca.where(:pessoa_id => self.id).where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => true)
     count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
   end
 
@@ -354,7 +354,7 @@ class Aluno < ActiveRecord::Base
   end
 
   def get_ultimas_aulas
-    Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:aluno_id => self.id).where("data < ?", @hora_certa.to_date).order("data DESC").order("horario DESC")
+    Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:pessoa_id => self.id).where("data < ?", @hora_certa.to_date).order("data DESC").order("horario DESC")
   end
 
   def txt_to_seg hora
@@ -378,6 +378,6 @@ class Aluno < ActiveRecord::Base
   end
 
   def codigo_existe?(codigo)
-    Aluno.where('id <> ?', self.id).find_by_codigo_de_acesso(codigo)
+    Pessoa.where('id <> ?', self.id).find_by_codigo_de_acesso(codigo)
   end
 end

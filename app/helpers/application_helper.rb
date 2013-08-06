@@ -6,10 +6,10 @@ module ApplicationHelper
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 
     if horario_da_aula.instance_of? HorarioDeAula
-      aluno_id = horario_da_aula.matricula.aluno.id
-      presenca = presenca.where(:aluno_id => aluno_id).where("realocacao is null or realocacao = false")
+      aluno_id = horario_da_aula.matricula.pessoa.id
+      presenca = presenca.where(:pessoa_id => aluno_id).where("realocacao is null or realocacao = false")
     else # será uma instancia de Presença
-      aluno_id = horario_da_aula.aluno.id
+      aluno_id = horario_da_aula.pessoa.id
       presenca = presenca.where(:id => horario_da_aula.id)
     end
 
@@ -62,15 +62,15 @@ module ApplicationHelper
   def get_title_realocacao aluno_id, dia_atual, presenca
     title = ""
     if presenca.realocacao? and not presenca.data_de_realocacao.blank?
-      p = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :data => presenca.data_de_realocacao).where("justificativas_de_falta.descricao ilike '%adiantado%'")
+      p = Presenca.joins(:justificativa_de_falta).where(:pessoa_id => aluno_id, :data => presenca.data_de_realocacao).where("justificativas_de_falta.descricao ilike '%adiantado%'")
       if not p.blank?
         title = "Adiantamento do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
       else
-        p = Presenca.where(:aluno_id => aluno_id, :data => presenca.data_de_realocacao)
+        p = Presenca.where(:pessoa_id => aluno_id, :data => presenca.data_de_realocacao)
         title = "Reposição do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
       end
     elsif not presenca.presenca? and presenca.data_de_realocacao.blank? and not presenca.justificativa_de_falta.nil?
-        p = Presenca.order("id DESC").find_by_data_de_realocacao_and_aluno_id(presenca.data, aluno_id) #em ordem descrescente pois caso haja mais de uma realocação para esse dia
+        p = Presenca.order("id DESC").find_by_data_de_realocacao_and_pessoa_id(presenca.data, aluno_id) #em ordem descrescente pois caso haja mais de uma realocação para esse dia
         if not p.nil?
           horario = ""
           if not presenca.justificativa_de_falta.nil? and not presenca.justificativa_de_falta.descricao.nil?
@@ -115,7 +115,7 @@ module ApplicationHelper
   end
 
   def get_aluno_de_aniversario aluno_id, dia
-    nascimento = Aluno.find(aluno_id).data_nascimento
+    nascimento = Pessoa.find(aluno_id).data_nascimento
     data_nascimento = Time.mktime(nascimento.year, nascimento.month, nascimento.day)
     aniversario = Time.mktime(Time.now.year, data_nascimento.month, nascimento.day)
 
@@ -125,11 +125,11 @@ module ApplicationHelper
   end
 
   def nao_mostrar_repetido?(agenda, dia_atual)
-    aluno_id = agenda.matricula.aluno.id
+    aluno_id = agenda.matricula.pessoa.id
 
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 
-    presenca = presenca.where(:aluno_id => aluno_id)
+    presenca = presenca.where(:pessoa_id => aluno_id)
 
     if not presenca.blank?
       presenca = presenca.first
@@ -144,7 +144,7 @@ module ApplicationHelper
   def horario_possui_aluno_valido? horarios_de_aula, dia_atual
     exibir = false
     horarios_de_aula.each do |horario|
-      aluno_id = (horario.instance_of?(HorarioDeAula)) ? horario.matricula.aluno.id : horario.aluno.id
+      aluno_id = (horario.instance_of?(HorarioDeAula)) ? horario.matricula.pessoa.id : horario.pessoa.id
       if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario) # se pelo menos um aluno for válido
         exibir = true
         break
@@ -160,11 +160,11 @@ module ApplicationHelper
       end
     end
     ok = true
-    mat = Matricula.where("data_inicio <= '#{dia_atual}' and (data_fim >= '#{dia_atual}' or data_fim is null)").where(:aluno_id => aluno_id)
+    mat = Matricula.where("data_inicio <= '#{dia_atual}' and (data_fim >= '#{dia_atual}' or data_fim is null)").where(:pessoa_id => aluno_id)
     if mat.blank?
       ok = false
     else
-      p = Presenca.where(:aluno_id => aluno_id, :data => dia_atual)[0]
+      p = Presenca.where(:pessoa_id => aluno_id, :data => dia_atual)[0]
       if p.blank? # se a presença ainda não tiver sido lançada
         hor = mat.joins(:horario_de_aula).where(:"horarios_de_aula.id" => horario_de_aula.id, :"horarios_de_aula.dia_da_semana" => dia_atual.wday)
         # se não existir horário de aula para o dia da semana tal com matricula válida, pois podem existir mais de uma matrícula para o mesmo aluno, mas somente uma válida

@@ -11,20 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130723170839) do
-
-  create_table "alunos", :force => true do |t|
-    t.string   "nome"
-    t.string   "foto"
-    t.date     "data_nascimento"
-    t.string   "sexo"
-    t.string   "email"
-    t.integer  "endereco_id"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
-    t.string   "cpf"
-    t.string   "codigo_de_acesso"
-  end
+ActiveRecord::Schema.define(:version => 20130806135706) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -86,7 +73,7 @@ ActiveRecord::Schema.define(:version => 20130723170839) do
   end
 
   create_table "matriculas", :force => true do |t|
-    t.integer  "aluno_id"
+    t.integer  "pessoa_id"
     t.string   "objetivo"
     t.date     "data_matricula"
     t.date     "data_inicio"
@@ -98,8 +85,23 @@ ActiveRecord::Schema.define(:version => 20130723170839) do
     t.string   "motivo_da_interrupcao"
   end
 
+  create_table "pessoas", :force => true do |t|
+    t.string   "nome"
+    t.string   "foto"
+    t.date     "data_nascimento"
+    t.string   "sexo"
+    t.string   "email"
+    t.integer  "endereco_id"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+    t.string   "cpf"
+    t.string   "codigo_de_acesso"
+  end
+
+  add_index "pessoas", ["id"], :name => "index_pessoas_on_id", :unique => true
+
   create_table "presencas", :force => true do |t|
-    t.integer  "aluno_id"
+    t.integer  "pessoa_id"
     t.date     "data"
     t.string   "horario"
     t.boolean  "presenca"
@@ -119,7 +121,7 @@ ActiveRecord::Schema.define(:version => 20130723170839) do
     t.integer  "tipo_telefone_id"
     t.string   "descricao"
     t.string   "ramal"
-    t.integer  "aluno_id"
+    t.integer  "pessoa_id"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
   end

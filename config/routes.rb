@@ -12,7 +12,7 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :cidades do as_routes end
   resources :presencas do as_routes end
   resources :matriculas do as_routes end
-  resources :alunos do as_routes end
+  resources :pessoas do as_routes end
   resources :enderecos do as_routes end
   resources :telefones do as_routes end
   resources :justificativas_de_falta do as_routes end

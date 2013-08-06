@@ -61,11 +61,11 @@
                   </td>
                   <td>
                     <% horarios_de_aula.each do |horario| %>
-                      <% aluno_id = horario.matricula.aluno.id rescue aluno_id = horario.aluno.id %>
+                      <% aluno_id = horario.matricula.pessoa.id rescue aluno_id = horario.pessoa.id %>
                       <% if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario) %> <!-- Se o aluno é válido, ou seja, se a matricula dele é válida e se o horario de aula também for. -->
-                        <% aluno = horario.matricula.aluno rescue aluno = horario.aluno %>
+                        <% aluno = horario.matricula.pessoa rescue aluno = horario.pessoa %>
                         <% if not horario.instance_of? HorarioDeAula or not nao_mostrar_repetido?(horario, dia_atual) %>
-                          <div class='nome_do_aluno' onclick="window.location='<%= aluno_path(aluno) %>'">
+                          <div class='nome_do_aluno' onclick="window.location='<%= pessoa_path(aluno) %>'">
                             <%= aluno.primeiro_nome %> <span><%= aluno.segundo_nome %></span>
                             <span class='status_presenca'><%= status_presenca(horario, dia_atual) %></span>
                           </div>

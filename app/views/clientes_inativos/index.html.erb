@@ -19,8 +19,8 @@
     <% even_record = false %>
     <% @matriculas.each do |matricula| %>
       <tr class="record <%= "even-record" if even_record %>">
-        <td><%= matricula.aluno_id %></td>
-        <td><%= matricula.aluno.nome %></td>
+        <td><%= matricula.pessoa_id %></td>
+        <td><%= matricula.pessoa.nome %></td>
         <td><%= matricula.hora_da_aula 1 %></td>
         <td><%= matricula.hora_da_aula 2 %></td>
         <td><%= matricula.hora_da_aula 3 %></td>

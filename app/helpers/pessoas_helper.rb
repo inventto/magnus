@@ -1,5 +1,5 @@
 #coding: utf-8
-module AlunosHelper
+module PessoasHelper
   def foto_column(model, column)
     "<img src='#{model.foto}' height='48'>".html_safe
   end
@@ -40,7 +40,7 @@ module AlunosHelper
   end
 
   def estatisticas_column(record, column)
-    if record.instance_of?(Aluno)
+    if record.instance_of?(Pessoa)
       return if record.presencas.blank?
 
       @count_presencas = 0
@@ -111,7 +111,7 @@ module AlunosHelper
       sub_query = "SELECT p2.data FROM presencas as p2"
       sub_query << " JOIN justificativas_de_falta as j ON j.presenca_id=p2.id"
       sub_query << " WHERE p2.data=presencas.data_de_realocacao AND"
-      sub_query << " p2.aluno_id=presencas.aluno_id AND p2.presenca = 'f' AND"
+      sub_query << " p2.pessoa_id=presencas.pessoa_id AND p2.presenca = 'f' AND"
       sub_query << " j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
 
       repostas = presencas.where(:realocacao => true, :presenca => true)
@@ -124,7 +124,7 @@ module AlunosHelper
   end
 
   def get_amout_allowed_fault student
-    valid_enrollment = Matricula.order(:id).find_all_by_aluno_id(student.id).last # pega a última cadastrada que sempre será a válida
+    valid_enrollment = Matricula.order(:id).find_all_by_pessoa_id(student.id).last # pega a última cadastrada que sempre será a válida
     weekly_frequency = HorarioDeAula.find_all_by_matricula_id(valid_enrollment.id).count
     (weekly_frequency * 4) # máximo de faltas em um mês
   end
@@ -241,7 +241,7 @@ module AlunosHelper
   end
 
   def pontualidade_column(record, column)
-    if record.instance_of?(Aluno) # se não ocorre erro ao carregar a página de Presenças
+    if record.instance_of?(Pessoa) # se não ocorre erro ao carregar a página de Presenças
 
       presencas = record.presencas.where(:presenca => true)
       total_de_presencas = presencas.count
@@ -365,7 +365,7 @@ module AlunosHelper
 
     data = get_data(aluno_id, hora_certa)
 
-    while not Presenca.where(:aluno_id => aluno_id).where(:data => data).blank?
+    while not Presenca.where(:pessoa_id => aluno_id).where(:data => data).blank?
       data = get_data(aluno_id, data)
     end
 
@@ -379,9 +379,9 @@ module AlunosHelper
   end
 
   def get_realocacao aluno_id, data
-    presenca = Presenca.joins(:justificativa_de_falta).where(:aluno_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true)
+    presenca = Presenca.joins(:justificativa_de_falta).where(:pessoa_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true)
     presenca = presenca.where("justificativas_de_falta.descricao <> ''")
-    presenca = presenca.where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.aluno_id=presencas.aluno_id)").order("id")
+    presenca = presenca.where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.pessoa_id=presencas.pessoa_id)").order("id")
 
     data_reposicao = (presenca.blank?) ? "" : presenca.first.data.to_date
 
@@ -472,7 +472,7 @@ module AlunosHelper
                            }
                            jAlert(error, 'Atenção');
                         } else {
-                           window.location.href = '/alunos';
+                           window.location.href = '/pessoas';
                         }
                       });
                     } else {
@@ -502,7 +502,7 @@ module AlunosHelper
                          }
                          jAlert(error, 'Atenção');
                       } else {
-                        window.location.href = '/alunos';
+                        window.location.href = '/pessoas';
                       }
                     });"
 
@@ -599,13 +599,13 @@ module AlunosHelper
   end
 
   def get_proximo_horario_de_aula aluno_id, data
-    horarios_de_aula = HorarioDeAula.joins(:matricula).where(:"matriculas.aluno_id" => aluno_id).order(:dia_da_semana)
+    horarios_de_aula = HorarioDeAula.joins(:matricula).where(:"matriculas.pessoa_id" => aluno_id).order(:dia_da_semana)
 
     return horarios_de_aula[0] if horarios_de_aula.count == 1 #caso tenha horario de aula em somente um dia da semana
 
     aula_de_hoje = horarios_de_aula.find_by_dia_da_semana(data.wday)
 
-    if not aula_de_hoje.nil? and Presenca.where(:aluno_id => aluno_id).where(:data => data.to_date).blank?
+    if not aula_de_hoje.nil? and Presenca.where(:pessoa_id => aluno_id).where(:data => data.to_date).blank?
       proximo_horario_de_aula = aula_de_hoje
     elsif horarios_de_aula.last == aula_de_hoje
       proximo_horario_de_aula = horarios_de_aula.first

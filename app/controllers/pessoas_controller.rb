@@ -1,6 +1,6 @@
   #coding: utf-8
-class AlunosController < ApplicationController
-  active_scaffold :aluno do |conf|
+class PessoasController < ApplicationController
+  active_scaffold :pessoa do |conf|
     conf.columns[:endereco].label = "Endereço"
     conf.columns[:cpf].label = "CPF"
     conf.columns[:telefones].label = "Telefone"
@@ -11,7 +11,7 @@ class AlunosController < ApplicationController
     conf.show.columns << :estatisticas
     conf.columns[:data_nascimento].options[:format] = :default
     conf.columns[:sexo].form_ui = :select
-    conf.columns[:sexo].options = {:options => Aluno::SEX.map(&:to_sym)}
+    conf.columns[:sexo].options = {:options => Pessoa::SEX.map(&:to_sym)}
     conf.columns[:endereco].allow_add_existing = false
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
@@ -85,11 +85,11 @@ class AlunosController < ApplicationController
     data_de_realocacao = params[:data_de_realocacao].to_date
 
     # Criar a falta
-    p = Presenca.create(:aluno_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario, :tem_direito_a_reposicao => true)
-    JustificativaDeFalta.create(:presenca_id => p.id, :descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
+    falta = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario, :tem_direito_a_reposicao => true)
+    falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
 
     # Criar o adiantamento
-    Presenca.create(:aluno_id => aluno_id, :presenca => false, :data => data, :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
+    Presenca.create(:pessoa_id => aluno_id, :presenca => false, :data => data, :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
 
     render :text => error
   end
@@ -116,12 +116,12 @@ class AlunosController < ApplicationController
     data_de_realocacao = (params[:data_de_realocacao].blank?) ? nil : params[:data_de_realocacao].to_date
     if not data_de_realocacao.nil?
       falta = Presenca.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao <> ''")
-      falta = falta.find_all_by_aluno_id_and_data_and_presenca_and_tem_direito_a_reposicao(aluno_id, data_de_realocacao, false, true)[0]
+      falta = falta.find_all_by_pessoa_id_and_data_and_presenca_and_tem_direito_a_reposicao(aluno_id, data_de_realocacao, false, true)[0]
       if falta.nil?
         horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data_de_realocacao.wday)[0]
         if not horario_de_aula.nil?
-          falta_justificada = Presenca.create(:aluno_id => aluno_id, :data => data_de_realocacao, :presenca => false, :tem_direito_a_reposicao => true, :horario => horario_de_aula.horario)
-          JustificativaDeFalta.create(:presenca_id => falta_justificada.id, :descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
+          falta_justificada = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :tem_direito_a_reposicao => true, :horario => horario_de_aula.horario)
+          falta_justificada.build_justificativa_de_falta(:descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
         else
           note = "Não pôde ser criada a Falta para o dia #{data_de_realocacao.strftime("%d/%m/%Y")}, pois aluno não possui aula nesse dia."
         end
@@ -139,7 +139,7 @@ class AlunosController < ApplicationController
       render :text => error and return
     end
 
-    Presenca.create(:aluno_id => aluno_id, :data => data, :presenca => false, :data_de_realocacao => data_de_realocacao, :horario => params[:horario], :realocacao => true)
+    Presenca.create(:pessoa_id => aluno_id, :data => data, :presenca => false, :data_de_realocacao => data_de_realocacao, :horario => params[:horario], :realocacao => true)
 
     error << note
     render :text => error
@@ -162,8 +162,8 @@ class AlunosController < ApplicationController
       aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data.wday)
       if not aula.blank?
         aula = aula[0]
-        presenca = Presenca.create(:aluno_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :tem_direito_a_reposicao => true)
-        JustificativaDeFalta.create( :presenca_id => presenca.id, :descricao => params[:justificativa])
+        falta = Presenca.create(:pessoa_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :tem_direito_a_reposicao => true)
+        falta.build_justificativa_de_falta(:descricao => params[:justificativa])
       end
       data += 1.day
     end
@@ -186,9 +186,9 @@ class AlunosController < ApplicationController
 
   def codigo_existe?(codigo)
     if id = params[:id] and not id.blank?
-      Aluno.where("id <> ?", id.to_i).find_by_codigo_de_acesso(codigo)
+      Pessoa.where("id <> ?", id.to_i).find_by_codigo_de_acesso(codigo)
     else
-     Aluno.find_by_codigo_de_acesso(codigo)
+     Pessoa.find_by_codigo_de_acesso(codigo)
     end
   end
 

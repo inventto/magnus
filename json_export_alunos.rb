@@ -1,5 +1,5 @@
 #coding: utf-8
-alunos = Aluno.order(:id).all
+alunos = Pessoa.order(:id).all
 alunos.each do |aluno|
   param_nome_municipio = {}
   if not aluno.endereco.nil? and not aluno.endereco.cidade.nil?
