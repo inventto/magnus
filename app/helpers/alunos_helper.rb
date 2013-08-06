@@ -41,6 +41,8 @@ module AlunosHelper
 
   def estatisticas_column(record, column)
     if record.instance_of?(Aluno)
+      return if record.presencas.blank?
+
       @count_presencas = 0
       @count_aulas_extras = 0
 
