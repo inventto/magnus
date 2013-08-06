@@ -11,8 +11,9 @@ module PessoasHelper
   def codigo_de_acesso_form_column(record, column)
     script = "<script type='text/javascript'>
                  function gerarCodigoDeAcesso() {
+                    eh_funcionario = ($('.e_funcionario-input').is(':checked')) ? 1 : 0;
                     var jqxhr = $.ajax({
-                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&id='+$(\".id\").text()
+                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&id='+$(\".id\").text()+'&eh_funcionario='+eh_funcionario
                     });
                     jqxhr.always(function () {
                       codigo = jqxhr.responseText

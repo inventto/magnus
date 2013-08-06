@@ -1,6 +1,6 @@
 #coding: utf-8
 class Pessoa < ActiveRecord::Base
-  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
+  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :e_funcionario
 
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
 
@@ -374,6 +374,7 @@ class Pessoa < ActiveRecord::Base
     while(codigo_existe?(codigo))
       codigo << codigo[codigo.length - 1]
     end
+    codigo = "9" << codigo if self.e_funcionario?
     self.codigo_de_acesso = codigo
   end
 

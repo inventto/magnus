@@ -5,7 +5,8 @@ class PessoasController < ApplicationController
     conf.columns[:cpf].label = "CPF"
     conf.columns[:telefones].label = "Telefone"
     conf.columns[:codigo_de_acesso].label = "Código de Acesso"
-    conf.columns = [:id, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :codigo_de_acesso, :foto, :endereco, :telefones]
+    conf.columns[:e_funcionario].label = "É Funcionário?"
+    conf.columns = [:id, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :e_funcionario, :codigo_de_acesso, :foto, :endereco, :telefones]
     conf.show.columns << :presencas
     conf.show.columns << :pontualidade
     conf.show.columns << :estatisticas
@@ -15,7 +16,7 @@ class PessoasController < ApplicationController
     conf.columns[:endereco].allow_add_existing = false
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
-    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento]
+    conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento, :e_funcionario]
   end
 
   def after_update_save record
@@ -180,7 +181,8 @@ class PessoasController < ApplicationController
         codigo << codigo[codigo.length - 1]
       end
     end
-
+    eh_funcionario = params[:eh_funcionario]
+    codigo = "9" << codigo if eh_funcionario.to_i == 1
     render :text => codigo
   end
 

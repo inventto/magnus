@@ -31,15 +31,15 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/registro_presenca", to: "registro_presenca#index"
 
-  match "/gerar_codigo_de_acesso", to: "alunos#gerar_codigo_de_acesso"
+  match "/gerar_codigo_de_acesso", to: "pessoas#gerar_codigo_de_acesso"
 
-  match "/justificar_falta", to: "alunos#justificar_falta"
+  match "/justificar_falta", to: "pessoas#justificar_falta"
 
-  match "/adiantar_aula", to: "alunos#adiantar_aula"
+  match "/adiantar_aula", to: "pessoas#adiantar_aula"
 
-  match "/gravar_reposicao", to: "alunos#gravar_reposicao"
+  match "/gravar_reposicao", to: "pessoas#gravar_reposicao"
 
-  match "/gravar_realocacao", to: "alunos#gravar_realocacao"
+  match "/gravar_realocacao", to: "pessoas#gravar_realocacao"
 
   match "/aniversariantes", to: "aniversariantes_do_mes#aniversariantes"
 
