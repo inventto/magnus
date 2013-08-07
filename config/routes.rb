@@ -18,6 +18,7 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :justificativas_de_falta do as_routes end
   resources :horarios_de_aula do as_routes end
   resources :tipos_telefone do as_routes end
+  resources :registros_de_ponto do as_routes end
 
   match "/graficos", to: "graficos#index"
 

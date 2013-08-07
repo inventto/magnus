@@ -10,6 +10,8 @@ class Pessoa < ActiveRecord::Base
   belongs_to :endereco
   has_one :matricula, :dependent => :destroy
   has_many :presencas, :dependent => :destroy
+  has_many :registros_de_ponto, :dependent => :destroy, :class_name => 'RegistroDePonto'
+
   mount_uploader :foto, FotoUploader
 
   validates_presence_of :nome, :data_nascimento

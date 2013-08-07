@@ -30,6 +30,8 @@
           $(".data_fim-input").mask("99/99/9999");
           $(".data-input").mask("99/99/9999");
           $(".horario-input").mask("99:99");
+          $(".hora_de_chegada-input").mask("99:99");
+          $(".hora_de_saida-input").mask("99:99");
           $(".cep-input").mask("99.999-999");
           $('.motivo_da_interrupcao-input').css('width', '500px');
           $('.nome-input').css('width', '350px');
@@ -50,18 +52,19 @@
       <% if user_signed_in? %>
         <div class="menu">
           <ul>
-            <li><a href="/">Agenda do Dia</a></li>
-            <li><a href="/pessoas">Pessoas</a></li>
-            <li><a href="/matriculas">Matrículas</a></li>
-            <li><a href="/presencas" onclick="verificaUltimaPaginaAcessada();">Presenças</a></li>
-            <li><a href="/feriados">Feriados</a></li>
+            <li><%= link_to "Agenda do Dia", root_path %></li>
+            <li><%= link_to "Pessoas", pessoas_path %></li>
+            <li><%= link_to "Matrículas", matriculas_path %></li>
+            <li><%= link_to "Presenças", presencas_path, :onclick => "verificaUltimaPaginaAcessada();" %></li>
+            <li><%= link_to "Registros de Ponto", registros_de_ponto_path %></li>
+            <li><%= link_to "Feriados", feriados_path %></li>
             <li><a href="#">Relatórios</a>
               <ul>
-                <li><a href="/aniversariantes">Aniversariantes do Mês</a></li>
-                <li><a href="/clientes_inativos">Clientes Inativos</a></li>
-                <li><a href="/clientes_que_perdemos">Clientes que Perdemos</a></li>
-                <li><a href="/quadro_de_horarios">Quadro de Horários</a></li>
-                <li><a href="/graficos">Gráficos</a></li>
+                <li><%= link_to "Aniversariantes do Mês", aniversariantes_path %></li>
+                <li><%= link_to "Clientes Inativos", clientes_inativos_path %></li>
+                <li><%= link_to "Clientes que Perdemos", clientes_que_perdemos_path %></li>
+                <li><%= link_to "Quadro de Horários", quadro_de_horarios_path %></li>
+                <li><%= link_to "Gráficos", graficos_path %></li>
               </ul>
             </li>
           </ul>
