@@ -363,6 +363,32 @@ class Pessoa < ActiveRecord::Base
     Time.strptime(hora, "%H:%M").seconds_since_midnight
   end
 
+  def chegada_de_horario?
+    (@ponto.hora_de_chegada.nil?) ? true : false
+  end
+
+  def get_ponto data
+    ponto = RegistroDePonto.order(:id).find_all_by_pessoa_id_and_data(self.id, data).last
+    (ponto.nil?) ? nil : ponto
+  end
+
+  def registrar_ponto time_millis
+    if time_millis.nil?
+      @hora_certa = (Time.now + Time.zone.utc_offset)
+      hora_atual = @hora_certa.strftime("%H:%M")
+      data_atual = @hora_certa.to_date
+    else
+      data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
+      hora_atual = data_hora.strftime("%H:%M")
+      data_atual = data_hora.to_date
+    end
+    @ponto = get_ponto data_atual
+  end
+
+  def chegada_de_horario?
+
+  end
+
   def label
     nome
   end
