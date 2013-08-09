@@ -12,7 +12,7 @@ class RegistroPresencaController < ApplicationController
         redirect_to "/registro_presenca"
         return
       else
-        @aluno = Pessoa.joins(:matricula).find_by_codigo_de_acesso(params[:codigo])
+        @aluno = Pessoa.com_matricula_valida((Time.now + Time.zone.utc_offset).to_date).find_by_codigo_de_acesso(params[:codigo])
         if not @aluno
           raise ""
         end
@@ -32,6 +32,7 @@ class RegistroPresencaController < ApplicationController
     @mensagem_sonora = ""
     notice = []
     error = []
+
     if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "Você está fora do horário da matrícula!"
       flash[:error] = "Você está fora do horário da matrícula!"
@@ -78,20 +79,10 @@ class RegistroPresencaController < ApplicationController
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
   end
 
-  def get_nome_do_periodo
-    periodo = get_periodo
-    if periodo[:manha]
-      return "Manhã"
-    elsif periodo[:tarde]
-      return "Tarde"
-    else
-      return "Noite"
-    end
-  end
-
   def get_periodo
     periodo = {:manha => false, :tarde => false, :noite => false}
-    if (hora = (Time.now + Time.zone.utc_offset).hour) < 12.hours
+    today = (Rails.env.production?) ? Time.now + Time.zone.utc_offset : Time.now
+    if (hora = today.hour) < 12.hours
       periodo[:manha] = true
     elsif hora > 12.hours and hora < 18.hours
       periodo[:tarde] = true
@@ -103,23 +94,39 @@ class RegistroPresencaController < ApplicationController
 
   def saudacao_ao pessoa
     periodo = get_periodo
+    saudacao = ""
+    saudacao_sonora = ""
     if periodo[:manha]
       saudacao << "Bom Dia "
+      saudacao_sonora = "bom_dia|"
     elsif periodo[:tarde]
       saudacao << "Boa Tarde "
+      saudacao_sonora = "boa_tarde|"
     else
       saudacao << "Boa Noite "
+      saudacao_sonora = "boa_noite|"
+    end
+    if @msg_sonora_for_employee
+      @msg_sonora_for_employee << saudacao_sonora
     end
     saudacao << pessoa.nome
   end
 
   def despedida_ao pessoa
     periodo = get_periodo
+    despedida = ""
+    despedida_sonora = ""
     if periodo[:manha]
-      return "Tenha uma Boa Tarde"
+      despedida = "Tenha uma Boa Tarde"
+      despedida_sonora = "tenha_boa_tarde|"
     else
-      return "Tenha uma Boa Noite"
+      despedida = "Tenha uma Boa Noite"
+      despedida_sonora = "tenha_boa_noite|"
     end
+    if @msg_sonora_for_employee
+      @msg_sonora_for_employee << despedida_sonora
+    end
+    despedida
   end
 
   def registrar_ponto_android
@@ -134,34 +141,38 @@ class RegistroPresencaController < ApplicationController
       render :text => [flash[:error], "codigo_funcionario_invalido"].join("|") and return
     end
 
-    mensagem_sonora = ""
+    @msg_sonora_for_employee = ""
     notice = []
 
     time_millis = (not params[:tim_millis]) ? nil : params[:time_millis]
+
     if not employee.registrar_ponto(time_millis)
-      flash[:error] = "Funcionário já possui Ponto Registrado para o periodo da #{get_nome_do_periodo}!"
+      flash[:error] = "" # verificar
       render :text => [flash[:error], "funcionario_possui_presenca"].join("|") and return
     end
+
     return if not time_millis.nil?
 
     if employee.esta_de_aniversario_essa_semana?
-      mensagem_sonora << "parabens_semana|"
+      @msg_sonora_for_employee << "parabens_semana|"
       notice << "Parabéns! Essa semana você está de aniversário!"
     elsif employee.esta_de_aniversario_esse_mes?
-      mensagem_sonora << "parabens_mes|"
+      @msg_sonora_for_employee << "parabens_mes|"
       notice << "Parabéns! Esse mês você está de aniversário!"
     end
 
-    flash[:notice] = notice.join("<br/><br/>").html_safe
+    notice = notice.join("<br/><br/>").html_safe
 
-    saudacao = (employee.chegada_de_horario?) ? saudacao_ao(employee) : despedida_ao(employee)
+    saudacao = (chegada = employee.chegada_de_horario?) ? saudacao_ao(employee) : despedida_ao(employee)
 
-    render :text => [saudacao, employee.nome, employee.foto, flash[:notice], "", mensagem_sonora].join(";") and return
+    chegada = (chegada) ? 1 : 0
+
+    render :text => [saudacao, employee.nome, employee.foto, notice, "", chegada, @msg_sonora_for_employee].join(";") and return
   end
 
   def registro_android
     begin
-      aluno = Pessoa.joins(:matricula).find_by_codigo_de_acesso(params[:codigo])
+      aluno = Pessoa.com_matricula_valida((Time.now + Time.zone.utc_offset).to_date).find_by_codigo_de_acesso(params[:codigo])
       if not aluno
         raise ""
       end
@@ -182,16 +193,17 @@ class RegistroPresencaController < ApplicationController
     mensagem_sonora = ""
     notice = []
     error = []
+    chegada = 1
 
     if aluno.esta_fora_de_horario?
       mensagem_sonora = "fora_de_horario|"
       flash[:error] = "Você está fora do horário da matrícula!"
-      render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], mensagem_sonora].join(";") and return
+      render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], chegada, mensagem_sonora].join(";") and return
     end
     if aluno.esta_no_dia_errado?
       mensagem_sonora = "dia_errado|"
       flash[:error] = "Hoje não é seu dia normal de aula!"
-      render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], mensagem_sonora].join(";") and return
+      render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], chegada, mensagem_sonora].join(";") and return
     end
     if aluno.aula_de_realocacao?
       mensagem_sonora = "aula_de_reposicao|"
@@ -228,12 +240,13 @@ class RegistroPresencaController < ApplicationController
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
 
-    render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], mensagem_sonora].join(";") and return
+
+    render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], chegada, mensagem_sonora].join(";") and return
   end
 
   def marcar_falta
     if not hoje_eh_feriado?
-      data_certa = (Time.now + Time.zone.utc_offset)
+      data_certa = (Rails.env.production?) ? (Time.now + Time.zone.utc_offset) : Time.now
       horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
       horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => data_certa.wday)
       horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ?)", data_certa.to_date, data_certa.to_date)

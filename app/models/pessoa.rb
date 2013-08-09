@@ -3,6 +3,7 @@ class Pessoa < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :e_funcionario
 
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
+  scope :com_matricula_valida, lambda { |data| joins(:matricula).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
 
   before_save :chk_codigo_de_acesso
 
@@ -30,21 +31,21 @@ class Pessoa < ActiveRecord::Base
     nome.gsub(/^[^ ]* /, "")
   end
 
-  def get_presenca data_atual, hora_atual
-    matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data_atual.wday)
+  def get_presenca
+    matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @data_atual.wday)
     horario_na_matricula = 0
     if not matricula.blank?
       horario_na_matricula = txt_to_seg(matricula[0].horario)
     end
 
-    p = Presenca.where(:pessoa_id => self.id).where(:data => data_atual)
+    p = Presenca.where(:pessoa_id => self.id).where(:data => @data_atual)
 
     horario_na_realocacao = 0
     if not p.blank?
       p.each do |presenca|
         p = presenca
 
-        next if not hora_esta_contida_em_horario?(hora_atual, presenca.horario)
+        next if not hora_esta_contida_em_horario?(@hora_atual, presenca.horario)
         if presenca.realocacao
           horario_na_realocacao = presenca.horario
           if not horario_na_realocacao.blank?
@@ -56,13 +57,13 @@ class Pessoa < ActiveRecord::Base
       end
     end
 
-    hora_atual = txt_to_seg(hora_atual)
+    hora_atual_in_sec = txt_to_seg(@hora_atual)
 
     dif_hora_matricula = nil
     dif_hora_realocacao = nil
 
-    dif_hora_matricula = hora_atual - horario_na_matricula if horario_na_matricula > 0
-    dif_hora_realocacao = hora_atual - horario_na_realocacao if horario_na_realocacao > 0
+    dif_hora_matricula = hora_atual_in_sec - horario_na_matricula if horario_na_matricula > 0
+    dif_hora_realocacao = hora_atual_in_sec - horario_na_realocacao if horario_na_realocacao > 0
 
     dif_hora_matricula = dif_hora_matricula * -1 if not dif_hora_matricula.nil? and dif_hora_matricula < 0
     dif_hora_realocacao = dif_hora_realocacao * -1 if not dif_hora_realocacao.nil? and dif_hora_realocacao < 0
@@ -78,27 +79,27 @@ class Pessoa < ActiveRecord::Base
     end
   end
 
-  def get_pontualidade hora_atual
+  def get_pontualidade
     horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0].horario
     horario_de_aula = txt_to_seg(horario_de_aula)
-    hora_atual = txt_to_seg(hora_atual)
-    ((horario_de_aula - hora_atual) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
+    hora_atual_in_sec = txt_to_seg(@hora_atual)
+    ((horario_de_aula - hora_atual_in_sec) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
   rescue # caso o aluno não esteja em algum dia cadastrado nos horarios de aula
     nil
   end
 
-  def get_pontualidade_da_realocacao hora_atual
+  def get_pontualidade_da_realocacao
     if not @presenca.realocacao? and @presenca.data_de_realocacao.blank? # caso apenas esteja atrasado
-      return get_pontualidade(hora_atual)
+      return get_pontualidade(@hora_atual)
     else # se não se for um adiantamento ou uma reposição
       horario_de_aula = txt_to_seg(@presenca.horario)
-      hora_atual = txt_to_seg(hora_atual)
-      return ((horario_de_aula - hora_atual) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
+      hora_atual_in_sec = txt_to_seg(@hora_atual)
+      return ((horario_de_aula - hora_atual_in_sec) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
     end
   end
 
-  def get_hora_fora_de_horario hora
-    seconds = txt_to_seg hora
+  def get_hora_fora_de_horario
+    seconds = txt_to_seg @hora_atual
     min_in_secs = seconds % 3600
     if min_in_secs > 1800 # se maior que 30 minutos
       return Time.at((seconds - min_in_secs) + 3600).gmtime.strftime("%H:%M")
@@ -107,22 +108,28 @@ class Pessoa < ActiveRecord::Base
     end
   end
 
-  def registrar_presenca time_millis
-    if time_millis.nil?
+  def get_current_time time_millis
+     if time_millis.nil?
       @hora_certa = (Time.now + Time.zone.utc_offset)
-      hora_atual = @hora_certa.strftime("%H:%M")
-      data_atual = @hora_certa.to_date
+      @hora_atual = @hora_certa.strftime("%H:%M")
+      @data_atual = @hora_certa.to_date
     else
       data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
-      hora_atual = data_hora.strftime("%H:%M")
-      data_atual = data_hora.to_date
+      @hora_atual = data_hora.strftime("%H:%M")
+      @data_atual = data_hora.to_date
     end
-    #@hora_certa = Time.now  #--> variáveis para teste local
-    #hora_atual = @hora_certa.strftime("%H:%M")
-    #data_atual = Date.today
-    @presenca = get_presenca(data_atual, hora_atual)
+    if Rails.env.development?#--> variáveis para teste local
+      @hora_certa = Time.now
+      @hora_atual = @hora_certa.strftime("%H:%M")
+      @data_atual = Date.today
+    end
+  end
+
+  def registrar_presenca time_millis
+    get_current_time time_millis
+    @presenca = get_presenca
     if @presenca.nil?
-      verifica_e_gera_presenca_realocada(data_atual, hora_atual)
+      verifica_e_gera_presenca_realocada
     elsif not @presenca.presenca?
       if not @presenca.realocacao?
         if esta_fora_de_horario?
@@ -130,27 +137,27 @@ class Pessoa < ActiveRecord::Base
           @presenca.realocacao = true
         end
       end
-      @presenca.pontualidade = get_pontualidade_da_realocacao(hora_atual)
+      @presenca.pontualidade = get_pontualidade_da_realocacao
       @presenca.presenca = true
       @presenca.save
     end
   end
 
-  def verifica_e_gera_presenca_realocada data_atual, hora_atual
-    presenca = Presenca.new(:pessoa_id => self.id, :data => data_atual, :presenca => true)
+  def verifica_e_gera_presenca_realocada
+    presenca = Presenca.new(:pessoa_id => self.id, :data => @data_atual, :presenca => true)
     if (fora_do_horario = esta_fora_de_horario?) || (dia_errado = esta_no_dia_errado?)
       #presenca.fora_de_horario = true
       presenca.realocacao = true
-      hora_da_aula = get_hora_fora_de_horario(hora_atual) # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
+      hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
       presenca.horario = hora_da_aula
-      presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(hora_atual)) / 60).round
+      presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
       if fora_do_horario # registrou a presença no mesmo dia mas no horário diferente do da aula
         if txt_to_seg(@horario_de_aula.horario) > txt_to_seg(hora_da_aula)  # adiantamento, pois registrou a presença antes do horário da aula
           # Cria a falta justificada para o horário da aula
-          criar_falta_com_justificativa_de_adiantamento(data_atual, data_atual, hora_da_aula, @horario_de_aula.horario)
+          criar_falta_com_justificativa_de_adiantamento(@data_atual, hora_da_aula, @horario_de_aula.horario)
         else
           # Cria a justificativa para a aula que está sendo reposta no dia
-          falta = Presenca.find_by_pessoa_id_and_data_and_presenca_and_horario(self.id, data_atual, false, @horario_de_aula.horario)
+          falta = Presenca.find_by_pessoa_id_and_data_and_presenca_and_horario(self.id, @data_atual, false, @horario_de_aula.horario)
           if not falta.nil?
             falta.tem_direito_a_reposicao = true
             falta.build_justificativa_de_falta(:descricao => "aula reposta às #{hora_da_aula}")
@@ -158,7 +165,7 @@ class Pessoa < ActiveRecord::Base
             falta.save
           end
         end
-        presenca.data_de_realocacao = data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
+        presenca.data_de_realocacao = @data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
       elsif dia_errado
         # verificar quantas aulas a repor ainda possui
         count_aulas_a_repor = get_count_aulas_a_repor
@@ -173,7 +180,7 @@ class Pessoa < ActiveRecord::Base
 
           horario_da_aula_da_matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data.wday)
 
-          criar_falta_com_justificativa_de_adiantamento(data, data_atual, hora_da_aula, horario_da_aula_da_matricula.first.horario)
+          criar_falta_com_justificativa_de_adiantamento(data, hora_da_aula, horario_da_aula_da_matricula.first.horario)
 
           presenca.data_de_realocacao = data
           # else não precisa fazer pois a reposição é apenas uma presença como realocação já que a falta teoricamente já é para estar lançada
@@ -181,29 +188,61 @@ class Pessoa < ActiveRecord::Base
       end
     else
       presenca.horario = @horario_de_aula.horario
-      presenca.pontualidade = get_pontualidade(hora_atual)
+      presenca.pontualidade = get_pontualidade
     end
     presenca.save
   end
 
   def get_count_aulas_a_repor
     count_aulas_repostas = get_aulas_repostas
+
     faltas_com_direito_a_reposicao = get_faltas_com_direito_a_reposicao
-    count_faltas_justificadas_com_direito_a_reposicao = faltas_com_direito_a_reposicao.count
-    (count_faltas_justificadas_com_direito_a_reposicao - count_aulas_repostas)
+
+    count_faltas_com_direito_a_reposicao = faltas_com_direito_a_reposicao.count
+
+    count_faltas_com_direto_a_repos_permitidas = get_amout_allowed_fault
+
+    count_faltas_de_realocacoes_com_direito_a_repos = get_faltas_de_realocacoes_com_direito_a_reposicao
+
+    count_faltas_de_realocacoes_sem_direito_a_repos = get_faltas_de_realocacoes_sem_direito_a_reposicao
+
+    a_repor = count_faltas_com_direito_a_reposicao - count_aulas_repostas
+    a_repor -= get_amount_of_expired_classes(a_repor, count_faltas_com_direto_a_repos_permitidas)
+    a_repor -= count_faltas_de_realocacoes_sem_direito_a_repos - count_faltas_de_realocacoes_com_direito_a_repos
   end
 
-  def criar_falta_com_justificativa_de_adiantamento data_da_aula_realocada, data_do_dia, hora_da_aula_registrada, horario_da_aula_da_matricula
-    falta = Presenca.find_by_pessoa_id_and_data_and_presenca_and_horario(self.id, data_do_dia, false, horario_da_aula_da_matricula)
+  def get_amount_of_expired_classes amount, amount_allowed_fault
+    (amount > amount_allowed_fault) ? amount - amount_allowed_fault : 0
+  end
+
+  def get_faltas_de_realocacoes_com_direito_a_reposicao
+    faltas = presencas.where(:realocacao => true).where("coalesce(presenca, 'f') = 'f'")
+    faltas = faltas.where(:tem_direito_a_reposicao => true).count
+  end
+
+  def get_faltas_de_realocacoes_sem_direito_a_reposicao
+    faltas = Presenca.where(:pessoa_id => self.id, :realocacao => true)
+    faltas = faltas.where("coalesce(presenca, 'f') = 'f'")
+    faltas = faltas.where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
+  end
+
+  def get_amout_allowed_fault
+    valid_enrollment = Matricula.order(:id).find_all_by_pessoa_id(self.id).last # pega a última cadastrada que sempre será a válida
+    weekly_frequency = HorarioDeAula.find_all_by_matricula_id(valid_enrollment.id).count
+    (weekly_frequency * 4) # máximo de faltas em um mês
+  end
+
+  def criar_falta_com_justificativa_de_adiantamento data_da_aula_realocada, hora_da_aula_registrada, horario_da_aula_da_matricula
+    falta = Presenca.find_by_pessoa_id_and_data_and_presenca_and_horario(self.id, @data_atual, false, horario_da_aula_da_matricula)
     if falta.nil?
       falta = Presenca.create(:pessoa_id => self.id, :data => data_da_aula_realocada, :presenca => false, :horario => horario_da_aula_da_matricula, :tem_direito_a_reposicao => true)
-      falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
+      falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{@data_atual.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
     else
       falta.tem_direito_a_reposicao = true
       if not falta.justificativa_de_falta.nil?
-        falta.justificativa_de_falta.descricao = "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}"
+        falta.justificativa_de_falta.descricao = "adiantado para o dia #{@data_atual.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}"
       else
-        falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data_do_dia.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
+        falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{@data_atual.strftime("%d/%m/%Y")} às #{hora_da_aula_registrada}")
       end
     end
     falta.justificativa_de_falta.save
@@ -242,15 +281,20 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_faltas_com_direito_a_reposicao
-    faltas = Presenca.where(:pessoa_id => self.id).where("data > ?", 2.month.ago)
-    faltas.where(:presenca => false, :tem_direito_a_reposicao => true)
+    faltas = Presenca.where(:pessoa_id => self.id).where("coalesce(presenca,'f') = 'f'")
+    faltas.where(:tem_direito_a_reposicao => true)
   end
 
   def get_aulas_repostas
-    sub_query = "SELECT p2.data FROM presencas as p2 JOIN justificativas_de_falta as j ON j.presenca_id=p2.id WHERE p2.data=presencas.data_de_realocacao"
-    sub_query << " AND p2.pessoa_id=presencas.pessoa_id AND p2.presenca = 'f' AND j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
-    count_aulas_repostas = Presenca.where(:pessoa_id => self.id).where("data > ?", 2.month.ago).where(:realocacao => true, :presenca => true)
-    count_aulas_repostas = count_aulas_repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
+    sub_query = "SELECT p2.data FROM presencas as p2"
+    sub_query << " JOIN justificativas_de_falta as j ON j.presenca_id=p2.id"
+    sub_query << " WHERE p2.data=presencas.data_de_realocacao AND"
+    sub_query << " p2.pessoa_id=presencas.pessoa_id AND p2.presenca = 'f' AND"
+    sub_query << " j.descricao <> '' AND p2.tem_direito_a_reposicao = 't'"
+
+    repostas = Presenca.where(:pessoa_id => self.id, :realocacao => true, :presenca => true)
+    repostas = repostas.where("(data_de_realocacao IN (#{sub_query}) OR data_de_realocacao is null)").count
+    repostas
   end
 
   def esta_de_aniversario_esse_mes?
@@ -364,29 +408,31 @@ class Pessoa < ActiveRecord::Base
   end
 
   def chegada_de_horario?
-    (@ponto.hora_de_chegada.nil?) ? true : false
+    (@ponto.nil?) ? true : false
   end
 
-  def get_ponto data
-    ponto = RegistroDePonto.order(:id).find_all_by_pessoa_id_and_data(self.id, data).last
-    (ponto.nil?) ? nil : ponto
+  def get_ponto
+    RegistroDePonto.order(:id).find_all_by_pessoa_id_and_data(self.id, @data_atual).last
   end
 
   def registrar_ponto time_millis
-    if time_millis.nil?
-      @hora_certa = (Time.now + Time.zone.utc_offset)
-      hora_atual = @hora_certa.strftime("%H:%M")
-      data_atual = @hora_certa.to_date
+    get_current_time time_millis
+    @ponto = get_ponto
+    if @ponto.nil?
+      gravar_ponto
     else
-      data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
-      hora_atual = data_hora.strftime("%H:%M")
-      data_atual = data_hora.to_date
+      if @ponto.hora_de_saida.nil?
+        @ponto.hora_de_saida = @hora_atual
+        @ponto.save
+      else
+        @ponto = nil
+        gravar_ponto
+      end
     end
-    @ponto = get_ponto data_atual
   end
 
-  def chegada_de_horario?
-
+  def gravar_ponto
+      reg_ponto = RegistroDePonto.create(:pessoa_id => self.id, :data => @data_atual, :hora_de_chegada => @hora_atual)
   end
 
   def label

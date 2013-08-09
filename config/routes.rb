@@ -54,6 +54,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   post "registro_presenca/registro_android"
 
+  post "registro_presenca/registrar_ponto_android"
+
   post "/registro_presenca/marcar_falta"
 
   get "/registro_presenca/marcar_falta"
