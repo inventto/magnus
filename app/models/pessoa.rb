@@ -90,7 +90,7 @@ class Pessoa < ActiveRecord::Base
 
   def get_pontualidade_da_realocacao
     if not @presenca.realocacao? and @presenca.data_de_realocacao.blank? # caso apenas esteja atrasado
-      return get_pontualidade(@hora_atual)
+      return get_pontualidade
     else # se não se for um adiantamento ou uma reposição
       horario_de_aula = txt_to_seg(@presenca.horario)
       hora_atual_in_sec = txt_to_seg(@hora_atual)
