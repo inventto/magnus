@@ -245,20 +245,27 @@ class RegistroPresencaController < ApplicationController
   end
 
   def marcar_falta
-    if not hoje_eh_feriado?
-      data_certa = (Rails.env.production?) ? (Time.now + Time.zone.utc_offset) : Time.now
-      horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
-      horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => data_certa.wday)
-      horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ?)", data_certa.to_date, data_certa.to_date)
-      horarios = horarios.where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", data_certa.hour, data_certa.min)
-      horarios.each do |horario|
-        aluno_id = horario.matricula.pessoa.id
-        if Presenca.where(:pessoa_id => aluno_id).where(:data => data_certa, :horario => horario.horario).blank?
-          Presenca.create(:pessoa_id => aluno_id, :data => data_certa, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
+    (hoje_eh_feriado?) ? gerar_falta(true) : gerar_falta(false)
+
+    render :nothing => true
+  end
+
+  def gerar_falta com_direito_a_reposicao
+    today = (Rails.env.production?) ? (Time.now + Time.zone.utc_offset) : Time.now
+    horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
+    horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => today.wday)
+    horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ?)", today.to_date, today.to_date)
+    horarios = horarios.where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", today.hour, today.min)
+    horarios.each do |horario|
+      aluno_id = horario.matricula.pessoa.id
+      if Presenca.where(:pessoa_id => aluno_id).where(:data => today, :horario => horario.horario).blank?
+        falta = Presenca.create(:pessoa_id => aluno_id, :data => today, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => com_direito_a_reposicao)
+        if com_direito_a_reposicao
+          falta.build_justificativa_de_falta(:descricao => "feriado")
+          falta.save
         end
       end
     end
-    render :nothing => true
   end
 
   def hoje_eh_feriado?
