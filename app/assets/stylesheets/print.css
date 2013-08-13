@@ -37,7 +37,7 @@
     font-size: 18px;
   }
   td:nth-child(1) {
-    width: 100px !important;
+    /*width: 100px !important;*/
   }
   #logo {
     float: none;
@@ -46,7 +46,13 @@
   .aluno-column a{
     white-space: nowrap;
   }
-  .fones {
+  .fones, .hint {
     display: block;
+  }
+  .show, .destroy, .edit {
+    display: none;
+  }
+  .edit.pessoa, .edit.justificativa_de_falta {
+    display: inline;
   }
 }

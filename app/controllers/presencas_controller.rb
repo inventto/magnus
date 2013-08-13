@@ -5,6 +5,7 @@ class PresencasController < ApplicationController
   active_scaffold :presenca do |conf|
     conf.label = "Presenças"
     conf.columns << :quantidade_de_registros
+    conf.list.columns << :status
     conf.columns[:presenca].label = "Presença"
     conf.columns[:horario].label = "Horário"
     conf.columns[:realocacao].label = "Realocação de Horário"
@@ -12,6 +13,7 @@ class PresencasController < ApplicationController
     conf.columns[:tem_direito_a_reposicao].label = "Tem Direito à Reposição?"
     conf.columns[:data_de_realocacao].label = "Realocado de"
     conf.columns[:pessoa].label = "Aluno"
+    conf.list.columns = [:pessoa, :data, :horario, :status, :justificativa_de_falta]
     conf.columns = [:pessoa, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :tem_direito_a_reposicao, :aula_extra, :justificativa_de_falta]
     conf.columns[:pessoa].form_ui = :select
     conf.columns[:quantidade_de_registros].form_ui = :select
