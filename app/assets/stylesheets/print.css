@@ -46,4 +46,7 @@
   .aluno-column a{
     white-space: nowrap;
   }
+  .fones {
+    display: block;
+  }
 }

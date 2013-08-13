@@ -372,3 +372,6 @@ i{
 #gerar_realocacao label:hover {
   cursor: pointer;
 }
+.fones {
+  display: none;
+}

@@ -1,14 +1,14 @@
 #coding: utf-8
 module PresencasHelper
   def pessoa_column(record, column)
-    nome = record.pessoa.nome << "<br/>"
+    nome = record.pessoa.nome
     fones = []
     if not record.pessoa.telefones.nil?
       record.pessoa.telefones.each do |telefone|
         fones << telefone.label
       end
     end
-    fones = "<div class='fones'>" << fones.join("<br/>") << "</div>"
+    fones = "<br/><div class='fones'>" << fones.join("<br/>") << "</div>"
     raw(nome + fones)
   end
 
