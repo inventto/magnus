@@ -1,0 +1,52 @@
+<script type='text/javascript'>
+  function gerarTabelaDePontos() {
+    url = '/registros_de_ponto_por_mes?funcionario_id='+$('.id-view').text().trim()+'&mes='+$('#mes').val();
+    $("#registros_de_ponto").load(url + " #registros_de_ponto ");
+  }
+</script>
+<div class='filtros mes'>
+  <label for='lbl_mes'>Mês:</label>
+  <select name='mes' id='mes'>
+    <% for i in 0..(Date::MONTHNAMES.length - 1) %>
+      <% if i == Date.today.month %>
+        <option selected value='<%= i %>'><%= Date::MONTHNAMES[i] %></option>
+      <% else %>
+        <option value='<%= i %>'><%= Date::MONTHNAMES[i] %></option>
+      <% end %>
+    <% end %>
+  </select>
+  <input type='submit' value='Filtrar' onclick='gerarTabelaDePontos();'/>
+</div>
+<div id='registros_de_ponto'>
+  <% if @registros_de_ponto.blank? %>
+    Nenhum registro de ponto para esse mês.
+  <% else %>
+    <table id='ponto_table' class='active-scaffold'>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Hora de Chegada</th>
+          <th>Hora de Saída</th>
+          <th>Total de horas trabalhadas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% total_por_dia = 0 %>
+        <% total_por_mes = 0 %>
+        <% even_record = false %>
+        <% @registros_de_ponto.each do |ponto| %>
+          <tr class='record<%= " even-record" if even_record %>' >
+            <td><%= ponto.data.strftime("%d/%m/%Y") %></td>
+            <td><%= hora_de_chegada = ponto.hora_de_chegada %></td>
+            <td><%= hora_de_saida = ponto.hora_de_saida.to_s %></td>
+            <% total_por_dia = calcula_horas_trabalhadas(hora_de_chegada, hora_de_saida) %>
+            <td><%= Time.at(total_por_dia).gmtime.strftime("%H:%M") %></td>
+          </tr>
+          <% total_por_mes += total_por_dia %>
+          <% even_record = !even_record %>
+        <% end %>
+      </tbody>
+    </table>
+    <p>Total no mês: <%= Time.at(total_por_mes).gmtime.strftime("%H:%M") %></p>
+  <% end %>
+</div>

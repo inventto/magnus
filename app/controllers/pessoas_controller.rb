@@ -201,4 +201,16 @@ class PessoasController < ApplicationController
   def txt_to_seg hour
     Time.strptime(hour, "%H:%M").seconds_since_midnight
   end
+
+  def registros_de_ponto_por_mes
+    id = params[:funcionario_id].to_i
+    mes = (params[:mes].to_i == 0) ? 12 : params[:mes].to_i # pois Dezembro é o index zero do array
+    data_inicio = Date.new(Date.today.year, mes, 1)
+    data_fim = data_inicio.at_end_of_month
+
+    @registros_de_ponto = RegistroDePonto.where(:pessoa_id => id)
+    @registros_de_ponto = @registros_de_ponto.where("data BETWEEN ? AND ?", data_inicio, data_fim).order("data desc")
+
+    render :partial => "registros_de_ponto_por_mes"
+  end
 end

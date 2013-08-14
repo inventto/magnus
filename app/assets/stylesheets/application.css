@@ -266,22 +266,20 @@ i{
   text-align: center;
 }
 #pontualidade_table th,
-#pontualidade_table table tr td,
+#pontualidade_table td,
 #estatisticas_table th,
-#estatisticas_table table tr td,
+#estatisticas_table td,
 #presencas_table th,
-#presencas_table table tr td {
+#presencas_table td {
   padding: 4px;
 }
-#estatisticas_table table thead tr th {
-  color: white;
-  font-size: 12px;
+#ponto_table td, th {
+  padding: 4px;
 }
-#pontualidade_table table thead tr th {
-  color: white;
-  font-size: 12px;
-}
-#presencas_table table thead tr th {
+#ponto_table th,
+#estatisticas_table th,
+#pontualidade_table th,
+#presencas_table th {
   color: white;
   font-size: 12px;
 }

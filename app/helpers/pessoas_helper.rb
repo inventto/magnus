@@ -243,7 +243,7 @@ module PessoasHelper
 
   def pontualidade_column(record, column)
     if record.instance_of?(Pessoa) # se não ocorre erro ao carregar a página de Presenças
-
+      return if record.e_funcionario
       presencas = record.presencas.where(:presenca => true)
       total_de_presencas = presencas.count
 
@@ -337,7 +337,12 @@ module PessoasHelper
   end
 
   def presencas_column(record, column)
-    return if record.presencas.blank? #caso seja aluno novo e sem registros de presenças
+    if record.e_funcionario
+      @registros_de_ponto = RegistroDePonto.where(:pessoa_id => record.id)
+      @registros_de_ponto = @registros_de_ponto.where("data BETWEEN ? AND ?", Date.today.beginning_of_month, Date.today.end_of_month).order("data desc")
+      render :partial => "registros_de_ponto_por_mes"
+    else
+    #return if record.presencas.blank? #caso seja aluno novo e sem registros de presenças
     inputDisabled = "<input type='checkbox' disabled='disabled' />"
     inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
     conteudo = ""
@@ -377,6 +382,7 @@ module PessoasHelper
     realocacao = get_realocacao(aluno_id, data)
 
     (table << justify_next_class << realocacao << get_script).html_safe
+    end
   end
 
   def get_realocacao aluno_id, data
@@ -626,5 +632,19 @@ module PessoasHelper
     else
       return "<a href='/presencas/#{presenca.id}/edit'>Justificar</a>"
     end
+  end
+
+  def calcula_horas_trabalhadas hora_de_chegada, hora_de_saida
+    unless hora_de_saida.blank?
+      hora_de_chegada = txt_to_seg hora_de_chegada
+      hora_de_saida = txt_to_seg hora_de_saida
+      return hora_de_saida - hora_de_chegada
+    else
+      return 0
+    end
+  end
+
+  def txt_to_seg hour
+    Time.strptime(hour, "%H:%M").seconds_since_midnight
   end
 end

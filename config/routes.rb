@@ -46,6 +46,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/verifica_ultima_pagina_acessada", to: "presencas#verifica_ultima_pagina_acessada"
 
+  match "/registros_de_ponto_por_mes", to: "pessoas#registros_de_ponto_por_mes"
+
   get "/agenda_do_dia/filtrar"
 
   get "/aniversariantes_do_mes/filtrar"
