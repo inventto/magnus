@@ -31,8 +31,8 @@ module PresencasHelper
         hint << "SD"
       end
       if presenca.realocacao
-        hora_atual = get_in_seconds(dia_atual)
-        hora_presenca = get_in_seconds(presenca.horario)
+        hora_atual = get_segundos(dia_atual)
+        hora_presenca = get_segundos(presenca.horario)
         if (((presenca.data == dia_atual.to_date) and not (hora_atual > (hora_presenca + 300))) or (presenca.data > dia_atual.to_date))
           retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "R"
@@ -65,7 +65,7 @@ module PresencasHelper
             horario = (not m.nil?) ?  m[0] : ""
           end
           if presenca.data == p.data # ainda pode ser reposição ou adiantamento, depende do horario
-            if get_in_seconds(presenca.horario) > get_in_seconds(p.horario) # adiantamento
+            if get_segundos(presenca.horario) > get_segundos(p.horario) # adiantamento
               title = "Falta Justificada com Adiantamento para o dia #{presenca.data.strftime("%d/%m/%Y")} às #{horario}"
             else # reposicao
               title = "Falta Justificada com Reposição Agendada para o dia #{p.data.strftime("%d/%m/%Y")} às #{p.horario}"
@@ -92,7 +92,7 @@ module PresencasHelper
     title
   end
 
-  def get_in_seconds(hour)
+  def get_segundos(hour)
     if hour.instance_of?(Time)
       return hour.seconds_since_midnight
     else
