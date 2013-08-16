@@ -116,22 +116,37 @@ class PessoasController < ApplicationController
     data = params[:data].to_date
     data_de_realocacao = (params[:data_de_realocacao].blank?) ? nil : params[:data_de_realocacao].to_date
     if not data_de_realocacao.nil?
-      falta = Presenca.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao <> ''")
-      falta = falta.find_all_by_pessoa_id_and_data_and_presenca_and_tem_direito_a_reposicao(aluno_id, data_de_realocacao, false, true)[0]
+      #falta = Presenca.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao <> ''")
+      #falta = falta.find_all_by_pessoa_id_and_data_and_presenca_and_tem_direito_a_reposicao(aluno_id, data_de_realocacao, false, true)[0]
+      falta = Presenca.where(:pessoa_id => aluno_id, :data => data_de_realocacao).where("coalesce(presenca, false) = false")[0]
       if falta.nil?
         horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data_de_realocacao.wday)[0]
         if not horario_de_aula.nil?
           falta_justificada = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :tem_direito_a_reposicao => true, :horario => horario_de_aula.horario)
           falta_justificada.build_justificativa_de_falta(:descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
+          falta_justificada.justificativa_de_falta.save
         else
           note = "Não pôde ser criada a Falta para o dia #{data_de_realocacao.strftime("%d/%m/%Y")}, pois aluno não possui aula nesse dia."
         end
       elsif horario_valido
+        puts "== horario valido"
         if data == data_de_realocacao
+          puts "== datas iguais"
           horario_a_ser_reposto = txt_to_seg(falta.horario)
           horario = txt_to_seg(params[:horario])
           if horario <= horario_a_ser_reposto
             error << "<strong>Horário de Reposição</strong> deve ser maior que Horário da Aula a ser Reposta!"
+          else
+            if not falta.tem_direito_a_reposicao
+              falta.tem_direito_a_reposicao = true
+            end
+            if falta.justificativa_de_falta.nil?
+              falta.build_justificativa_de_falta(:descricao => "aula reposta às #{params[:horario]}")
+            else
+              falta.justificativa_de_falta.descricao = "aula reposta às #{params[:horario]}"
+            end
+            falta.justificativa_de_falta.save
+            falta.save
           end
         end
       end
