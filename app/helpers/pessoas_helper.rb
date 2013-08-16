@@ -269,60 +269,15 @@ module PessoasHelper
         end
       end
 
-      table = "<div id='pontualidade_table' class='active-scaffold'>
-                 <table>
-                   <thead>
-                     <tr>
-                       <th>Intervalo de Pontualidade</th>
-                       <th>Percentual</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     <tr>
-                       <td>-15</td>
-                       <td class='tip_trigger'>
-                         #{calcular_percentual(count_menor_que_menos_quinze, total_de_presencas)}%
-                         <span class='tip'>Percentual de Atraso maior que 15 minutos.</span>
-                       </td>
-                     </tr>
-                     <tr>
-                       <td>-5 a -15</td>
-                       <td class='tip_trigger'>
-                         #{calcular_percentual(count_maior_que_menos_quinze, total_de_presencas)}%
-                         <span class='tip'>Percentual de Atraso entre 5 e 15 minutos.</span>
-                       </td>
-                     </tr>
-                     <tr>
-                       <td>-5 a 5</td>
-                       <td class='tip_trigger'>
-                         #{calcular_percentual(count_maior_que_menos_cinco, total_de_presencas)}%
-                         <span class='tip'>Percentual do intervalo entre 4 minutos de Atraso e 4 minutos Adiantado.</span>
-                       </td>
-                     </tr>
-                     <tr>
-                       <td>5 a 15</td>
-                       <td class='tip_trigger'>
-                         #{calcular_percentual(count_maior_que_cinco, total_de_presencas)}%
-                         <span class='tip'>Percentual de Adiantamento entre 5 e 15 minutos.</span>
-                       </td>
-                     </tr>
-                     <tr>
-                       <td>15</td>
-                       <td class='tip_trigger'>
-                         #{calcular_percentual(count_maior_que_quinze, total_de_presencas)}%
-                         <span class='tip'>Percentual de Adiantamento maior que 15 minutos.</span>
-                       </td>
-                     </tr>
-                   </tdboy>
-                 </table>
-               </div>".html_safe
-               script = "<script type='text/javascript'>
-                           $(document).ready(function(){
-                             tooltips();
-                           });
-                         </script>".html_safe
+      @pontualidades = {
+        :menor_que_menos_quinze => calcular_percentual(count_menor_que_menos_quinze, total_de_presencas),
+        :maior_que_menos_quinze => calcular_percentual(count_maior_que_menos_quinze, total_de_presencas),
+        :maior_que_menos_cinco  => calcular_percentual(count_maior_que_menos_cinco, total_de_presencas),
+        :maior_que_cinco        => calcular_percentual(count_maior_que_cinco, total_de_presencas),
+        :maior_que_quinze       => calcular_percentual(count_maior_que_quinze, total_de_presencas)
+      }
 
-      return (table << script)
+      render :partial => "pontualidade"
     else
       return record.pontualidade
     end

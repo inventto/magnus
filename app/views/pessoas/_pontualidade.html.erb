@@ -1,0 +1,98 @@
+<div id='pontualidade_table' class='active-scaffold'>
+  <table>
+    <thead>
+      <tr>
+        <th>Intervalo de Pontualidade</th>
+        <th>Percentual</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>-15</td>
+        <td class='tip_trigger'>
+          <%= @pontualidades[:menor_que_menos_quinze] %>%
+          <span class='tip'>Percentual de Atraso maior que 15 minutos.</span>
+        </td>
+      </tr>
+      <tr>
+        <td>-5 a -15</td>
+        <td class='tip_trigger'>
+          <%= @pontualidades[:maior_que_menos_quinze] %>%
+          <span class='tip'>Percentual de Atraso entre 5 e 15 minutos.</span>
+        </td>
+      </tr>
+      <tr>
+        <td>-5 a 5</td>
+        <td class='tip_trigger'>
+        <%= @pontualidades[:maior_que_menos_cinco] %>%
+          <span class='tip'>Percentual do intervalo entre 4 minutos de Atraso e 4 minutos Adiantado.</span>
+        </td>
+      </tr>
+      <tr>
+        <td>5 a 15</td>
+        <td class='tip_trigger'>
+          <%= @pontualidades[:maior_que_cinco] %>%
+          <span class='tip'>Percentual de Adiantamento entre 5 e 15 minutos.</span>
+        </td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td class='tip_trigger'>
+          <%= @pontualidades[:maior_que_quinze] %>%
+          <span class='tip'>Percentual de Adiantamento maior que 15 minutos.</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<br/>
+<div id='grafico_da_pontualidade_do_aluno'></div>
+<script type='text/javascript'>
+   $(document).ready(function(){
+     tooltips();
+     pontualidadeGraph();
+   });
+   $(document).ajaxComplete(function(){
+     pontualidadeGraph();
+   });
+   function pontualidadeGraph() {
+     new Highcharts.Chart({
+       chart: {
+         renderTo: 'grafico_da_pontualidade_do_aluno',
+         type: 'pizza'
+       },
+       title: {
+         text: 'Gráfico da Pontualidade dos Treinamentos'
+       },
+       tooltip: {
+         pointFormat: '{point.y}%'
+       },
+       plotOptions: {
+         pie: {
+           allowPointSelect: true,
+           cursor: 'pointer',
+           dataLabels: {
+             enabled: true,
+             color: '#000',
+             formatter: function() {
+               return this.point.name + ': ' + this.point.y + '%';
+             }
+           },
+           showInLegend: false
+         }
+       },
+       series: [{
+         type: 'pie',
+         name: 'Estatísticas',
+         data: [
+           ['Atrasado mais de 15(quinze) minutos', <%= @pontualidades[:menor_que_menos_quinze] %>],
+           ['Atrasado entre 5(quatro) e 15(quinze) minutos', <%= @pontualidades[:maior_que_menos_quinze] %>],
+           ['Adiantado ou Atrasado entre 0(zero) e 4(quatro) minutos', <%= @pontualidades[:maior_que_menos_cinco] %>],
+           ['Adiantado entre 5(cinco) e 15(quinze) minutos', <%= @pontualidades[:maior_que_cinco] %>],
+           ['Adiantado mais de 15(quinze) minutos', <%= @pontualidades[:maior_que_quinze] %>]
+         ]
+       }]
+     });
+   }
+</script>
+

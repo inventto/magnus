@@ -373,3 +373,10 @@ i{
 .fones, .hint {
   display: none;
 }
+#pontualidade_table {
+  width: 235px;
+}
+#grafico_da_pontualidade_do_aluno {
+  height: 400px;
+  width: 1220px !important;
+}
