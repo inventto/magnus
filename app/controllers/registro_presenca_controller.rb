@@ -250,7 +250,7 @@ class RegistroPresencaController < ApplicationController
     render :nothing => true
   end
 
-  def gerar_falta com_direito_a_reposicao
+  def gerar_falta eh_feriado
     today = (Rails.env.production?) ? (Time.now + Time.zone.utc_offset) : Time.now
     horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
     horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => today.wday)
@@ -259,8 +259,8 @@ class RegistroPresencaController < ApplicationController
     horarios.each do |horario|
       aluno_id = horario.matricula.pessoa.id
       if Presenca.where(:pessoa_id => aluno_id).where(:data => today, :horario => horario.horario).blank?
-        falta = Presenca.create(:pessoa_id => aluno_id, :data => today, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => com_direito_a_reposicao)
-        if com_direito_a_reposicao
+        falta = Presenca.create(:pessoa_id => aluno_id, :data => today, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
+        if eh_feriado
           falta.build_justificativa_de_falta(:descricao => "feriado")
           falta.save
         end
