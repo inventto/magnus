@@ -1,9 +1,9 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  nome: MyString
-  sigla: MyString
+pr:
+  nome: Paraná
+  sigla: PR
 
-two:
-  nome: MyString
-  sigla: MyString
+sc:
+  nome: Santa Catarina
+  sigla: SC

@@ -6,7 +6,7 @@ one:
   tipo_telefone_id: 1
   descricao: MyString
   ramal: MyString
-  aluno_id: 1
+  pessoa_id: 1
 
 two:
   ddd: MyString
@@ -14,4 +14,4 @@ two:
   tipo_telefone_id: 1
   descricao: MyString
   ramal: MyString
-  aluno_id: 1
+  pessoa_id: 1
