@@ -374,9 +374,12 @@ i{
   display: none;
 }
 #pontualidade_table {
-  width: 235px;
+  width: 450px;
 }
 #grafico_da_pontualidade_do_aluno {
   height: 400px;
   width: 1220px !important;
+}
+#pontualidade_table table tr td {
+  color: black !important;
 }

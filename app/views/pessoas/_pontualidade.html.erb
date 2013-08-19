@@ -8,36 +8,36 @@
     </thead>
     <tbody>
       <tr>
-        <td>-15</td>
-        <td class='tip_trigger'>
+        <td style='background: #F00C0C; color: black;'>-15 (Atrasado mais de 15 minutos)</td>
+        <td class='tip_trigger' style='background: #F00C0C; color: black;'>
           <%= @pontualidades[:menor_que_menos_quinze] %>%
           <span class='tip'>Percentual de Atraso maior que 15 minutos.</span>
         </td>
       </tr>
       <tr>
-        <td>-5 a -15</td>
-        <td class='tip_trigger'>
+        <td style='background: #FFF200'>-5 a -15 (Atrasado entre 5 e 15 minutos)</td>
+        <td class='tip_trigger' style='background: #FFF200'>
           <%= @pontualidades[:maior_que_menos_quinze] %>%
           <span class='tip'>Percentual de Atraso entre 5 e 15 minutos.</span>
         </td>
       </tr>
       <tr>
-        <td>-5 a 5</td>
-        <td class='tip_trigger'>
+        <td style='background: #11C900'>-5 a 5 (PONTUAL)</td>
+        <td class='tip_trigger' style='background: #11C900'>
         <%= @pontualidades[:maior_que_menos_cinco] %>%
           <span class='tip'>Percentual do intervalo entre 4 minutos de Atraso e 4 minutos Adiantado.</span>
         </td>
       </tr>
       <tr>
-        <td>5 a 15</td>
-        <td class='tip_trigger'>
+        <td style='background: #fc8aeb'>5 a 15 (Adiantado entre 5 e 15 minutos)</td>
+        <td class='tip_trigger' style='background: #fc8aeb'>
           <%= @pontualidades[:maior_que_cinco] %>%
           <span class='tip'>Percentual de Adiantamento entre 5 e 15 minutos.</span>
         </td>
       </tr>
       <tr>
-        <td>15</td>
-        <td class='tip_trigger'>
+        <td style='background: #2134ff'>15 (Adiantado mais de 15 minutos)</td>
+        <td class='tip_trigger' style='background: #2134ff'>
           <%= @pontualidades[:maior_que_quinze] %>%
           <span class='tip'>Percentual de Adiantamento maior que 15 minutos.</span>
         </td>
@@ -56,6 +56,23 @@
      pontualidadeGraph();
    });
    function pontualidadeGraph() {
+      colors= [
+        '#F00C0C', // vermelho
+        '#FFF200', // amarelo
+        '#11C900', // verde
+        '#fc8aeb', // lilás (roxo whatever)
+        '#2134ff'  // azul
+      ];
+      Highcharts.getOptions().colors = Highcharts.map(colors,
+      function(color) {
+        return {
+          radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+          stops: [
+            [0, color],
+            [1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+          ]
+        };
+      });
      new Highcharts.Chart({
        chart: {
          renderTo: 'grafico_da_pontualidade_do_aluno',
