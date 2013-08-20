@@ -216,7 +216,7 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_faltas_de_realocacoes_com_direito_a_reposicao
-    faltas = presencas.where(:realocacao => true).where("coalesce(presenca, 'f') = 'f'")
+    faltas = Presenca.where(:pessoa_id => self.id, :realocacao => true).where("coalesce(presenca, 'f') = 'f'")
     faltas = faltas.where(:tem_direito_a_reposicao => true).count
   end
 
