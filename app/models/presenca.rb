@@ -49,5 +49,6 @@ class Presenca < ActiveRecord::Base
       # Cria falta justificada
       falta = Presenca.create(:pessoa_id => self.pessoa_id, :data => self.data_de_realocacao, :presenca => false, :horario => horario_de_aula.first.horario)
       falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{Date.parse(self.data.to_s).strftime("%d/%m/%Y")} às #{self.horario}")
+      falta.save
     end
 end

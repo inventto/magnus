@@ -88,6 +88,7 @@ class PessoasController < ApplicationController
     # Criar a falta
     falta = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario, :tem_direito_a_reposicao => true)
     falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
+    falta.save
 
     # Criar o adiantamento
     Presenca.create(:pessoa_id => aluno_id, :presenca => false, :data => data, :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
@@ -124,7 +125,7 @@ class PessoasController < ApplicationController
         if not horario_de_aula.nil?
           falta_justificada = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :tem_direito_a_reposicao => true, :horario => horario_de_aula.horario)
           falta_justificada.build_justificativa_de_falta(:descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
-          falta_justificada.justificativa_de_falta.save
+          falta_justificada.save
         else
           note = "Não pôde ser criada a Falta para o dia #{data_de_realocacao.strftime("%d/%m/%Y")}, pois aluno não possui aula nesse dia."
         end
@@ -170,7 +171,6 @@ class PessoasController < ApplicationController
     if not error.blank?
       render :text => error and return
     end
-
     data = Date.parse(params[:data_da_falta])
     data_fim =  (params[:data_da_falta_fim].blank?) ? data : Date.parse(params[:data_da_falta_fim])
     aluno_id = params[:aluno_id].to_i
@@ -180,6 +180,7 @@ class PessoasController < ApplicationController
         aula = aula[0]
         falta = Presenca.create(:pessoa_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :tem_direito_a_reposicao => true)
         falta.build_justificativa_de_falta(:descricao => params[:justificativa])
+        falta.save
       end
       data += 1.day
     end
