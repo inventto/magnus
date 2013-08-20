@@ -178,9 +178,17 @@ class PessoasController < ApplicationController
       aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data.wday)
       if not aula.blank?
         aula = aula[0]
-        falta = Presenca.create(:pessoa_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :tem_direito_a_reposicao => true)
-        falta.build_justificativa_de_falta(:descricao => params[:justificativa])
-        falta.save
+        if not (presenca = Presenca.where(:pessoa_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false)).blank?
+          presenca = presenca.first
+          presenca.tem_direito_a_reposicao = true
+          presenca.build_justificativa_de_falta(:descricao => params[:justificativa])
+          presenca.justificativa_de_falta.save
+          presenca.save
+        else
+          falta = Presenca.create(:pessoa_id => aluno_id, :data => data, :horario => aula.horario, :presenca => false, :realocacao => false, :tem_direito_a_reposicao => true)
+          falta.build_justificativa_de_falta(:descricao => params[:justificativa])
+          falta.save
+        end
       end
       data += 1.day
     end
