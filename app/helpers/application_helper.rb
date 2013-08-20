@@ -33,21 +33,25 @@ module ApplicationHelper
         retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
         return retorno.html_safe
       else
-        if presenca.justificativa_de_falta.nil?
-          retorno = "<img src='/assets/falta_sem_justif.png' title='Falta Sem Justificativa' />"
-        elsif presenca.tem_direito_a_reposicao?
-          retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+        if is_feriado?(dia_atual)
+          retorno = "<img src='/assets/bandeira_feriado.png' title='Feriado' />"
         else
-          retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
-        end
-        if presenca.realocacao
-          hora_atual = get_in_seconds()
-          hora_presenca = get_in_seconds(presenca.horario)
-
-          if (((presenca.data == @hora_certa.to_date) and not (hora_atual > (hora_presenca + 300))) or (presenca.data > @hora_certa.to_date))
-            retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+          if presenca.justificativa_de_falta.nil?
+            retorno = "<img src='/assets/falta_sem_justif.png' title='Falta Sem Justificativa' />"
+          elsif presenca.tem_direito_a_reposicao?
+            retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           else
-            retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+            retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+          end
+          if presenca.realocacao
+            hora_atual = get_in_seconds()
+            hora_presenca = get_in_seconds(presenca.horario)
+
+            if (((presenca.data == @hora_certa.to_date) and not (hora_atual > (hora_presenca + 300))) or (presenca.data > @hora_certa.to_date))
+              retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+            else
+              retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+            end
           end
         end
         retorno = (aniversario << retorno)
@@ -57,6 +61,18 @@ module ApplicationHelper
     else
       return aniversario.html_safe # mesmo que não haja presença deve se retornar a imagem de aniversário
     end
+  end
+
+  def is_feriado? dia_atual
+    ok = false
+    feriado = Feriado.where(:dia => dia_atual.day).where(:mes => dia_atual.month)
+    if not feriado.blank?
+      feriado = feriado[0]
+      if feriado.repeticao_anual or feriado.ano == dia_atual.year
+        ok = true
+      end
+    end
+    ok
   end
 
   def get_title_realocacao aluno_id, dia_atual, presenca

@@ -61,7 +61,7 @@ module PessoasHelper
 
       count_faltas_com_direto_a_repos_permitidas = get_amout_allowed_fault(record)
 
-      @count_faltas_sem_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, false)
+      @count_faltas_sem_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, false) - count_feriados(presencas)
 
       @count_faltas_com_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, true)
 
@@ -85,6 +85,29 @@ module PessoasHelper
 
       table << graph
     end
+  end
+
+  def count_feriados presencas
+    count_faltas = 0
+    presencas.where(:presenca => false, :tem_direito_a_reposicao => false).each do |falta|
+      if is_holiday_this_day?(falta.data)
+        count_faltas += 1
+      end
+    end
+    puts "===> quantidade de faltas feriados #{count_faltas}"
+    count_faltas
+  end
+
+  def is_holiday_this_day? dia_atual
+    ok = false
+    feriado = Feriado.where(:dia => dia_atual.day).where(:mes => dia_atual.month)
+    if not feriado.blank?
+      feriado = feriado[0]
+      if feriado.repeticao_anual or feriado.ano == dia_atual.year
+        ok = true
+      end
+    end
+    ok
   end
 
   def get_faltas_direito_a_reposicao presencas, tem_direito_a_reposicao
