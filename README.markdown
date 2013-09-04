@@ -42,6 +42,7 @@ rails server
 
 ## Imagens do sistema rodando
 
+![agendadodia]
 ### Login
 
 ### Relatório de presenças
@@ -62,4 +63,5 @@ Estamos muito gratos a [todos os outros projetos](/Gemfile) open source que nos 
 [semdireito]:       https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
 [semjustificativa]: https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
 [aulaextra]:        https://raw.github.com/inventto/magnus/master/app/assets/images/aula_extra.png
+[agendadodia]:      https://raw.github.com/inventto/magnus/master/printscreens/agendadodia.png
 
