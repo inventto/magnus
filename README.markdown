@@ -56,10 +56,10 @@ rails server
 Estamos muito gratos a [todos os outros projetos](/Gemfile) open source que nos ajudaram a fazer este programa :+1:
 
 
-[grafico1]: https://github.com/inventto/magnus/tree/master/printscreens/grafico1.png
-[grafico2]: https://github.com/inventto/magnus/tree/master/printscreens/grafico2.png
-[comdireito]: https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_com_direito_a_reposicao.png
-[semdireito]: https://raw.github.sem/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
-[semjustificativa]: https://raw.github.sem/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
-[aulaextra]: https://raw.github.com/inventto/magnus/master/app/assets/images/aula_extra.png
+[grafico1]:         https://raw.github.com/inventto/magnus/master/printscreens/grafico1.png
+[grafico2]:         https://raw.github.com/inventto/magnus/master/printscreens/grafico2.png
+[comdireito]:       https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_com_direito_a_reposicao.png
+[semdireito]:       https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
+[semjustificativa]: https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
+[aulaextra]:        https://raw.github.com/inventto/magnus/master/app/assets/images/aula_extra.png
 
