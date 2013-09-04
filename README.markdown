@@ -49,15 +49,17 @@ rails server
 ### Gráficos
 
 ![grafico1]
-
+![grafico2]
 
 ## Muito obrigado
 
 Estamos muito gratos a [todos os outros projetos](/Gemfile) open source que nos ajudaram a fazer este programa :+1:
 
 
-[grafico1]: http://invent.to/magnus/printscreens/1.png
+[grafico1]: http://invent.to/magnus/printscreens/grafico1.png
+[grafico2]: http://invent.to/magnus/printscreens/grafico2.png
 [comdireito]: https://raw.github.com/inventto/magnus/master/app/assets/images/falta_justif_com_direito_a_reposicao.png
 [semdireito]: https://raw.github.sem/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
+[semjustificativa]: https://raw.github.sem/inventto/magnus/master/app/assets/images/falta_justif_sem_direito_a_reposicao.png
 [aulaextra]: https://raw.github.com/inventto/magnus/master/app/assets/images/aula_extra.png
 
