@@ -31,22 +31,47 @@
         </tr>
       </thead>
       <tbody>
-        <% total_por_dia = 0 %>
-        <% total_por_mes = 0 %>
+        <% sum_a_day = 0 %>
+        <% sum_a_month = 0 %>
+        <% sum_a_week = 0 %>
+        <% beginning_of_week = nil %>
         <% even_record = false %>
         <% @registros_de_ponto.each do |ponto| %>
+          <% if (not beginning_of_week.nil? and beginning_of_week != ponto.data.beginning_of_week) %>
+            <tr>
+              <td colspan="3">Total da semana:</td>
+              <td><%= seconds_to_txt(sum_a_week) %></td>
+            </tr>
+            <% sum_a_week = 0 %>
+          <% end %>
+
+          <% if beginning_of_week != ponto.data.at_beginning_of_week %>
+            <% beginning_of_week = ponto.data.at_beginning_of_week %>
+          <% end %>
+
           <tr class='record<%= " even-record" if even_record %>' >
             <td><%= ponto.data.strftime("%d/%m/%Y") %></td>
             <td><%= hora_de_chegada = ponto.hora_de_chegada %></td>
             <td><%= hora_de_saida = ponto.hora_de_saida.to_s %></td>
-            <% total_por_dia = calcula_horas_trabalhadas(hora_de_chegada, hora_de_saida) %>
-            <td><%= Time.at(total_por_dia).gmtime.strftime("%H:%M") %></td>
+            <% sum_a_day = calcula_horas_trabalhadas(hora_de_chegada, hora_de_saida) %>
+            <% sum_a_week += sum_a_day %>
+
+            <td><%= Time.at(sum_a_day).gmtime.strftime("%H:%M") %></td>
           </tr>
-          <% total_por_mes += total_por_dia %>
+
+          <% if @registros_de_ponto.last == ponto %>
+            <tr>
+              <td colspan="3">Total da semana:</td>
+              <td><%= seconds_to_txt(sum_a_week) %></td>
+            </tr>
+            <% sum_a_week = 0 %>
+          <% end %>
+
+          <% sum_a_month += sum_a_day %>
           <% even_record = !even_record %>
         <% end %>
       </tbody>
     </table>
-    <p>Total no mês: <%= Time.at(total_por_mes).gmtime.strftime("%H:%M") %></p>
+    <p>Total no mês: <%= seconds_to_txt(sum_a_month) %></p>
   <% end %>
 </div>

@@ -625,4 +625,10 @@ module PessoasHelper
   def txt_to_seg hour
     Time.strptime(hour, "%H:%M").seconds_since_midnight
   end
+
+  def seconds_to_txt seconds
+   hours = seconds / 3600
+   min = (seconds % 3600) / 60
+   "#{hours.to_i.to_s.rjust(2, '0')}:#{min.to_i.to_s.rjust(2, '0')}"
+  end
 end
