@@ -1,6 +1,6 @@
 # Bem vindo
 
-Magnus Controle de Presenças é um aplicativo [Rails][rails] para personal trainers controlarem as presenças dos alunos conforme a política da Academia [Magnus Personal Trainers][magnussite]. O sistema também permite o registro de pontos dos funcionários.
+Magnus Controle de Presenças é um aplicativo [Rails](https://github.com/rails/rails) para personal trainers controlarem as presenças dos alunos conforme a política da Academia [Magnus Personal Trainers](http://magnus.invent.to/). O sistema também permite o registro de pontos dos funcionários.
 
 Tanto o funcionário registrando o ponto quanto o aluno confirmando sua presença alimentam o mesmo sistema de presenças. A diferença é que as pessoas do tipo Funcionário não participam das políticas dos alunos. Veja mais detalhes [aqui](app/models/pessoa.rb).
 
