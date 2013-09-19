@@ -1,7 +1,6 @@
 # Bem vindo
 
-Magnus Controle de Presenças é um aplicativo [Rails][rails] para personal trainers controlarem suas as presenças dos alunos conforme a política da Academia [Magnus Personal Trainers][magnussite]. O sistema também permite o registro de pontos dos funcionários.
-
+Magnus Controle de Presenças é um aplicativo [Rails][rails] para personal trainers controlarem as presenças dos alunos conforme a política da Academia [Magnus Personal Trainers][magnussite]. O sistema também permite o registro de pontos dos funcionários.
 
 Tanto o funcionário registrando o ponto quanto o aluno confirmando sua presença alimentam o mesmo sistema de presenças. A diferença é que as pessoas do tipo Funcionário não participam das políticas dos alunos. Veja mais detalhes [aqui](app/models/pessoa.rb).
 
@@ -11,20 +10,20 @@ Tanto o funcionário registrando o ponto quanto o aluno confirmando sua presenç
 ### ![comdireito] Quando posso repor minha aula?
 
 * Não ser feriado
-* No mínimo 3 horas
+* Avisar falta com no mínimo 3 horas de antecedência
 
 ### ![semdireito] O que caracteriza uma falta sem direito a reposição?
 
-* No mínimo 3 horas de antecedência
-* Feriados
+* Não avisar que faltou, ou avisar em um prazo menor de 3 horas de antecedência
+* Quando dia da aula for feriado
 
 ### ![aulaextra] Aulas extras
 
-Aulas extras tratam-se de alunos que dedicam-se a outras aulas fora de seu tempo contratado.
+Essas tratam-se de alunos que dedicam-se a aulas fora de seu tempo contratado.
 
 ### ![semjustificativa] Faltas não justificadas
 
-Não permitem ser reposta.
+Não permitem reposição da mesma.
 
 ## Como instalar?
 
@@ -45,7 +44,12 @@ rails server
 ![agendadodia]
 ### Login
 
+O login é feito apartir de um email cadastrado sendo que sempre terá um que será o administrador, onde somente este terá acesso à página de Registros de Ponto.
+
 ### Relatório de presenças
+
+Esse é apresentado na página inicial chamada de Agenda do Dia, onde listará todos os alunos que possuem horário de aula no dia, exibindo o horário da aula, o nome do aluno e um ícone representando se o mesmo compareceu à aula.
+Também esse relatório é agrupado por horário, como se pode visualizar nas Imagens do sistema rodando.
 
 ### Gráficos
 
