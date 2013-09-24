@@ -1022,13 +1022,13 @@ form {
   margin: 0 0 20px;
 }
 
-fieldset {
+/*fieldset {
   padding: 0;
   margin: 0;
   border: 0;
-}
+}*/
 
-legend {
+/*legend {
   display: block;
   width: 100%;
   padding: 0;
@@ -1038,7 +1038,7 @@ legend {
   color: #333333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
-}
+}*/
 
 legend small {
   font-size: 15px;

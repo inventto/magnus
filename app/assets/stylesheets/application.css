@@ -310,7 +310,7 @@ i{
   vertical-align: middle;
   margin: 0px;
 }
-#quadro_de_horarios #displayN,
+#quadro_de_horarios #displayN, .nome-da-semana,
 .periodo #compactar {
   cursor: pointer;
 }
@@ -382,4 +382,18 @@ i{
 }
 #pontualidade_table table tr td {
   color: black !important;
+}
+#filtro-aluno, #filtro-dias-da-semana, #filtro-mes-da-interrupcao, #filtro-tempo-de-permanencia, #freq-semanal {
+  border: 1px solid black;
+  border-radius: 8px 17px 17px 8px;
+  padding: 10px;
+}
+.filtros-clientes-inativos-none {
+  display: none;
+}
+.filtros-clientes-inativos-show {
+  display: block;
+}
+#lgd-filtros {
+  cursor: pointer;
 }
