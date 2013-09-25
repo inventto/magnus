@@ -1,6 +1,7 @@
 <script>
   $(document).ready(function() {
     $("legend").on("click", function() {
+      $("#fld-set-clientes-inativos").toggleClass("background-clientes-inativos-show");
       $("#filtros-clientes-inativos").toggleClass("filtros-clientes-inativos-none");
       $("#filtros-clientes-inativos").toggleClass("filtros-clientes-inativos-show");
     });
@@ -10,7 +11,6 @@
     $("#filtro-dias-da-semana").find("input:checked").each(function() {
           cpCheckeds.push($(this).val());
     });
-
     tipo_do_tempo = "";
     radios = $('[name=\"tipo[tempo]\"]');
     for(i = 0; i < radios.length; i++) {
@@ -22,46 +22,65 @@
     $("#clientes-inativos").load(url + " #clientes-inativos ");
   }
 </script>
-<fieldset>
+<fieldset id="fld-set-clientes-inativos">
   <legend id="lgd-filtros">Filtros</legend>
-  <div id="filtros-clientes-inativos" class="filtros-clientes-inativos-none">
+  <div id="filtros-clientes-inativos" class="filtros-clientes-inativos-none as_form">
     <!-- form action="< clientes_inativos_filtrar_path %>" method="GET" accept-charset="utf-8" -->
-      <div id="filtro-aluno">
-        Aluno:
-        <%= select("filtro", "pessoa_id", Pessoa.order(:nome).all.collect {|p| [p.nome, p.id]}, {prompt: "- Selecione -"} ) %>
-      </div>
-      <div id="filtro-dias-da-semana">
-        Dias da semana:
-        <p>
-          <% Date::DAYNAMES.each do |day| %>
-            <% day_of_week = day.gsub(/\W/, '') %>
-            <%= check_box_tag "semana_#{day_of_week}", day_of_week %>
-            <label class="nome-da-semana" for="semana_<%= day_of_week %>"><%= day %></label>
-          <% end %>
-        </p>
-      </div>
-      <div id="filtro-mes-da-interrupcao">
-        <% i = -1 %>
-        Mês da interrupção:
-        <%= select("filtro", "mes_id", Date::MONTHNAMES.collect {|m| i = i + 1;  [m, i]}, {prompt: "- Selecione -"} ) %>
-      </div>
-      <div id="filtro-tempo-de-permanencia">
-        Selecione as seguintes opções para o tempo de permanência:
-        <p>
-          <%= radio_button "tipo", "tempo", "dia" %> Dias
-          <%= radio_button "tipo", "tempo", "mes" %> Meses
-          <%= radio_button "tipo", "tempo", "ano" %> Anos
-        </p>
-        <p>Tempo de Permanência: <input type="text" id="tempo_de_permanencia" name="tempo-de-permanencia" value="" /></p>
-      </div>
-      <div id="freq-semanal">
-        Frequência semanal:
-        <%= select("filtro", "freq_semanal", (1..5).collect { |n| [n, n] }, {prompt: "- Selecione -"} ) %>
-      </div>
-      <p>
-        <input type="submit" value="Filtrar" class="active-scaffold submit" onclick="gerarTabelaInativos();"/>
-        <%= link_to "Cancelar", "" %>
-      </p>
+    <ol class="active-scaffold form" >
+      <li class="form-element" >
+        <dl>
+          <dt><label for="filtro_pessoa_id">Aluno:</label></dt>
+          <dd><%= select("filtro", "pessoa_id", Pessoa.order(:nome).all.collect {|p| [p.nome, p.id]}, {prompt: "- Selecione -"} ) %></dd>
+        </dl>
+      </li>
+      <li class="form-element">
+        <dl>
+          <dt><label for="filtro_freq_semanal">Frequência semanal:</label></dt>
+          <dd><%= select("filtro", "freq_semanal", (1..5).collect { |n| [n, n] }, {prompt: "- Selecione -"} ) %></dd>
+        </dl>
+      </li>
+      <li class="form-element">
+        <dl>
+          <% i = -1 %>
+          <dt><label for="filtro_mes_id">Mês da interrupção:</label></dt>
+          <dd><%= select("filtro", "mes_id", Date::MONTHNAMES.collect {|m| i = i + 1;  [m, i]}, {prompt: "- Selecione -"} ) %></dd>
+        </dl>
+      </li>
+      <li class="form-element">
+        <dl>
+          <dt><label for="">Tempo de permanência:</label></dt>
+          <dd>Selecione uma das seguintes opções para o tempo de permanência:
+            <p>
+              <%= radio_button "tipo", "tempo", "dia" %> Dias
+              <%= radio_button "tipo", "tempo", "mes" %> Meses
+              <%= radio_button "tipo", "tempo", "ano" %> Anos
+            </p>
+            <p>Tempo: <input type="text" id="tempo_de_permanencia" name="tempo-de-permanencia" value="" /></p>
+          </dd>
+        </dl>
+      </li>
+      <li class="form-element">
+        <dl>
+        <dt><label for="">Dias da semana:</label></dt>
+        <dd>
+          <div id="filtro-dias-da-semana">
+            <% i = 0 %>
+            <% Date::DAYNAMES.each do |day| %>
+              <% day_of_week = day.gsub(/\W/, '') %>
+              <%= check_box_tag "semana_#{day_of_week}","#{i}" %>
+              <label class="nome-da-semana" for="semana_<%= day_of_week %>"><%= day %></label>
+              <% i = i + 1 %>
+            <% end %>
+          </div>
+        </dd>
+        </dl>
+      </li>
+    </ol>
+    <br />
+    <p class="active-scaffold form-footer" style="clear: both;">
+      <input type="submit" value="Filtrar" class="active-scaffold submit" onclick="gerarTabelaInativos();"/>
+      <%= link_to "Cancelar", "" %>
+    </p>
     <!-- /form -->
   </div>
 </fieldset>
@@ -79,7 +98,7 @@
       <th><a href="#">Motivo da Interrupção</a></th>
       <th><a href="#">Data de Inicio</a></th>
       <th><a href="#">Data de Interrupção</a></th>
-      <th><a href="#">Tempo de Permanencia</a></th>
+      <th><a href="#">Tempo de Permanência</a></th>
       <th><a href="#">Frequência Semanal</a></th>
       <th><a href="#">% Faltas</a></th>
     </tr>
