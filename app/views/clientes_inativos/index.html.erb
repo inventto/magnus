@@ -139,7 +139,7 @@
     <% even_record = false %>
     <% @matriculas.each do |matricula| %>
       <tr class="record <%= "even-record" if even_record %>">
-        <td><%= matricula.pessoa_id %></td>
+        <td class="type-number"><%= matricula.pessoa_id %></td>
         <td><%= matricula.pessoa.nome %></td>
         <td><%= matricula.hora_da_aula 1 %></td>
         <td><%= matricula.hora_da_aula 2 %></td>
@@ -148,10 +148,10 @@
         <td><%= matricula.hora_da_aula 5 %></td>
         <td><%= matricula.hora_da_aula 6 %></td>
         <td><%= matricula.motivo_da_interrupcao %></td>
-        <td><%= matricula.data_inicio.strftime("%d/%m/%Y") %></td>
-        <td><%= matricula.data_fim.strftime("%d/%m/%Y") %></td>
+        <td class="type-date"><%= matricula.data_inicio.strftime("%d/%m/%Y") %></td>
+        <td class="type-date"><%= matricula.data_fim.strftime("%d/%m/%Y") %></td>
         <td><%= distance_of_time_in_words(matricula.data_fim, matricula.data_inicio) %></td>
-        <td><%= matricula.horario_de_aula.count %></td>
+        <td class="type-number"><%= matricula.horario_de_aula.count %></td>
         <td><%= matricula.percentual_de_faltas * 100 %>%</td>
       </tr>
       <% even_record = !even_record %>

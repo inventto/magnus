@@ -399,3 +399,9 @@ i{
 #filtros-clientes-inativos li {
   line-height: 5px !important;
 }
+.type-date {
+  text-align: center;
+}
+.type-number {
+  text-align: right;
+}

@@ -21,11 +21,12 @@ class ClientesInativosController < ApplicationController
       end
       mats = Matricula.where("id IN (?)", matriculas_id)
       matriculas_id = []
+      fount = false
       mats.each do |matricula|
         i = 0
         found = true
         matricula.horario_de_aula.order(:dia_da_semana).each do |horario|
-          if horario.dia_da_semana != dias[i]
+          if horario.dia_da_semana != dias[i].to_i
             found = false
             break
           end
