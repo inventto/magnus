@@ -1,31 +1,66 @@
 <script>
   $(document).ready(function() {
-    $("legend").on("click", function() {
-      $("#fld-set-clientes-inativos").toggleClass("background-clientes-inativos-show");
-      $("#filtros-clientes-inativos").toggleClass("filtros-clientes-inativos-none");
-      $("#filtros-clientes-inativos").toggleClass("filtros-clientes-inativos-show");
-    });
+      $("legend").on("click", function() {
+        header = $("#header-filtros");
+        if (header.is(".inactive-header")) {
+            header.toggleClass("inactive-header").toggleClass("active-header");
+            header.attr("src", "assets/active-header.gif");
+        } else {
+            header.toggleClass("active-header").toggleClass("inactive-header");
+            header.attr("src", "assets/inactive-header.gif");
+        }
+        $("#fld-set-clientes-inativos").toggleClass("background-clientes-inativos-show");
+        $("#filtros-clientes-inativos").toggleClass("filtros-clientes-inativos-none").toggleClass("filtros-clientes-inativos-show");
+     });
   });
-  function gerarTabelaInativos() {
-    cpCheckeds = new Array();
-    $("#filtro-dias-da-semana").find("input:checked").each(function() {
-          cpCheckeds.push($(this).val());
-    });
-    tipo_do_tempo = "";
-    radios = $('[name=\"tipo[tempo]\"]');
-    for(i = 0; i < radios.length; i++) {
-      if (radios[i].checked) {
-        tipo_do_tempo = radios[i].value;
+  function validarCampos() {
+      found = true;
+      tempo_de_permanencia = $("#tempo_de_permanencia").val();
+      if (tempo_de_permanencia != "") {
+          m = tempo_de_permanencia.match(/\D/);
+          if (m != null) {
+              $("#tempo_de_permanencia").css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+              jAlert('Campo <strong>Tempo</strong> deve se informar apenas números!', 'Atenção');
+              return false;
+          }
+          found = false;
+          radios = $('[name=\"tipo[tempo]\"]');
+          for(i = 0; i < radios.length; i++) {
+              if (radios[i].checked) {
+                  found = true;
+                  break;
+              }
+          }
+          if (!found) {
+              $('#tipo-tempo').find('input').css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+              $("#tempo_de_permanencia").css({'border-color': 'rgba(255, 0, 0, 0.8)', '-webkit-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', '-moz-box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)', 'box-shadow': 'inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6)'});
+              jAlert('Selecione o <strong>Tipo do tempo de permanência</strong> para informar o <strong>Tempo</strong>!', 'Atenção');
+          }
       }
-    }
-    url = '/clientes_inativos_filtrar?aluno_id='+$("#filtro_pessoa_id").val()+'&dias_da_semana='+cpCheckeds+'&mes_da_interrupcao='+$("#filtro_mes_id").val()+'&tipo_do_tempo='+tipo_do_tempo+'&tempo_de_permanencia='+$("#tempo_de_permanencia").val()+'&freq_semanal='+$("#filtro_freq_semanal").val();
-    $("#clientes-inativos").load(url + " #clientes-inativos ");
+      return found;
+  }
+  function gerarTabelaInativos() {
+      if (validarCampos())  {
+          cpCheckeds = new Array();
+          $("#filtro-dias-da-semana").find("input:checked").each(function() {
+              cpCheckeds.push($(this).val());
+          });
+          tipo_do_tempo = "";
+          radios = $('[name=\"tipo[tempo]\"]');
+          for(i = 0; i < radios.length; i++) {
+              if (radios[i].checked) {
+                  tipo_do_tempo = radios[i].value;
+                  break;
+              }
+          }
+          url = '/clientes_inativos_filtrar?aluno_id='+$("#filtro_pessoa_id").val()+'&dias_da_semana='+cpCheckeds+'&mes_da_interrupcao='+$("#filtro_mes_id").val()+'&tipo_do_tempo='+tipo_do_tempo+'&tempo_de_permanencia='+$("#tempo_de_permanencia").val()+'&freq_semanal='+$("#filtro_freq_semanal").val();
+          $("#clientes-inativos").load(url + " #clientes-inativos ");
+      }
   }
 </script>
 <fieldset id="fld-set-clientes-inativos">
-  <legend id="lgd-filtros">Filtros</legend>
+  <legend id="lgd-filtros">Filtros <img id="header-filtros" class="inactive-header" src="assets/inactive-header.gif"></legend>
   <div id="filtros-clientes-inativos" class="filtros-clientes-inativos-none as_form">
-    <!-- form action="< clientes_inativos_filtrar_path %>" method="GET" accept-charset="utf-8" -->
     <ol class="active-scaffold form" >
       <li class="form-element" >
         <dl>
@@ -50,10 +85,10 @@
         <dl>
           <dt><label for="">Tempo de permanência:</label></dt>
           <dd>Selecione uma das seguintes opções para o tempo de permanência:
-            <p>
-              <%= radio_button "tipo", "tempo", "dia" %> Dias
-              <%= radio_button "tipo", "tempo", "mes" %> Meses
-              <%= radio_button "tipo", "tempo", "ano" %> Anos
+            <p id="tipo-tempo">
+              <%= radio_button "tipo", "tempo", "dia" %> <label for="tipo_tempo_dia">Dias</label>
+              <%= radio_button "tipo", "tempo", "mes" %> <label for="tipo_tempo_mes">Meses</label>
+              <%= radio_button "tipo", "tempo", "ano" %> <label for="tipo_tempo_ano">Anos</label>
             </p>
             <p>Tempo: <input type="text" id="tempo_de_permanencia" name="tempo-de-permanencia" value="" /></p>
           </dd>
@@ -81,7 +116,6 @@
       <input type="submit" value="Filtrar" class="active-scaffold submit" onclick="gerarTabelaInativos();"/>
       <%= link_to "Reiniciar", "" %>
     </p>
-    <!-- /form -->
   </div>
 </fieldset>
 <div id="clientes-inativos" class="active-scaffold">
@@ -114,8 +148,8 @@
         <td><%= matricula.hora_da_aula 5 %></td>
         <td><%= matricula.hora_da_aula 6 %></td>
         <td><%= matricula.motivo_da_interrupcao %></td>
-        <td><%= matricula.data_inicio %></td>
-        <td><%= matricula.data_fim %></td>
+        <td><%= matricula.data_inicio.strftime("%d/%m/%Y") %></td>
+        <td><%= matricula.data_fim.strftime("%d/%m/%Y") %></td>
         <td><%= distance_of_time_in_words(matricula.data_fim, matricula.data_inicio) %></td>
         <td><%= matricula.horario_de_aula.count %></td>
         <td><%= matricula.percentual_de_faltas * 100 %>%</td>

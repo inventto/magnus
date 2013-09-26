@@ -306,12 +306,13 @@ i{
 #horarios table td {
   vertical-align: top;
 }
-.periodo .data, #compactar_nomes, #display_names {
+.periodo .data, #compactar_nomes, #display_names,
+#tipo-tempo input, #filtro-dias-da-semana input {
   vertical-align: middle;
   margin: 0px;
 }
 #quadro_de_horarios #displayN, .nome-da-semana,
-.periodo #compactar {
+.periodo #compactar, #tipo-tempo label {
   cursor: pointer;
 }
 #input_compactar_nomes {
