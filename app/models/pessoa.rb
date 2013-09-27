@@ -16,7 +16,7 @@ class Pessoa < ActiveRecord::Base
   mount_uploader :foto, FotoUploader
 
   validates_presence_of :nome, :data_nascimento
-  regexp = /^[^\.][a-z0-9!#$\%&'*+-\/=?^_\`{|}~][a-z0-9!#$\%&'*+-\/=?^_\`{|}~.]{0,62}[a-z0-9!#$\%&'*+-\/=?^_`{|}~]?+[^\.]@([a-z0-9][a-z0-9\-]{0,61}[a-z0-9]?\.)+\w{2,4}$/i
+  regexp = /^[^0-9][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[@][a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{2,4}$/i
   validates_format_of :email, :with => regexp, :message => 'Inválido!', :unless => "email.blank?"
   validates :cpf, :uniqueness => true, :unless => "cpf.blank?", :cpf => true
   validates :codigo_de_acesso, :uniqueness => true
