@@ -77,7 +77,7 @@ ControleDePresencaMagnus::Application.configure do
     # :tls                => true,
     :domain             => 'gmail.com', #you can also use google.com
     :authentication     => :plain,
-    :user_name => "invent.to.sistemas@gmail",
+    :user_name => "invent.to.sistemas@gmail.com",
     :password => '!@#123abc#@!'
   }
 

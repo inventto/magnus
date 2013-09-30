@@ -378,7 +378,7 @@ class Pessoa < ActiveRecord::Base
     presencas = get_ultimas_aulas
     if not presencas.blank?
       aula = presencas.first
-      if not aula.justificativa_de_falta.nil? and not aula.justificativa_de_falta.descricao.match(/adiantado/).nil? # se for um adiantamento
+      if aula and aula.justificativa_de_falta and aula.justificativa_de_falta.descricao and not aula.justificativa_de_falta.descricao.match(/adiantado/).nil? # se for um adiantamento
         aula = presencas[1] # presencas[1] para retornar o segundo registro já que o primeiro é um adiantamento
       end
     end
