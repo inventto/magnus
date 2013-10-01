@@ -28,12 +28,15 @@
           <th>Hora de Chegada</th>
           <th>Hora de Saída</th>
           <th>Total de horas trabalhadas</th>
+          <th>Total de horas arredondada</th>
         </tr>
       </thead>
       <tbody>
         <% sum_a_day = 0 %>
         <% sum_a_month = 0 %>
         <% sum_a_week = 0 %>
+        <% sum_round_a_week = 0 %>
+        <% sum_round_a_month = 0 %>
         <% beginning_of_week = nil %>
         <% even_record = false %>
         <% @registros_de_ponto.each do |ponto| %>
@@ -41,8 +44,11 @@
             <tr>
               <td colspan="3">Total da semana:</td>
               <td><%= seconds_to_txt(sum_a_week) %></td>
+              <td><%= seconds_to_txt(sum_round_a_week) %></td>
             </tr>
+            <% sum_round_a_month += sum_round_a_week %>
             <% sum_a_week = 0 %>
+            <% sum_round_a_week = 0 %>
           <% end %>
 
           <% if beginning_of_week != ponto.data.at_beginning_of_week %>
@@ -57,14 +63,19 @@
             <% sum_a_week += sum_a_day %>
 
             <td><%= Time.at(sum_a_day).gmtime.strftime("%H:%M") %></td>
+            <td><%= round_h = round_hour(sum_a_day) %></td>
+            <% sum_round_a_week += txt_to_seg(round_h) %>
           </tr>
 
           <% if @registros_de_ponto.last == ponto %>
             <tr>
               <td colspan="3">Total da semana:</td>
               <td><%= seconds_to_txt(sum_a_week) %></td>
+              <td><%= seconds_to_txt(sum_round_a_week) %></td>
             </tr>
+            <% sum_round_a_month += sum_round_a_week %>
             <% sum_a_week = 0 %>
+            <% sum_round_a_week = 0 %>
           <% end %>
 
           <% sum_a_month += sum_a_day %>
@@ -73,5 +84,6 @@
       </tbody>
     </table>
     <p>Total no mês: <%= seconds_to_txt(sum_a_month) %></p>
+    <p>Total no mês arredondado: <%= seconds_to_txt(sum_round_a_month) %></p>
   <% end %>
 </div>

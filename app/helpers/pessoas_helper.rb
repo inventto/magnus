@@ -631,4 +631,36 @@ module PessoasHelper
    min = (seconds % 3600) / 60
    "#{hours.to_i.to_s.rjust(2, '0')}:#{min.to_i.to_s.rjust(2, '0')}"
   end
+
+  def round_hour secs
+    hour = secs / 3600
+    m = secs % 3600 / 60
+    if m > 0 and m < 15
+      if m < 7.5
+        m = 0
+      else
+        m = 15
+      end
+    elsif m > 15 and m < 30
+      if m < 22.5
+        m = 15
+      else
+        m = 30
+      end
+    elsif m > 30 and m < 45
+      if m < 37.5
+        m = 30
+      else
+        m = 45
+      end
+    elsif m > 45 and m <= 59
+      if m < 52
+        m = 45
+      else
+        m = 0
+        hour += 1
+      end
+    end
+    "#{hour.to_i.to_s.rjust(2, '0')}:#{m.to_i.to_s.rjust(2, '0')}"
+  end
 end
