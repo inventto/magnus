@@ -50,6 +50,10 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/clientes_inativos_filtrar", to: "clientes_inativos#filtrar"
 
+  match "/get_codigo_do_bairro", to: "pessoas#get_codigo_do_bairro"
+
+  match "/get_codigo_da_cidade", to: "pessoas#get_codigo_da_cidade"
+
   get "/agenda_do_dia/filtrar"
 
   get "/clientes_inativos/filtrar"

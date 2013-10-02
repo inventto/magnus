@@ -8,6 +8,11 @@ module PessoasHelper
     "<span class='id'>#{record.id}</span>"
   end
 
+  def endereco_form_column(record, column)
+    @pessoa = record
+    render :partial => "endereco"
+  end
+
   def codigo_de_acesso_form_column(record, column)
     script = "<script type='text/javascript'>
                  function gerarCodigoDeAcesso() {

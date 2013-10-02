@@ -237,4 +237,20 @@ class PessoasController < ApplicationController
 
     render :partial => "registros_de_ponto_por_mes"
   end
+
+  def get_codigo_do_bairro
+    if params and params["nome"]
+      bairro = Bairro.where("nome ILIKE '%#{params['nome']}%'")
+    end
+    id = (bairro.blank?) ? 0 : bairro.first.id
+    render :text => id
+  end
+
+  def get_codigo_da_cidade
+    if params and params["nome"]
+      cidade = Cidade.where("nome ILIKE '%#{params['nome']}%'")
+    end
+    id = (cidade.blank?) ? 0 : cidade.first.id
+    render :text => id
+  end
 end
