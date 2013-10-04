@@ -17,7 +17,6 @@
           $(".cidade-input").val(codigo);
       });
   }
-
   $(".cep-input").on('blur', function() {
       $.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+$('.cep-input').val().replace(/\D/g, ""), function(){
           if(resultadoCEP["resultado"]){
@@ -96,7 +95,6 @@
               </dt>
               <dd>
                 <select class="bairro-input" name="record[endereco][bairro]" id="record_bairro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" >
-                  <% puts "===Bairro #{@pessoa.endereco.bairro.inspect}" %>
                   <option selected value=<%= (not @pessoa.endereco.nil? and not @pessoa.endereco.bairro.nil?) ? @pessoa.endereco.bairro.id : "selecione" %> >
                     <% if not @pessoa.endereco.nil? and not @pessoa.endereco.bairro.nil? %>
                       <%= @pessoa.endereco.bairro.nome  %>
@@ -118,7 +116,13 @@
               </dt>
               <dd>
                 <select class="cidade-input" name="record[endereco][cidade]" id="record_ciade_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" >
-                  <option selected value="selecione"> - Selecione - </option>
+                  <option selected value=<%= (not @pessoa.endereco.nil? and not @pessoa.endereco.cidade.nil?) ? @pessoa.endereco.cidade.id : "selecione" %> >
+                    <% if not @pessoa.endereco.nil? and not @pessoa.endereco.cidade.nil? %>
+                      <%= @pessoa.endereco.cidade.nome %>
+                    <% else %>
+                      - Selecione -
+                    <% end %>
+                  </option>
                   <% Cidade.order(:nome).all.each do |c| %>
                     <option value="<%= c.id %>"><%= c.nome %></option>
                   <% end %>
