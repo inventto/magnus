@@ -640,9 +640,10 @@ module PessoasHelper
   def round_hour secs
     hour = secs / 3600
     m = secs % 3600 / 60
-    if m > 0
-      m = m - (m % 5)
+    if m > 30
+      hour += 1
     end
+    m = 0
     "#{hour.to_i.to_s.rjust(2, '0')}:#{m.to_i.to_s.rjust(2, '0')}"
   end
 end

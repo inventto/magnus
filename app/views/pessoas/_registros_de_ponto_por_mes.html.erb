@@ -63,7 +63,7 @@
             <% sum_a_week += sum_a_day %>
 
             <td><%= Time.at(sum_a_day).gmtime.strftime("%H:%M") %></td>
-            <td><%= round_h = round_hour(sum_a_day) %></td>
+            <td><%= round_h = (ponto.pessoa_id == 136) ? seconds_to_txt(sum_a_day) : round_hour(sum_a_day) %></td>
             <% sum_round_a_week += txt_to_seg(round_h) %>
           </tr>
 
