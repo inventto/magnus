@@ -18,14 +18,16 @@
       });
   }
   $(".cep-input").on('blur', function() {
-      $.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+$('.cep-input').val().replace(/\D/g, ""), function(){
-          if(resultadoCEP["resultado"]){
-              logradouro = unescape(resultadoCEP["tipo_logradouro"]) + " " + unescape(resultadoCEP["logradouro"]);
-              $(".logradouro-input").val(logradouro);
-              setBairro(unescape(resultadoCEP["bairro"]));
-              setCidade(unescape(resultadoCEP["cidade"]));
-           }
-      });
+      if ($(this).val().replace(/\D/g, "") != "") {
+          $.getScript("http://cep.republicavirtual.com.br/web_cep.php?formato=javascript&cep="+$(this).val().replace(/\D/g, ""), function(){
+              if(resultadoCEP["resultado"]){
+                  logradouro = unescape(resultadoCEP["tipo_logradouro"]) + " " + unescape(resultadoCEP["logradouro"]);
+                  $(".logradouro-input").val(logradouro);
+                  setBairro(unescape(resultadoCEP["bairro"]));
+                  setCidade(unescape(resultadoCEP["cidade"]));
+              }
+          });
+      }
   });
 </script>
 <li class="sub-form horizontal-sub-form  endereco-sub-form" id="as_pessoas-<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>-endereco-subform" >
@@ -64,7 +66,7 @@
                 <label for="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Logradouro</label>
               </dt>
               <dd>
-              <input class="logradouro-input text-input" id="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][logradouro]" value=<%= (@pessoa.endereco.nil? ) ? "" : @pessoa.endereco.logradouro %> ></input>
+              <input class="logradouro-input text-input" id="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][logradouro]" value="<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.logradouro %>" ></input>
               </dd>
             </dl>
           </td>
@@ -84,7 +86,7 @@
                 <label for="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Complemento</label>
               </dt>
               <dd>
-              <input class="complemento-input text-input" id="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][complemento]" value=<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.complemento %> ></input>
+              <input class="complemento-input text-input" id="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][complemento]" value="<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.complemento %>" ></input>
               </dd>
             </dl>
           </td>
