@@ -53,7 +53,7 @@
                 <label for="record_cep_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Cep</label>
               </dt>
               <dd>
-                <input class="cep-input text-input" id="record_cep_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][cep]" value=<%= @pessoa.endereco.cep %> />
+              <input class="cep-input text-input" id="record_cep_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][cep]" value=<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.cep %> />
               </dd>
             </dl>
           </td>
@@ -64,7 +64,7 @@
                 <label for="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Logradouro</label>
               </dt>
               <dd>
-                <input class="logradouro-input text-input" id="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][logradouro]" value=<%= @pessoa.endereco.logradouro %>/>
+              <input class="logradouro-input text-input" id="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][logradouro]" value=<%= (@pessoa.endereco.nil? ) ? "" : @pessoa.endereco.logradouro %> ></input>
               </dd>
             </dl>
           </td>
@@ -74,7 +74,7 @@
                 <label for="record_numero_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Numero</label>
               </dt>
               <dd>
-                <input class="numero-input text-input" id="record_numero_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][numero]" value=<%= @pessoa.endereco.numero %> />
+              <input class="numero-input text-input" id="record_numero_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][numero]" value=<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.numero %> ></input>
               </dd>
             </dl>
           </td>
@@ -84,7 +84,7 @@
                 <label for="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Complemento</label>
               </dt>
               <dd>
-                <input class="complemento-input text-input" id="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][complemento]" value=<%= @pessoa.endereco.complemento %> />
+              <input class="complemento-input text-input" id="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][complemento]" value=<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.complemento %> ></input>
               </dd>
             </dl>
           </td>

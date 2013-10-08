@@ -1,0 +1,104 @@
+<div id='estatisticas_table' class='active-scaffold'>
+  <table>
+    <thead>
+      <tr>
+        <th>Presenças</th>
+        <th>Aulas Extras</th>
+        <th>Treinamento com direito à realocação(+)</th>
+        <th>Faltas sem comunicar com antecedência e/ou expirados</th>
+        <th>Treinamentos realocados(-)</th>
+        <th>Saldo de Treinamentos para realocação(+)</th>
+        <th>Total de aulas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class='tip_trigger' style='background-color: green;'>
+          <%= @count_presencas %>
+          <span class='tip'><%= @perc_presencas = calcular_percentual(@count_presencas, @total_de_aulas) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: lightblue;'>
+          <%= @count_aulas_extras %>
+          <span class='tip'><%= @perc_aulas_extras = calcular_percentual(@count_aulas_extras, @total_de_aulas) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: yellow;'>
+          <%= @count_faltas_com_direito_a_reposicao %>
+          <span class='tip'><%= calcular_percentual(@count_faltas_com_direito_a_reposicao, @total_de_aulas) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: red; color: black;'>
+          <%= @count_faltas_sem_direito_a_reposicao %>
+          <span class='tip'><%= @perc_faltas_sem_direito_a_reposicao = calcular_percentual(@count_faltas_sem_direito_a_reposicao, @total_de_aulas) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: lightgreen;'>
+          <%= @count_aulas_realocadas %>
+          <span class='tip'><%= @perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_de_aulas) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: white;'>
+          <%= @count_aulas_a_repor %>
+          <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_aulas_a_repor, @total_de_aulas) %>%</span>
+        </td>
+        <td><%= @total_de_aulas %></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<br/>
+<div id='grafico_das_estatisticas_do_aluno' style='height: 400px; min-width: 600px'></div>
+<script type='text/javascript'>
+    $(document).ready(function() {graph();});
+    $(document).ajaxComplete(function(){graph();});
+    function graph() {
+        colors= [
+            '#109415', // verde escuro
+            '#8fee90', // verde claro
+            '#f5e9e9',    // branco
+            '#F00C0C'  // vermelho
+        ];
+        Highcharts.getOptions().colors = Highcharts.map(colors,
+        function(color) {
+            return {
+                radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+                stops: [
+                    [0, color],
+                    [1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+                ]
+            };
+        });
+        new Highcharts.Chart({
+            chart: {
+                renderTo: 'grafico_das_estatisticas_do_aluno',
+                type: 'pizza'
+            },
+            title: {
+                text: 'Gráfico das Estatísticas dos Treinamentos'
+            },
+            tooltip: {
+                pointFormat: '{point.y}%'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000',
+                        formatter: function() {
+                            return this.point.name + ': ' + this.point.y + '%';
+                        }
+                    },
+                    showInLegend: false
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Estatísticas',
+                data: [
+                    ['Presenças', <%= @perc_presencas + @perc_aulas_extras %>],
+                    ['Aulas Realocadas', <%= @perc_de_aulas_realocadas %>],
+                    ['Aulas a serem Realocadas', <%= @perc_aulas_a_repor %>],
+                    ['Faltas não Avisadas', <%= @perc_faltas_sem_direito_a_reposicao %>],
+                ]
+            }]
+        });
+    }
+</script>
