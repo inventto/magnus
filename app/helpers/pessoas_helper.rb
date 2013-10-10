@@ -5,11 +5,13 @@ module PessoasHelper
   end
 
   def id_form_column(record, column)
-    "<span class='id'>#{record.id}</span>"
+    if record
+      "<span class='id'>#{record.id}</span>"
+    end
   end
 
   def endereco_form_column(record, column)
-    @pessoa = record
+    @pessoas = record
     render :partial => "endereco"
   end
 

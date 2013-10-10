@@ -1,5 +1,5 @@
 class Endereco < ActiveRecord::Base
-   attr_accessible :bairro_id, :cidade_id, :complemento, :logradouro, :numero, :cep
+   attr_accessible :cep, :logradouro, :numero, :complemento, :bairro_id, :cidade_id
   has_one :pessoa
   belongs_to :bairro
   belongs_to :cidade

@@ -30,9 +30,9 @@
       }
   });
 </script>
-<li class="sub-form horizontal-sub-form  endereco-sub-form" id="as_pessoas-<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>-endereco-subform" style="margin-right: 500px;" >
+<li class="sub-form horizontal-sub-form  endereco-sub-form" id="as_pessoas-<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>-endereco-subform" style="margin-right: 500px;" >
   <h5>Endereço</h5>
-  <div id='as_pessoas-<%= (@pessoa.id.nil?) ? 99999999999 : @pessoa.id %>-endereco-subform-div'>
+  <div id='as_pessoas-<%= (@pessoas.id.nil?) ? 99999999999 : @pessoas.id %>-endereco-subform-div'>
     <table>
       <thead>
         <tr>
@@ -44,18 +44,18 @@
           <th class='cidade-column'>Cidade</th>
         </tr>
       </thead>
-      <tbody id="as_pessoas-<%= (@pessoa.id.nil?) ? 99999999999 : @pessoa.id %>-endereco-subform-list">
+      <tbody id="as_pessoas-<%= (@pessoas.id.nil?) ? 99999999999 : @pessoas.id %>-endereco-subform-list">
         <tr class='association-record-errors'>
-          <td colspan="7" id="as_pessoas-endereco-<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.id %>-0-messages"></td>
+          <td colspan="7" id="as_pessoas-endereco-<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.id %>-0-messages"></td>
         </tr>
-        <tr id="association-record_id_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">
+        <tr id="association-record_id_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">
           <td>
             <dl>
               <dt>
-                <label for="record_cep_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Cep</label>
+                <label for="record_cep_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Cep</label>
               </dt>
               <dd>
-              <input class="cep-input text-input" id="record_cep_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][cep]" value=<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.cep %> />
+              <input class="cep-input text-input" id="record_cep_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" type="text" name="record[endereco][cep]" value=<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.cep %> />
               </dd>
             </dl>
           </td>
@@ -63,43 +63,43 @@
           <td>
             <dl>
               <dt>
-                <label for="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Logradouro</label>
+                <label for="record_logradouro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Logradouro</label>
               </dt>
               <dd>
-              <input class="logradouro-input text-input" id="record_logradouro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][logradouro]" value="<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.logradouro %>" ></input>
+              <input class="logradouro-input text-input" id="record_logradouro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" type="text" name="record[endereco][logradouro]" value="<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.logradouro %>" ></input>
               </dd>
             </dl>
           </td>
           <td>
             <dl>
               <dt>
-                <label for="record_numero_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Numero</label>
+                <label for="record_numero_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Numero</label>
               </dt>
               <dd>
-              <input class="numero-input text-input" id="record_numero_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][numero]" value=<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.numero %> ></input>
+              <input class="numero-input text-input" id="record_numero_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" type="text" name="record[endereco][numero]" value=<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.numero %> ></input>
               </dd>
             </dl>
           </td>
           <td>
             <dl>
               <dt>
-                <label for="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Complemento</label>
+                <label for="record_complemento_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Complemento</label>
               </dt>
               <dd>
-              <input class="complemento-input text-input" id="record_complemento_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" type="text" name="record[endereco][complemento]" value="<%= (@pessoa.endereco.nil?) ? "" : @pessoa.endereco.complemento %>" ></input>
+              <input class="complemento-input text-input" id="record_complemento_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" type="text" name="record[endereco][complemento]" value="<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.complemento %>" ></input>
               </dd>
             </dl>
           </td>
           <td>
             <dl>
               <dt>
-                <label for="record_bairro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Bairro</label>
+                <label for="record_bairro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Bairro</label>
               </dt>
               <dd>
-                <select class="bairro-input" name="record[endereco][bairro]" id="record_bairro_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" >
-                  <option selected value=<%= (not @pessoa.endereco.nil? and not @pessoa.endereco.bairro.nil?) ? @pessoa.endereco.bairro.id : "selecione" %> >
-                    <% if not @pessoa.endereco.nil? and not @pessoa.endereco.bairro.nil? %>
-                      <%= @pessoa.endereco.bairro.nome  %>
+                <select class="bairro-input" name="record[endereco][bairro]" id="record_bairro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" >
+                  <option selected value=<%= (not @pessoas.endereco.nil? and not @pessoas.endereco.bairro.nil?) ? @pessoas.endereco.bairro.id : "" %> >
+                    <% if not @pessoas.endereco.nil? and not @pessoas.endereco.bairro.nil? %>
+                      <%= @pessoas.endereco.bairro.nome  %>
                     <% else %>
                       - Selecione -
                     <% end %>
@@ -114,13 +114,13 @@
           <td>
             <dl>
               <dt>
-                <label for="record_cidade_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco">Cidade</label>
+                <label for="record_cidade_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Cidade</label>
               </dt>
               <dd>
-                <select class="cidade-input" name="record[endereco][cidade]" id="record_ciade_<%= (@pessoa.id.nil?) ? "" : @pessoa.id %>_endereco" >
-                  <option selected value=<%= (not @pessoa.endereco.nil? and not @pessoa.endereco.cidade.nil?) ? @pessoa.endereco.cidade.id : "selecione" %> >
-                    <% if not @pessoa.endereco.nil? and not @pessoa.endereco.cidade.nil? %>
-                      <%= @pessoa.endereco.cidade.nome %>
+                <select class="cidade-input" name="record[endereco][cidade]" id="record_ciade_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" >
+                  <option selected value=<%= (not @pessoas.endereco.nil? and not @pessoas.endereco.cidade.nil?) ? @pessoas.endereco.cidade.id : "" %> >
+                    <% if not @pessoas.endereco.nil? and not @pessoas.endereco.cidade.nil? %>
+                      <%= @pessoas.endereco.cidade.nome %>
                     <% else %>
                       - Selecione -
                     <% end %>
