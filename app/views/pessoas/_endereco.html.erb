@@ -55,7 +55,7 @@
                 <label for="record_cep_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Cep</label>
               </dt>
               <dd>
-              <input class="cep-input text-input" id="record_cep_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" type="text" name="record[endereco][cep]" value=<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.cep %> />
+              <input class="cep-input text-input" id="record_cep_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" type="text" name="record[endereco][cep]" value=<%= (@pessoas.endereco.nil?) ? "" : @pessoas.endereco.cep %> ></input>
               </dd>
             </dl>
           </td>
