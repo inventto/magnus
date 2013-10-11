@@ -211,36 +211,30 @@ module PessoasHelper
     end
   end
 
+  def inputEnabled
+    "<input type='checkbox' disabled='enabled' checked='checked' />".html_safe
+  end
+
+  def inputDisabled
+    "<input type='checkbox' disabled='disabled' />".html_safe
+  end
+
   def presencas_column(record, column)
     if record.e_funcionario
       @registros_de_ponto = RegistroDePonto.where(:pessoa_id => record.id)
       @registros_de_ponto = @registros_de_ponto.where("data BETWEEN ? AND ?", Date.today.beginning_of_month, Date.today.end_of_month).order("data desc")
       render :partial => "registros_de_ponto_por_mes"
     else
-    #return if record.presencas.blank? #caso seja aluno novo e sem registros de presenças
-    inputDisabled = "<input type='checkbox' disabled='disabled' />"
-    inputEnabled = "<input type='checkbox' disabled='enabled' checked='checked' />"
-    conteudo = ""
-    even_record = false
-
-    record.presencas.order("data desc").order("horario desc").limit(5).each do |presenca|
-      conteudo << ( (even_record) ? "<tr class='record even-record'>" : "<tr class='record'>" )
-      conteudo << "<td>" << presenca.data.strftime("%d/%m/%Y") << "</td>"
-      conteudo << "<td>" << presenca.horario << "</td>"
-      conteudo << "<td>" << presenca.pontualidade.to_s << "</td>"
-      conteudo << "<td>" << ( (presenca.presenca) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.realocacao) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.data_de_realocacao.nil?) ? "" : presenca.data_de_realocacao.strftime("%d/%m/%Y") ) << "</td>"
-      conteudo << "<td>" << ( (presenca.fora_de_horario) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.tem_direito_a_reposicao) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.aula_extra) ? inputEnabled : inputDisabled ) << "</td>"
-      conteudo << "<td>" << ( (presenca.justificativa_de_falta.nil?) ? get_link(presenca) : (presenca.justificativa_de_falta.descricao.nil?) ? "" : presenca.justificativa_de_falta.descricao ) << "</td>"
-      conteudo << "</tr>"
-      even_record = !even_record
+      @pessoa = record
+      if column
+        render :partial => "presenca"
+      else
+        render :partial => "pessoas/presenca"
+      end
     end
+  end
 
-    table = get_tabela_de_presencas(conteudo)
-
+  def aulas_column(record, column)
     aluno_id = record.id
     hora_certa = Time.now + Time.zone.utc_offset
 
@@ -256,8 +250,7 @@ module PessoasHelper
     # realocacao
     realocacao = get_realocacao(aluno_id, data)
 
-    (table << justify_next_class << realocacao << get_script).html_safe
-    end
+    (justify_next_class << realocacao << get_script).html_safe
   end
 
   def get_realocacao aluno_id, data
@@ -505,7 +498,7 @@ module PessoasHelper
     if presenca.presenca
       return ""
     else
-      return "<a href='/presencas/#{presenca.id}/edit'>Justificar</a>"
+      return "<a href='/presencas/#{presenca.id}/edit'>Justificar</a>".html_safe
     end
   end
 

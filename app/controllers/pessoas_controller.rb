@@ -8,6 +8,7 @@ class PessoasController < ApplicationController
     conf.columns[:e_funcionario].label = "É Funcionário?"
     conf.columns = [:id, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :e_funcionario, :codigo_de_acesso, :foto, :endereco, :telefones]
     conf.show.columns << :presencas
+    conf.show.columns << :aulas
     conf.show.columns << :pontualidade
     conf.show.columns << :estatisticas
     conf.columns[:data_nascimento].options[:format] = :default
