@@ -86,7 +86,11 @@ module PessoasHelper
 
       @total_de_aulas = presencas.count
 
-      render :partial => 'estatistica'
+      if column
+        render :partial => 'estatistica'
+      else
+        render :partial => 'pessoas/estatistica'
+      end
     end
   end
 
@@ -182,7 +186,6 @@ module PessoasHelper
           count_menor_que_menos_quinze += 1
         end
       end
-
       @pontualidades = {
         :menor_que_menos_quinze => calcular_percentual(count_menor_que_menos_quinze, total_de_presencas),
         :maior_que_menos_quinze => calcular_percentual(count_maior_que_menos_quinze, total_de_presencas),
@@ -190,8 +193,11 @@ module PessoasHelper
         :maior_que_cinco        => calcular_percentual(count_maior_que_cinco, total_de_presencas),
         :maior_que_quinze       => calcular_percentual(count_maior_que_quinze, total_de_presencas)
       }
-
-      render :partial => "pontualidade"
+      if column
+        render :partial => "pontualidade"
+      else
+        render :partial => 'pessoas/pontualidade'
+      end
     else
       return record.pontualidade
     end

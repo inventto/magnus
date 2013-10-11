@@ -66,6 +66,10 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   post "registro_presenca/registrar_ponto_android"
 
+  post "dados_do_aluno/show"
+
+  get "dados_do_aluno/index"
+
   post "/registro_presenca/marcar_falta"
 
   get "/registro_presenca/marcar_falta"

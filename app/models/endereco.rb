@@ -14,4 +14,28 @@ class Endereco < ActiveRecord::Base
     end
     descricao
   end
+
+  def completo
+    address = ""
+    if not self.blank?
+      endereco = self
+      address << endereco.logradouro
+      if endereco.numero
+        address << ", " << endereco.numero
+      end
+      if endereco.complemento
+        address << " - " << endereco.complemento
+      end
+      if endereco.bairro
+        address << " - " << endereco.bairro.nome
+      end
+      if endereco.cidade
+        address << " - " << endereco.cidade.nome.chomp << "/" << endereco.cidade.estado.sigla
+      end
+      if endereco.cep
+        address << " - " << endereco.cep
+      end
+    end
+    address
+  end
 end
