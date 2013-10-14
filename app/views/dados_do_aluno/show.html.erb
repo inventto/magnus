@@ -1,22 +1,44 @@
-<div id="dados">
-  <p><label for="foto">Foto: </label><%= @aluno.foto %></p>
-  <p><label for="nome">Nome: </label><%= @aluno.nome %></p>
-  <p><label for="cpf">CPF: </label><%= @aluno.cpf %></p>
-  <p><label for="email">Email: </label><%= @aluno.email %></p>
-  <p><label for="sexo">Sexo: </label><%= @aluno.sexo %></p>
-  <p><label for="data">Data de Nascimento: </label><%= @aluno.data_nascimento.strftime("%d/%m/%Y") %></p>
-  <p><label for="codigo">Código de Acesso: </label><%= @aluno.codigo_de_acesso %></p>
-  <p><label for="endereco">Endereço: </label><%= (@aluno.endereco.blank?) ? "" : @aluno.endereco.completo %></p>
-  <p><label for="telefone">Telefones: </label>
-  <% if not @aluno.telefones.blank? %>
-    <% @aluno.telefones.each do |fone| %>
-      <p><%= fone.label %></p>
-    <% end %>
-  <% end %>
-  <label for="presencas">Presencas: </label>
-  <%= presencas_column @aluno, nil %>
-  <label for="estatistica">Estatisticas: </label>
-  <%= estatisticas_column @aluno, nil %>
-  <label for="pontualidade">Pontualidade: </label>
-  <%= pontualidade_column(@aluno, nil)  %>
+<div id="s_pessoas-active-scaffold" class="active-scaffold active-scaffold-as_pessoas pessoas-view default-theme">
+  <table cellpadding="0" cellspacing="0">
+    <tbody class="records" id="as_pessoas-tbody">
+      <tr class="inline-adapter as_adapter" id="as_pessoas-nested-<%= @aluno.id %>-row" >
+        <td colspan="12" class="inline-adapter-cell">
+          <div class="show-view pessoas-view view" style="height: 1500px;" >
+            <dl>
+              <dt>Foto:</dt>
+              <dd><img src="<%= @aluno.foto %>" height="48" /></dd>
+              <dt>Nome:</dt>
+              <dd><%= @aluno.nome %></dd>
+              <dt>CPF:</dt>
+              <dd><%= @aluno.cpf %></dd>
+              <dt>Email:</dt>
+              <dd><%= @aluno.email %></dd>
+              <dt>Sexo:</dt>
+              <dd><%= @aluno.sexo %></dd>
+              <dt>Data de Nascimento:</dt>
+              <dd><%= @aluno.data_nascimento.strftime("%d/%m/%Y") %></dd>
+              <dt>Código de Acesso:</dt>
+              <dd><%= @aluno.codigo_de_acesso %></dd>
+              <dt>Endereço:</dt>
+              <dd><%= (@aluno.endereco.blank?) ? "" : @aluno.endereco.completo %></dd>
+              <dt>Telefones:</dt>
+              <dd>
+                <% if not @aluno.telefones.blank? %>
+                  <% @aluno.telefones.each do |fone| %>
+                    <%= fone.label %><br />
+                  <% end %>
+                <% end %>
+              </dd>
+              <dt>Presenças:</dt>
+              <dd><%= presencas_column(@aluno, nil) %></dd>
+              <dt>Estatisticas:</dt>
+              <dd><%= estatisticas_column(@aluno, nil) %></dd>
+              <dt>Pontualidade:</dt>
+              <dd><%= pontualidade_column(@aluno, nil) %></dd>
+            </dl>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
