@@ -62,27 +62,6 @@
           <td>
             <dl>
               <dt>
-                <label for="record_cidade_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Cidade</label>
-              </dt>
-              <dd>
-                <select class="cidade-input" name="record[endereco][cidade]" id="record_ciade_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" >
-                  <option selected value=<%= (not @pessoas.endereco.nil? and not @pessoas.endereco.cidade.nil?) ? @pessoas.endereco.cidade.id : "" %> >
-                    <% if not @pessoas.endereco.nil? and not @pessoas.endereco.cidade.nil? %>
-                      <%= @pessoas.endereco.cidade.nome %>
-                    <% else %>
-                      - Selecione -
-                    <% end %>
-                  </option>
-                  <% Cidade.order(:nome).all.each do |c| %>
-                    <option value="<%= c.id %>"><%= c.nome %></option>
-                  <% end %>
-                </select>
-              </dd>
-            </dl>
-          </td>
-          <td>
-            <dl>
-              <dt>
                 <label for="record_logradouro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Logradouro</label>
               </dt>
               <dd>
@@ -131,6 +110,28 @@
               </dd>
             </dl>
           </td>
+          <td>
+            <dl>
+              <dt>
+                <label for="record_cidade_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Cidade</label>
+              </dt>
+              <dd>
+                <select class="cidade-input" name="record[endereco][cidade]" id="record_ciade_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" >
+                  <option selected value=<%= (not @pessoas.endereco.nil? and not @pessoas.endereco.cidade.nil?) ? @pessoas.endereco.cidade.id : "" %> >
+                    <% if not @pessoas.endereco.nil? and not @pessoas.endereco.cidade.nil? %>
+                      <%= @pessoas.endereco.cidade.nome %>
+                    <% else %>
+                      - Selecione -
+                    <% end %>
+                  </option>
+                  <% Cidade.order(:nome).all.each do |c| %>
+                    <option value="<%= c.id %>"><%= c.nome %></option>
+                  <% end %>
+                </select>
+              </dd>
+            </dl>
+          </td>
+
         </tr>
       </tbody>
     </table>
