@@ -9,6 +9,8 @@ class DadosDoAlunoController < ApplicationController
     error_message = []
     if params[:nome].blank?
       error_message << "Campo <strong>Nome</strong> deve ser informado!"
+    elsif params[:nome].length < 3
+      error_message << "<strong>Nome</strong> deve possuir ao menos 3 caracteres!"
     end
     if params[:codigo_de_acesso].blank?
       error_message << "Campo <strong>Código de acesso</strong> deve ser informado!"
