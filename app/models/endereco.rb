@@ -19,7 +19,9 @@ class Endereco < ActiveRecord::Base
     address = ""
     if not self.blank?
       endereco = self
-      address << endereco.logradouro
+      if endereco.logradouro
+        address << endereco.logradouro
+      end
       if endereco.numero
         address << ", " << endereco.numero
       end
