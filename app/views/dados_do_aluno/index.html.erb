@@ -1,7 +1,7 @@
 <script type="text/javascript">
    $('.message-error').show('fade',1000);
    setTimeout("$('.message-error').hide('fade',1000);", 5000);
-   $(document).ready(function() { data.focus(); });
+   $(document).ready(function() { nome.focus(); });
 </script>
 <% if flash[:error] %>
   <div class="message-error border"><%= flash[:error] %></div>
@@ -10,8 +10,8 @@
 <div id="auth-aluno">
   <h2>Entrar</h2>
   <form action="show" method="get" accept-charset="utf-8">
-    <label for="data">Data de Nascimento:<label>
-    <p><input class='text-input' id='data' name='data' type='date' value='' /></p>
+    <label for="nome">Nome:<label>
+    <p><%= text_field_tag "nome" %></p>
     <label for="codigo_de_acesso">Código de acesso:<label>
     <p><%= text_field_tag "codigo_de_acesso" %></p>
 

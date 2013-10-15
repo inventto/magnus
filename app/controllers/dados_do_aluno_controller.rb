@@ -7,8 +7,8 @@ class DadosDoAlunoController < ApplicationController
 
   def show
     error_message = []
-    if params[:data].blank?
-      error_message << "Campo <strong>Data</strong> deve ser informado!"
+    if params[:nome].blank?
+      error_message << "Campo <strong>Nome</strong> deve ser informado!"
     end
     if params[:codigo_de_acesso].blank?
       error_message << "Campo <strong>Código de acesso</strong> deve ser informado!"
@@ -18,15 +18,17 @@ class DadosDoAlunoController < ApplicationController
       flash[:error] = msg.html_safe
       render "/dados_do_aluno/index" and return
     else
-      data = params[:data].to_date
+      nome = params[:nome]
       codigo = params[:codigo_de_acesso]
 
-      @aluno = Pessoa.find_by_data_nascimento_and_codigo_de_acesso(data, codigo)
+      @aluno = Pessoa.where("nome ILIKE '%#{nome.strip.gsub(/\s/, "%")}%'").where(:codigo_de_acesso => codigo)
 
-      if @aluno.nil?
+      if @aluno.blank?
         msg = "Aluno não encontrado! Verifique os dados informados."
         flash[:error] = msg.html_safe
         render "/dados_do_aluno/index" and return
+      else
+        @aluno = @aluno.first
       end
     end
   end
