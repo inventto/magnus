@@ -12,7 +12,7 @@ class RegistroPresencaController < ApplicationController
         redirect_to "/registro_presenca"
         return
       else
-        @aluno = Pessoa.com_matricula_valida((Time.now + Time.zone.utc_offset).to_date).find_by_codigo_de_acesso(params[:codigo])
+        @aluno = Pessoa.com_matricula_valida((Time.now + Time.zone.gmt_offset).to_date).find_by_codigo_de_acesso(params[:codigo])
         if not @aluno
           raise ""
         end
@@ -81,7 +81,7 @@ class RegistroPresencaController < ApplicationController
 
   def get_periodo
     periodo = {:manha => false, :tarde => false, :noite => false}
-    today = (Rails.env.production?) ? Time.now + Time.zone.utc_offset : Time.now
+    today = (Rails.env.production?) ? Time.now + Time.zone.gmt_offset : Time.now
     if (hora = today.hour) < 12.hours
       periodo[:manha] = true
     elsif hora > 12.hours and hora < 18.hours
@@ -136,7 +136,7 @@ class RegistroPresencaController < ApplicationController
         raise ""
       end
     rescue
-      logger.warn("=== .: Código do Funcionário Inválido: #{params[:codigo]} às #{(Time.now + Time.zone.utc_offset)} :.")
+      logger.warn("=== .: Código do Funcionário Inválido: #{params[:codigo]} às #{(Time.now + Time.zone.gmt_offset)} :.")
       flash[:error] = "Código do Funcionário Inválido!"
       render :text => [flash[:error], "codigo_funcionario_invalido"].join("|") and return
     end
@@ -172,12 +172,12 @@ class RegistroPresencaController < ApplicationController
 
   def registro_android
     begin
-      aluno = Pessoa.com_matricula_valida((Time.now + Time.zone.utc_offset).to_date).find_by_codigo_de_acesso(params[:codigo])
+      aluno = Pessoa.com_matricula_valida((Time.now + Time.zone.gmt_offset).to_date).find_by_codigo_de_acesso(params[:codigo])
       if not aluno
         raise ""
       end
     rescue
-      logger.warn("=== .: Código do Aluno Inválido/Sem Matrícula: #{params[:codigo]} às #{(Time.now + Time.zone.utc_offset)} :.")
+      logger.warn("=== .: Código do Aluno Inválido/Sem Matrícula: #{params[:codigo]} às #{(Time.now + Time.zone.gmt_offset)} :.")
       flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
       render :text => [flash[:error], "codigo_invalido"].join("|") and return
     end
@@ -251,7 +251,7 @@ class RegistroPresencaController < ApplicationController
   end
 
   def gerar_falta eh_feriado
-    today = (Rails.env.production?) ? (Time.now + Time.zone.utc_offset) : Time.now
+    today = (Rails.env.production?) ? (Time.now + Time.zone.gmt_offset) : Time.now
     horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
     horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => today.wday)
     horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ?)", today.to_date, today.to_date)
@@ -269,7 +269,7 @@ class RegistroPresencaController < ApplicationController
   end
 
   def hoje_eh_feriado?
-    current_date = (Time.now + Time.zone.utc_offset)
+    current_date = (Time.now + Time.zone.gmt_offset)
     feriado = Feriado.where(:dia => current_date.day).where(:mes => current_date.month)
     ok = false
     if not feriado.blank?

@@ -1,7 +1,7 @@
 #coding: utf-8
 module ApplicationHelper
   def status_presenca horario_da_aula, dia_atual
-    @hora_certa = (Time.now + Time.zone.utc_offset)
+    @hora_certa = (Time.now + Time.zone.gmt_offset)
 
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 

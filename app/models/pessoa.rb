@@ -2,7 +2,7 @@
 class Pessoa < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :e_funcionario
 
-  scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.utc_offset).to_date, (Time.now + Time.zone.utc_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
+  scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now + Time.zone.gmt_offset).to_date, (Time.now + Time.zone.gmt_offset).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
   scope :com_matricula_valida, lambda { |data| joins(:matricula).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
 
   before_save :chk_codigo_de_acesso
@@ -110,11 +110,11 @@ class Pessoa < ActiveRecord::Base
 
   def get_current_time time_millis
      if time_millis.nil?
-      @hora_certa = (Time.now + Time.zone.utc_offset)
+      @hora_certa = (Time.now + Time.zone.gmt_offset)
       @hora_atual = @hora_certa.strftime("%H:%M")
       @data_atual = @hora_certa.to_date
     else
-      data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.utc_offset
+      data_hora = Time.at(time_millis.to_i / 1000) + Time.zone.gmt_offset
       @hora_atual = data_hora.strftime("%H:%M")
       @data_atual = data_hora.to_date
     end
