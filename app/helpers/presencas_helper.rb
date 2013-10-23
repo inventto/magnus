@@ -3,7 +3,7 @@
     def status_column(record, column)
       presenca = record
       aluno_id = record.pessoa_id
-      dia_atual = (Rails.env.development?) ? Time.now : Time.now + Time.zone.utc_offset
+      dia_atual = (Rails.env.development?) ? Time.now : Time.now 
       hint = []
       retorno = ""
       if presenca.presenca
@@ -69,8 +69,12 @@
         if not p.blank?
           title = "Adiantamento do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
         else
-          p = Presenca.where(:pessoa_id => aluno_id, :data => presenca.data_de_realocacao)
-          title = "Reposição do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
+          begin
+            p = Presenca.where(:pessoa_id => aluno_id, :data => presenca.data_de_realocacao)
+            title = "Reposição do dia #{presenca.data_de_realocacao.strftime("%d/%m/%Y")}, horário das #{p[0].horario}"
+          rescue
+            title = "ERRO! sem registro de presença na data realocada."
+          end
         end
       elsif not presenca.presenca? and presenca.data_de_realocacao.blank? and not presenca.justificativa_de_falta.nil?
           p = Presenca.order("id DESC").find_by_data_de_realocacao_and_pessoa_id(presenca.data, aluno_id) #em ordem descrescente pois caso haja mais de uma realocação para esse dia

@@ -236,7 +236,7 @@ module PessoasHelper
 
   def aulas_column(record, column)
     aluno_id = record.id
-    hora_certa = Time.now + Time.zone.utc_offset
+    hora_certa = Time.now
 
     data = get_data(aluno_id, hora_certa)
 
