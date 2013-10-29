@@ -258,8 +258,8 @@ class RegistroPresencaController < ApplicationController
     horarios = horarios.where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", today.hour, today.min)
     horarios.each do |horario|
       aluno_id = horario.matricula.pessoa.id
-      if Presenca.where(:pessoa_id => aluno_id).where(:data => today, :horario => horario.horario).blank?
-        falta = Presenca.create(:pessoa_id => aluno_id, :data => today, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
+      if Presenca.where(:pessoa_id => aluno_id).where(:data => today.to_date, :horario => horario.horario).blank?
+        falta = Presenca.create(:pessoa_id => aluno_id, :data => today.to_date, :horario => horario.horario, :presenca => false, :tem_direito_a_reposicao => false)
         if eh_feriado
           falta.build_justificativa_de_falta(:descricao => "feriado")
           falta.save
