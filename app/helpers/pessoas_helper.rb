@@ -465,10 +465,12 @@ module PessoasHelper
 
   def get_data aluno_id, data
     proximo_horario_de_aula = get_proximo_horario_de_aula(aluno_id, data)
-    dia = proximo_horario_de_aula.dia_da_semana - data.wday
-    data = (data + dia.day).to_date
-    if dia <= 0
-      data = data + 7.day
+    if not proximo_horario_de_aula.nil?
+      dia = proximo_horario_de_aula.dia_da_semana - data.wday
+      data = (data + dia.day).to_date
+      if dia <= 0
+        data = data + 7.day
+      end
     end
     data
   end
