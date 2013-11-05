@@ -385,7 +385,14 @@ class Pessoa < ActiveRecord::Base
         aula = presencas[1] # presencas[1] para retornar o segundo registro já que o primeiro é um adiantamento
       end
     end
-    aula
+    if not eh_feriado? aula.data
+      aula
+    end
+  end
+
+  def eh_feriado? data
+    feriado = Feriado.where(:dia => data.day).where(:mes => data.month).last
+    feriado and (feriado.repeticao_anual or feriado.ano == data.year)
   end
 
   def faltou_aula_passada_e_justificou?
