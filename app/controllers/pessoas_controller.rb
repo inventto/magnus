@@ -37,6 +37,23 @@ class PessoasController < ApplicationController
     end
   end
 
+  def before_update_save record
+    set_bairro(record)
+  end
+
+  def before_create_save record
+    set_bairro(record)
+  end
+
+  def set_bairro record
+     bairro = Bairro.find_by_nome_and_cidade_id(params[:bairro_nome], record.endereco.cidade_id)
+     if bairro.nil?
+       bairro = Bairro.create :nome => params[:bairro_nome], :cidade_id => record.endereco.cidade_id
+     end
+     record.endereco.bairro = bairro
+  end
+
+
   def gravar_realocacao
     if params[:tipo_realocacao].to_s == "A" # adiantamento
       adiantar_aula
@@ -243,8 +260,8 @@ class PessoasController < ApplicationController
     if params and params["nome"]
       bairro = Bairro.where("nome ILIKE '%#{params['nome']}%'")
     end
-    id = (bairro.blank?) ? 0 : bairro.first.id
-    render :text => id
+    nome = (bairro.blank?) ? "" : bairro[0].nome
+    render :text => nome
   end
 
   def get_codigo_da_cidade

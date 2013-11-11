@@ -230,13 +230,14 @@ class RegistroPresencaController < ApplicationController
       mensagem_sonora << "bem_vindo|"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-    if aluno.faltou_aula_passada_e_nao_justificou?
-      mensagem_sonora << "voce_faltou|"
-      error << "Você faltou aula passada e não justificou."
-    elsif aluno.faltou_aula_passada_e_justificou?
-      mensagem_sonora << "justificou_aula_passada|"
-      notice << "Você faltou aula passada e justificou."
-    end
+
+      if aluno.faltou_aula_passada_e_nao_justificou?
+        mensagem_sonora << "voce_faltou|"
+        error << "Você faltou aula passada e não justificou."
+      elsif aluno.faltou_aula_passada_e_justificou?
+        mensagem_sonora << "justificou_aula_passada|"
+        notice << "Você faltou aula passada e justificou."
+      end
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
 

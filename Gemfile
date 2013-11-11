@@ -3,11 +3,13 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.11'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
-gem 'devise'
+gem 'devise', '3.0.3'
 gem 'pg'
 gem 'active_scaffold'
 gem 'carrierwave'
 gem 'unicorn'
+gem "rails3-jquery-autocomplete"
+gem 'nifty-generators'
 #gem 'highcharts-rails'
 # Gems used only for assets and not required
 # in production environments by default.
@@ -30,6 +32,7 @@ end
 
 gem 'jquery-rails', '2.1.4'
 gem 'jquery-ui-rails'
+gem 'rails3-jquery-autocomplete'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

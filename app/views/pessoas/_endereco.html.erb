@@ -1,11 +1,13 @@
+<%= javascript_include_tag "autocomplete-rails.js" %>
 <script type="text/javascript">
   function setBairro(bairro) {
       var jqxhr = $.ajax({
           url: '/get_codigo_do_bairro?nome='+bairro
       });
+      $("#bairro_nome").val(bairro);
       jqxhr.always(function () {
           codigo = jqxhr.responseText;
-          $(".bairro-input").val(codigo);
+          //$(".bairro_id").val(codigo);
       });
   }
   function setCidade(cidade) {
@@ -95,20 +97,9 @@
                 <label for="record_bairro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Bairro</label>
               </dt>
               <dd>
-                <select class="bairro-input" name="record[endereco][bairro]" id="record_bairro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco" >
-                  <option selected value=<%= (not @pessoas.endereco.nil? and not @pessoas.endereco.bairro.nil?) ? @pessoas.endereco.bairro.id : "" %> >
-                    <% if not @pessoas.endereco.nil? and not @pessoas.endereco.bairro.nil? %>
-                      <%= @pessoas.endereco.bairro.nome  %>
-                    <% else %>
-                      - Selecione -
-                    <% end %>
-                  </option>
-                  <% Bairro.order(:nome).all.each do |b| %>
-                    <option value="<%= b.id %>"><%= b.nome %></option>
-                  <% end %>
-                </select>
+              <%= autocomplete_field_tag 'bairro_nome', (@pessoas.id.nil? or @pessoas.endereco.nil? or @pessoas.endereco.bairro.nil?) ? "" : @pessoas.endereco.bairro.nome, autocomplete_bairro_nome_path, :autocomplete => 'on' %>
               </dd>
-            </dl>
+             </dl>
           </td>
           <td>
             <dl>
@@ -131,7 +122,6 @@
               </dd>
             </dl>
           </td>
-
         </tr>
       </tbody>
     </table>

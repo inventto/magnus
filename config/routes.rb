@@ -78,6 +78,12 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   get "/users/reset_password_edit"
 
+  match "/autocomplete_bairro_nome", to: "cidades#autocomplete_bairro_nome"
+
+  #resource :cidades do
+  #  get :autocomplete_bairro_nome, :on => :collection
+  #end
+
   resource :users do
     post 'do_reset_password'
   end

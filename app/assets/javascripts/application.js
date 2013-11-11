@@ -16,3 +16,4 @@
 //= require active_scaffold
 //= require jquery.ui.datepicker
 //= require jquery.ui.datepicker-pt-BR
+//= require autocomplete-rails
