@@ -97,7 +97,8 @@
                 <label for="record_bairro_<%= (@pessoas.id.nil?) ? "" : @pessoas.id %>_endereco">Bairro</label>
               </dt>
               <dd>
-              <%= autocomplete_field_tag 'bairro_nome', (@pessoas.id.nil? or @pessoas.endereco.nil? or @pessoas.endereco.bairro.nil?) ? "" : @pessoas.endereco.bairro.nome, autocomplete_bairro_nome_path, :autocomplete => 'on' %>
+              <%= autocomplete_field_tag 'bairro_nome', (@pessoas.id.nil? or @pessoas.endereco.nil? or @pessoas.endereco.bairro.nil?) ? "" : @pessoas.endereco.bairro.nome, autocomplete_bairro_nome_path, :autocomplete => 'on', :style => 'background-color: #ffffcc; letter-spacing: 0;
+              font: bold 12px arial; border-color: #1f7f00; padding: 2px;'%>
               </dd>
              </dl>
           </td>
