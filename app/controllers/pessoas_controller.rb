@@ -1,5 +1,7 @@
   #coding: utf-8
 class PessoasController < ApplicationController
+  skip_before_filter :authenticate_user!
+
   active_scaffold :pessoa do |conf|
     conf.columns[:endereco].label = "Endereço"
     conf.columns[:cpf].label = "CPF"
