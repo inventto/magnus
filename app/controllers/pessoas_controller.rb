@@ -271,4 +271,16 @@ class PessoasController < ApplicationController
     id = (cidade.blank?) ? 0 : cidade.first.id
     render :text => id
   end
+
+  def alunos_xml
+    pessoas = Pessoa.where(["id > ?", params["id"]||0]).collect do |p|
+      export_xml_data p
+    end
+    render :xml => {alunos: pessoas}.to_xml
+  end
+
+  def export_xml_data pessoa
+    {"id" => pessoa.id , "nome" => pessoa.nome, "codigo" => pessoa.codigo_de_acesso}
+  end
+
 end

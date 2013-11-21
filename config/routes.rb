@@ -78,6 +78,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   get "/users/reset_password_edit"
 
+  match "/alunos_xml", to: "pessoas#alunos_xml"
+
   match "/autocomplete_bairro_nome", to: "cidades#autocomplete_bairro_nome"
 
   #resource :cidades do
