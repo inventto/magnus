@@ -75,7 +75,7 @@ class RegistroPresencaController < ApplicationController
       @mensagem_sonora << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-    if not matricula_standby
+    if not @matricula_standby
       if @aluno.faltou_aula_passada_e_nao_justificou?
         @mensagem_sonora << "Você faltou aula passada e não justificou."
         error << "Você faltou aula passada e não justificou."
