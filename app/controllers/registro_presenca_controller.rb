@@ -193,7 +193,7 @@ class RegistroPresencaController < ApplicationController
 
     notice = notice.join("<br/><br/>").html_safe
 
-    saudacao = (chegada = employee.chegada_de_hora?) ? saudacao_ao(employee) : despedida_ao(employee)
+    saudacao = (chegada = employee.hora_de_chegada?) ? saudacao_ao(employee) : despedida_ao(employee)
 
     chegada = (chegada) ? 1 : 0
 
