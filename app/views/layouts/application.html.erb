@@ -42,6 +42,7 @@
     </script>
   </head>
   <body>
+    <% if user_signed_in? %>
     <div id="top">
       <% if user_signed_in? %>
         <strong><div id="login">Usuário: </strong><%= current_user.email %>, <%= link_to 'Sair', destroy_user_session_path, :method => :delete %></div>
@@ -49,7 +50,6 @@
       <div id="logo">
         <img src="/assets/logo.png"/></img>
       </div>
-      <% if user_signed_in? %>
         <div class="menu">
           <ul>
             <li><%= link_to "Agenda do Dia", root_path %></li>

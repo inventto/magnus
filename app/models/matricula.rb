@@ -1,12 +1,12 @@
 #coding: utf-8
 class Matricula < ActiveRecord::Base
-  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao
+  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :standby
 
   belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
 
   validates_presence_of :pessoa
-  validates_presence_of :horario_de_aula
+  #validates_presence_of :horario_de_aula
   validates_presence_of :data_inicio
   validates_numericality_of :numero_de_aulas_previstas, :unless => "numero_de_aulas_previstas.blank?"
   validate :data_final

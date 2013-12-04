@@ -3,13 +3,13 @@ class Pessoa < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :e_funcionario
 
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now).to_date, (Time.now).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
-  scope :com_matricula_valida, lambda { |data| joins(:matricula).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
+  scope :com_matricula_valida, lambda { |data| joins(:matriculas).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
 
   before_save :chk_codigo_de_acesso
 
   has_many :telefones, :dependent => :destroy
   belongs_to :endereco
-  has_one :matricula, :dependent => :destroy
+  has_many :matriculas, :dependent => :destroy
   has_many :presencas, :dependent => :destroy
   has_many :registros_de_ponto, :dependent => :destroy, :class_name => 'RegistroDePonto'
 
@@ -145,7 +145,9 @@ class Pessoa < ActiveRecord::Base
 
   def verifica_e_gera_presenca_realocada
     presenca = Presenca.new(:pessoa_id => self.id, :data => @data_atual, :presenca => true)
-    if (fora_do_horario = esta_fora_de_horario?) || (dia_errado = esta_no_dia_errado?)
+    if passe_livre?
+      presenca.horario = Time.now.strftime("%H:%M")
+    elsif (fora_do_horario = esta_fora_de_horario?) || (dia_errado = esta_no_dia_errado?)
       #presenca.fora_de_horario = true
       presenca.realocacao = true
       hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
@@ -251,6 +253,7 @@ class Pessoa < ActiveRecord::Base
 
   def get_data data
     proximo_horario_de_aula = get_proximo_horario_de_aula(data)
+    return nil if not proximo_horario_de_aula
     dia = proximo_horario_de_aula.dia_da_semana - data.wday
     data = (data + dia.day).to_date
     if dia <= 0
@@ -324,13 +327,21 @@ class Pessoa < ActiveRecord::Base
     hora = txt_to_seg(hora)
     horario = txt_to_seg(horario)
     (hora >= (horario - 1740)) && (hora <= (horario + 3600)) # 1740s = 29 min
+  rescue
+    nil
   end
 
+  def passe_livre?
+    matriculas.where("data_fim is null").each do |matricula|
+      return true if matricula.horario_de_aula.empty?
+    end
+    return false
+  end
   def esta_fora_de_horario?
     @hora_registrada = @hora_certa
     @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0]
 
-    if not @presenca.nil? and @presenca.realocacao # se for reposição, adiantamento
+    if not @presenca.nil? and @presenca.realocacao# se for reposição, adiantamento
       p "@presenca #{@presenca}"
       hora_da_aula = @presenca.horario
       @horario_de_aula = @presenca
@@ -415,6 +426,8 @@ class Pessoa < ActiveRecord::Base
 
   def txt_to_seg hora
     Time.strptime(hora, "%H:%M").seconds_since_midnight
+  rescue
+    nil
   end
 
   def chegada_de_horario?

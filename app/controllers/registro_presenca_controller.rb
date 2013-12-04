@@ -18,7 +18,7 @@ class RegistroPresencaController < ApplicationController
         end
       end
     rescue
-      flash[:error] = "Código do Aluno Inválido ou Aluno sem matrícula!"
+      flash[:error] = "Erro interno. Código do Aluno Inválido ou Aluno sem matrícula!"
       redirect_to "/registro_presenca"
       return
     end
@@ -33,6 +33,13 @@ class RegistroPresencaController < ApplicationController
     notice = []
     error = []
 
+    @matricula_standby = Matricula.where("standby is true")
+
+    if @aluno.passe_livre?
+      puts "=================> PASSE LIVRE"
+      flash[:notice] = "Presença registrada!"
+      return
+    end
     if @aluno.esta_fora_de_horario?
       @mensagem_sonora = "Você está fora do horário da matrícula!"
       flash[:error] = "Você está fora do horário da matrícula!"
@@ -68,13 +75,21 @@ class RegistroPresencaController < ApplicationController
       @mensagem_sonora << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-     if @aluno.faltou_aula_passada_e_nao_justificou?
-      @mensagem_sonora << "Você faltou aula passada e não justificou."
-      error << "Você faltou aula passada e não justificou."
-    elsif @aluno.faltou_aula_passada_e_justificou?
-      @mensagem_sonora << "Você faltou aula passada e justificou."
-      notice << "Você faltou aula passada e justificou."
+    if not matricula_standby
+      if @aluno.faltou_aula_passada_e_nao_justificou?
+        @mensagem_sonora << "Você faltou aula passada e não justificou."
+        error << "Você faltou aula passada e não justificou."
+      elsif @aluno.faltou_aula_passada_e_justificou?
+        @mensagem_sonora << "Você faltou aula passada e justificou."
+        notice << "Você faltou aula passada e justificou."
+      end
     end
+
+    if @matricula_standby
+      @mensagem_sonora << "Matrícula em estado inativo."
+      notice << "Matrícula em estado inativo."
+    end
+
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
   end
@@ -146,6 +161,21 @@ class RegistroPresencaController < ApplicationController
 
     time_millis = (not params[:tim_millis]) ? nil : params[:time_millis]
 
+    registros = RegistroDePonto.where("pessoa_id = #{employee.id}").order(:id)
+    ultimo_ponto = registros.last
+    if ultimo_ponto.hora_de_saida.nil?
+      primeiro_ponto = registros.first
+      if primeiro_ponto.hora_de_saida < ultimo_ponto.hora_de_chegada
+        primeiro_ponto = registros.second
+      end
+      if primeiro_ponto
+        ultimo_ponto.hora_de_saida = primeiro_ponto.hora_de_saida
+      else
+        ultimo_ponto.hora_de_saida = ultimo_ponto.hora_de_chegada
+      end
+      ultimo_ponto.save
+    end
+
     if not employee.registrar_ponto(time_millis)
       flash[:error] = "" # verificar
       render :text => [flash[:error], "funcionario_possui_presenca"].join("|") and return
@@ -163,7 +193,7 @@ class RegistroPresencaController < ApplicationController
 
     notice = notice.join("<br/><br/>").html_safe
 
-    saudacao = (chegada = employee.chegada_de_horario?) ? saudacao_ao(employee) : despedida_ao(employee)
+    saudacao = (chegada = employee.chegada_de_hora?) ? saudacao_ao(employee) : despedida_ao(employee)
 
     chegada = (chegada) ? 1 : 0
 
@@ -238,6 +268,12 @@ class RegistroPresencaController < ApplicationController
         mensagem_sonora << "justificou_aula_passada|"
         notice << "Você faltou aula passada e justificou."
       end
+
+      if @matricula_standby
+        mensagem_sonora << "Matrícula em estado inativo."
+        notice << "Matrícula em estado inativo."
+      end
+
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
 
@@ -255,7 +291,7 @@ class RegistroPresencaController < ApplicationController
     today = (Rails.env.production?) ? (Time.now) : Time.now
     horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
     horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => today.wday)
-    horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ?)", today.to_date, today.to_date)
+    horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ? and (standby is null or standby is false))", today.to_date, today.to_date)
     horarios = horarios.where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", today.hour, today.min)
     horarios.each do |horario|
       aluno_id = horario.matricula.pessoa.id
