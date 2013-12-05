@@ -1,6 +1,6 @@
 #coding: utf-8
 class Matricula < ActiveRecord::Base
-  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :standby
+  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate
 
   belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
@@ -39,4 +39,9 @@ class Matricula < ActiveRecord::Base
      return 0
    end
   end
+
+  def standby
+    inativo_ate and inativo_ate.to_time > Time.now
+  end
+
 end
