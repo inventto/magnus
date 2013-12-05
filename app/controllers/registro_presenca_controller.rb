@@ -75,7 +75,7 @@ class RegistroPresencaController < ApplicationController
       @mensagem_sonora << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
       notice << "Bem Vindo à Magnus Personal...Hoje é sua primeira aula!"
     end
-    if not @matricula_standby
+
       if @aluno.faltou_aula_passada_e_nao_justificou?
         @mensagem_sonora << "Você faltou aula passada e não justificou."
         error << "Você faltou aula passada e não justificou."
@@ -83,7 +83,6 @@ class RegistroPresencaController < ApplicationController
         @mensagem_sonora << "Você faltou aula passada e justificou."
         notice << "Você faltou aula passada e justificou."
       end
-    end
 
     if @matricula_standby
       @mensagem_sonora << "Matrícula em estado inativo."
@@ -193,7 +192,7 @@ class RegistroPresencaController < ApplicationController
 
     notice = notice.join("<br/><br/>").html_safe
 
-    saudacao = (chegada = employee.hora_de_chegada?) ? saudacao_ao(employee) : despedida_ao(employee)
+    saudacao = (chegada = employee.chegada_de_horario?) ? saudacao_ao(employee) : despedida_ao(employee)
 
     chegada = (chegada) ? 1 : 0
 
@@ -269,10 +268,10 @@ class RegistroPresencaController < ApplicationController
         notice << "Você faltou aula passada e justificou."
       end
 
-      if @matricula_standby
-        mensagem_sonora << "Matrícula em estado inativo."
-        notice << "Matrícula em estado inativo."
-      end
+    if @matricula_standby
+      @mensagem_sonora << "Matrícula em estado inativo."
+      notice << "Matrícula em estado inativo."
+    end
 
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?

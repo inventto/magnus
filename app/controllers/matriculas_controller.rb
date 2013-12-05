@@ -5,7 +5,7 @@ class MatriculasController < ApplicationController
     conf.columns[:data_matricula].label = "Data de Matrícula"
     conf.columns[:data_inicio].label = "Data de Início"
     conf.columns[:data_fim].label = "Data de Interrupção"
-    conf.columns[:standby].label = "Inativo"
+    conf.columns[:standby].label = "Não gerar falta"
     conf.columns[:numero_de_aulas_previstas].label = "Número de Aulas Previstas"
     conf.columns[:horario_de_aula].label = "Horário de Aula"
     conf.columns[:motivo_da_interrupcao].label = "Motivo da Interrupção"
