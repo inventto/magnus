@@ -1,6 +1,6 @@
 #coding: utf-8
 class Matricula < ActiveRecord::Base
-  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate
+  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate, :inativo_desde
 
   belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
@@ -11,6 +11,7 @@ class Matricula < ActiveRecord::Base
   validates_numericality_of :numero_de_aulas_previstas, :unless => "numero_de_aulas_previstas.blank?"
   validate :data_final
   validate :validar_matricula, :on => :create
+  validate :validar_data_inativa
 
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio
@@ -19,6 +20,15 @@ class Matricula < ActiveRecord::Base
   def validar_matricula
     if not Matricula.where("data_fim is null and pessoa_id=?", pessoa_id).blank?
       self.errors.add(:pessoa, "já possui matrícula ativa.")
+    end
+  end
+
+  def validar_data_inativa
+    if (not self.inativo_desde and self.inativo_ate) or (not self.inativo_ate and self.inativo_desde )
+      self.errors.add(:inativo_desde," e #{:inativo_ate} Ambos os campos inativos devem estar preenchidos.")
+    end
+    if self.inativo_desde and self.inativo_ate and (self.inativo_desde > self.inativo_ate)
+      errors.add(:inativo_desde, "não pode ser maior que Data Inativo até!")
     end
   end
 
@@ -41,7 +51,7 @@ class Matricula < ActiveRecord::Base
   end
 
   def standby
-    inativo_ate and inativo_ate.to_time > Time.now
+    inativo_desde and inativo_ate and inativo_desde < inativo_ate
   end
 
 end

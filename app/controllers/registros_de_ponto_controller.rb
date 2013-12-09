@@ -1,14 +1,14 @@
 #coding: utf-8
 class RegistrosDePontoController < ApplicationController
-  begin before_filter :is_admin
-    def is_admin
-      if current_user.admin
+   begin before_filter :is_admin
+     def is_admin
+       if current_user.admin
         return
-      end
-      flash[:error] = "Você não possui permissão para acessar essa página!"
-      redirect_to :root
-    end
-  end
+       end
+       flash[:error] = "Você não possui permissão para acessar essa página!"
+       redirect_to :root
+     end
+   end
 
   active_scaffold :registro_de_ponto do |conf|
     conf.label = "Registros de Ponto"

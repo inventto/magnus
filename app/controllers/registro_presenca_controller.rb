@@ -33,10 +33,9 @@ class RegistroPresencaController < ApplicationController
     notice = []
     error = []
 
-    @matricula_standby = Matricula.where("inativo_ate > current_date")
+    @matricula_standby = Matricula.where("inativo_desde < inativo_ate")
 
     if @aluno.passe_livre?
-      puts "=================> PASSE LIVRE"
       flash[:notice] = "Presença registrada!"
       return
     end
@@ -162,16 +161,9 @@ class RegistroPresencaController < ApplicationController
 
     registros = RegistroDePonto.where("pessoa_id = #{employee.id}").order(:id)
     ultimo_ponto = registros.last
-    if ultimo_ponto.hora_de_saida.nil?
-      primeiro_ponto = registros.first
-      if primeiro_ponto.hora_de_saida < ultimo_ponto.hora_de_chegada
-        primeiro_ponto = registros.second
-      end
-      if primeiro_ponto
-        ultimo_ponto.hora_de_saida = primeiro_ponto.hora_de_saida
-      else
-        ultimo_ponto.hora_de_saida = ultimo_ponto.hora_de_chegada
-      end
+
+    if ultimo_ponto.hora_de_saida.nil? and ultimo_ponto.data.to_date != Time.now.to_date
+      ultimo_ponto.hora_de_saida = ultimo_ponto.hora_de_chegada
       ultimo_ponto.save
     end
 
@@ -290,7 +282,7 @@ class RegistroPresencaController < ApplicationController
     today = (Rails.env.production?) ? (Time.now) : Time.now
     horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
     horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => today.wday)
-    horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ? and (inativo_ate is null or inativo_ate < current_date))", today.to_date, today.to_date)
+    horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ? and (inativo_ate is null and inativo_desde is null or inativo_desde > inativo_ate))", today.to_date, today.to_date)
     horarios = horarios.where("((cast(substr(horario,1,2) as int4) * 3600) + (cast(substr(horario,4,2) as int4) * 60)) + 180 < ((?) * 3600 + (?) * 60)", today.hour, today.min)
     horarios.each do |horario|
       aluno_id = horario.matricula.pessoa.id
