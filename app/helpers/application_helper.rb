@@ -15,7 +15,13 @@ module ApplicationHelper
 
     aniversario = get_aluno_de_aniversario(aluno_id, dia_atual)
 
-    matricula_standby = Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate', aluno_id, dia_atual.to_date)
+    if horario_da_aula.instance_of? HorarioDeAula
+      inativo_desde = horario_da_aula.matricula.inativo_desde
+      inativo_ate = horario_da_aula.matricula.inativo_ate
+      matricula_standby = inativo_desde and inativo_ate and inativo_desde < dia_atual and inativo_ate > dia_atual
+    else
+      matricula_standby = !(Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate and (data_fim is null or data_fim > ?)', aluno_id, dia_atual, dia_atual).empty?)
+    end
 
     if not presenca.blank?
       presenca = presenca[0]
@@ -33,7 +39,7 @@ module ApplicationHelper
         end
         retorno = (aniversario << retorno)
         retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
-        if not matricula_standby.empty?
+        if matricula_standby
           retorno << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
         end
         return retorno.html_safe
@@ -59,7 +65,7 @@ module ApplicationHelper
             end
           end
         end
-        if not matricula_standby.empty?
+        if matricula_standby
           retorno << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
         end
         retorno = (aniversario << retorno)
@@ -67,7 +73,7 @@ module ApplicationHelper
         return retorno.html_safe
       end
     else
-      if not matricula_standby.empty?
+      if matricula_standby
         aniversario << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
       end
       return aniversario.html_safe # mesmo que não haja presença deve se retornar a imagem de aniversário
