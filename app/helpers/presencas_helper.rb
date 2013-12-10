@@ -3,9 +3,12 @@
     def status_column(record, column)
       presenca = record
       aluno_id = record.pessoa_id
-      dia_atual = (Rails.env.development?) ? Time.now : Time.now 
+      dia_atual = (Rails.env.development?) ? Time.now : Time.now
       hint = []
       retorno = ""
+
+      matricula_standby = Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate', aluno_id, presenca.data)
+
       if presenca.presenca
         retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
         hint << "P"
@@ -45,6 +48,10 @@
             end
           end
         end
+      end
+      if not matricula_standby.empty?
+        retorno << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
+        hint << "ST"
       end
       hint = "<div class='hint'>#{hint.uniq.join('')}</div>"
       (retorno << hint).html_safe
