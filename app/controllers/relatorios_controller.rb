@@ -1,5 +1,7 @@
+#coding: utf-8
 class RelatoriosController < ApplicationController
   active_scaffold :relatorio do |conf|
+    conf.label = "Relatório"
     conf.columns = [:nome, :titulos, :consulta]
     conf.columns[:consulta].form_ui = :textarea
     conf.action_links.add 'visualizar', :position => true, :type => :member, :popup => true
