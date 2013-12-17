@@ -1,5 +1,7 @@
 ControleDePresencaMagnus::Application.routes.draw do
 
+
+
   devise_for :users
   devise_for :users, :path => "auth", :path_names => { :sign_in => 'login', :sign_out => 'logout', :password => 'secret', :confirmation => 'verification', :unlock => 'unblock', :registration => 'register', :sign_up => 'cmon_let_me_in' }
   devise_scope :user do
@@ -19,6 +21,9 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :horarios_de_aula do as_routes end
   resources :tipos_telefone do as_routes end
   resources :registros_de_ponto do as_routes end
+  resources :relatorios do as_routes end
+
+  match "/relatorios/visualizar/:id", to: "relatorios#visualizar"
 
   match "/graficos", to: "graficos#index"
 

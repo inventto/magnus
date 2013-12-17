@@ -1,0 +1,14 @@
+<div class='active-scaffold'>
+  <div class='active-scaffold-header'>
+    <h2>Preencha os parâmetros necessários para a consulta</h2>
+  </div>
+  <form>
+  <% @args.each do |arg| %>
+    <div>
+      <label for="<%= arg %>"><%= arg.humanize.gsub(":","") %></label>
+    <input type="text" id="<%= arg %>" name="<%= arg %>" value="<%= params[arg] %>">
+    <div>
+  <% end %>
+  <button type="submit">Enviar</button>
+  </form>
+</div>
