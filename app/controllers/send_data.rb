@@ -14,7 +14,7 @@ class SendData
     require 'net/http'
     require 'uri'
 
-    url = 'http://sisagil.com/service'
+    url = 'http://academi.as'
     url = URI.parse(url)
 
     request = Net::HTTP::Post.new(url.path)
@@ -30,6 +30,7 @@ class SendData
         puts "=== .: Erro ao enviar dados ao Sisagil - Aluno ID #{aluno.id}:. ==="
         puts msg
         @errors = msg
+      puts "MATRICULA2"+matricula_standby
       else
         puts "=== .: Aluno ID #{aluno.id} Enviado ao Sisagil com Sucesso! :. ==="
       end

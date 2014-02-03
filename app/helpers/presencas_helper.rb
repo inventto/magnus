@@ -7,7 +7,7 @@
       hint = []
       retorno = ""
 
-      matricula_standby = Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate', aluno_id, presenca.data)
+      matricula_standby = Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate', aluno_id, presenca.data).empty?
 
       if presenca.presenca
         retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
@@ -49,7 +49,7 @@
           end
         end
       end
-      if not matricula_standby.empty?
+      if not matricula_standby
         retorno << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
         hint << "ST"
       end
