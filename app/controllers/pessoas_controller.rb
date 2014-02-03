@@ -33,9 +33,9 @@ class PessoasController < ApplicationController
   def send_data_to_sisagil aluno
     data = SendData.new
     if data.send(aluno)
-      flash[:info] = "Aluno #{aluno.nome} enviado ao Sisagil com sucesso!"
+      flash[:info] = "Aluno #{aluno.nome} enviado ao Academias com sucesso!"
     else
-      flash[:error] = "Não foi possível enviar dados ao Sisagil do aluno #{aluno.nome}: " << data.get_errors
+      flash[:error] = "Não foi possível enviar dados ao Academias do aluno #{aluno.nome}: " << data.get_errors
     end
   end
 

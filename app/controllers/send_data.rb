@@ -27,12 +27,12 @@ class SendData
       msg = response.body
       if msg["FAILURE"]
         msg = get_error_message(msg)
-        puts "=== .: Erro ao enviar dados ao Sisagil - Aluno ID #{aluno.id}:. ==="
+        puts "=== .: Erro ao enviar dados ao Academais - Aluno ID #{aluno.id}:. ==="
         puts msg
         @errors = msg
       puts "MATRICULA2"+matricula_standby
       else
-        puts "=== .: Aluno ID #{aluno.id} Enviado ao Sisagil com Sucesso! :. ==="
+        puts "=== .: Aluno ID #{aluno.id} Enviado ao Academias com Sucesso! :. ==="
       end
     else
       puts response.error!
