@@ -250,6 +250,9 @@ class PessoasController < ApplicationController
     id = params[:funcionario_id].to_i
     mes = (params[:mes].to_i == 0) ? 12 : params[:mes].to_i # pois Dezembro é o index zero do array
     data_inicio = Date.new(Date.today.year, mes, 1)
+    if (params[:ano].to_i > 0)
+      data_inicio = Date.new(params[:ano].to_i, mes, 1)
+    end
     data_fim = data_inicio.at_end_of_month
 
     @registros_de_ponto = RegistroDePonto.where(:pessoa_id => id)
