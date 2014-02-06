@@ -18,9 +18,7 @@ module ApplicationHelper
     if horario_da_aula.instance_of? HorarioDeAula
       inativo_desde = horario_da_aula.matricula.inativo_desde
       inativo_ate = horario_da_aula.matricula.inativo_ate
-      matricula_standby = inativo_desde and inativo_ate and inativo_desde < dia_atual and inativo_ate > dia_atual
-    else
-      matricula_standby = !(Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate and (data_fim is null or data_fim > ?)', aluno_id, dia_atual, dia_atual).empty?)
+      matricula_standby = !(Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate',  aluno_id, dia_atual).empty?)
     end
 
     if not presenca.blank?
