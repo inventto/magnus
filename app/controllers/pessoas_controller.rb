@@ -285,7 +285,7 @@ class PessoasController < ApplicationController
   end
 
   def export_xml_data pessoa
-    {"id" => pessoa.id , "nome" => pessoa.nome, "codigo" => pessoa.codigo_de_acesso}
+    {"id" => pessoa.id , "nome" => pessoa.primeiro_nome.downcase, "codigo" => pessoa.codigo_de_acesso}
   end
 
 end

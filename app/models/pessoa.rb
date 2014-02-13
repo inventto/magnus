@@ -396,7 +396,7 @@ class Pessoa < ActiveRecord::Base
         aula = presencas[1] # presencas[1] para retornar o segundo registro já que o primeiro é um adiantamento
       end
     end
-    if not eh_feriado? aula.data
+    if not eh_feriado? aula.data.nil?
       aula
     end
   end

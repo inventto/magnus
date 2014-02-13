@@ -19,6 +19,12 @@
     -webkit-column-gap: 21px;
     column-gap: 21px;
   }
+
+  #horarios.compact table tr {
+    margin-bottom: 40px;
+    display: block;
+  }
+
   #agenda #horarios table {
     width: 380px;
   }

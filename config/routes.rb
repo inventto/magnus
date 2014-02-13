@@ -59,6 +59,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/get_codigo_da_cidade", to: "pessoas#get_codigo_da_cidade"
 
+  match "/lista_de_alunos_ativos_inativos", to: "lista_de_alunos_ativos_inativos#ativos_inativos"
+
   get "/agenda_do_dia/filtrar"
 
   get "/clientes_inativos/filtrar"

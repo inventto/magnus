@@ -290,21 +290,56 @@ i{
 #horarios table img.realocacao {
   margin-right: 0;
 }
+#horarios table #segundo_nome_hidden{
+  display: none;
+}
 #horarios.compact table span,
 #horarios.compact table img {
   display: none;
 }
+#horarios.compact table #esta_de_aniver {
+  font-weight: bold;
+}
+#horarios.compact table #segundo_nome_hidden,
 #horarios.compact table div {
   display: inline;
+}
+#horarios.compact table tr {
+  line-height: 175%;
 }
 #horarios.compact table div:after {
   content: "/";
 }
 #horarios.compact table div:nth-last-child(1):after {
-  content: ""
+  content: "";
+}
+#horarios.compact table span:after {
+  content: "";
 }
 #horarios table td {
   vertical-align: top;
+}
+
+#ativos_inativos h2{
+  text-align: center;
+}
+#ativos_inativos {
+  width: 80%;
+  margin: 0 auto;
+}
+#tabela_ativos_inativos .tabela_colunas_brancas {
+  width: 900px;
+}
+
+#tabela_ativos_inativos tr th,
+#tabela_ativos_inativos tr td {
+  line-height: 175%;
+  width: 300px;
+  border-collapse: collapse;
+  border: 1px solid rgb(95, 201, 221);
+}
+#tabela_ativos_inativos tr td span {
+  margin: 0 15px 0 0;
 }
 .periodo .data, #compactar_nomes, #display_names,
 #tipo-tempo input, #filtro-dias-da-semana input {
