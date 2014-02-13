@@ -1,0 +1,38 @@
+<div id="ativos_inativos" >
+  <h2>Lista </h2>
+  <form method="get"/>
+    <div>
+      <input type="checkbox" id="ativos_matriculados" name="ativos_matriculados" <%= params[:ativos_matriculados] ? "checked='checked'" : '' %> />
+      <label for="ativos_matriculados">Alunos Ativos</label>
+      &nbsp;
+      &nbsp;
+      <input type="checkbox" id="inativos" name="inativos" <%= params[:inativos] ? "checked='checked'" : '' %> />
+      <label for="inativos">Alunos Inativos</label>
+      &nbsp;
+      &nbsp;
+      <input type="checkbox" id="interrompidos" name="interrompidos" <%= params[:interrompidos] ? "checked='checked'" : '' %> />
+      <label for="interrompidos">Alunos Interrompidos</label>
+    </div>
+    <input type="submit" value="Filtrar"/>
+  </form>
+  <table id="tabela_ativos_inativos">
+    <thead>
+      <tr>
+        <th>Nomes</th>
+        <th>Anotações</th>
+      </tr>
+    </thead>
+    <tbody>
+    <% @alunos.each do |pessoa| %>
+      <tr>
+        <td>
+            <span><%= pessoa.nome %></span>
+        </td>
+        <td class="tabela_colunas_brancas">
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+<i></i>
