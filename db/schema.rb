@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131213131817) do
+ActiveRecord::Schema.define(:version => 2014021416430232) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -72,14 +72,6 @@ ActiveRecord::Schema.define(:version => 20131213131817) do
     t.datetime "updated_at",  :null => false
   end
 
-  create_table "logradouros", :force => true do |t|
-    t.string   "nome"
-    t.string   "cep"
-    t.integer  "bairro_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "matriculas", :force => true do |t|
     t.integer  "pessoa_id"
     t.string   "objetivo"
@@ -124,6 +116,7 @@ ActiveRecord::Schema.define(:version => 20131213131817) do
     t.boolean  "tem_direito_a_reposicao"
     t.date     "data_de_realocacao"
     t.boolean  "aula_extra",              :default => false
+    t.integer  "status_presenca_id"
   end
 
   create_table "registros_de_ponto", :force => true do |t|
@@ -141,6 +134,18 @@ ActiveRecord::Schema.define(:version => 20131213131817) do
     t.string   "consulta"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "status_presencas", :force => true do |t|
+    t.string   "descricao"
+    t.string   "icone"
+    t.boolean  "presenca",          :default => false
+    t.boolean  "direito_reposicao", :default => false
+    t.boolean  "realocacao",        :default => false
+    t.boolean  "aula_extra",        :default => false
+    t.boolean  "justificavel",      :default => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
   end
 
   create_table "telefones", :force => true do |t|

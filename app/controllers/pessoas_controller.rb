@@ -65,98 +65,59 @@ class PessoasController < ApplicationController
   end
 
   def adiantar_aula
-    error = ""
 
-    aluno_id = params[:aluno_id].to_i
+    aluno = Pessoa.find params[:aluno_id]
+    falta = aluno.presencas.falta.na_data(data_de_realocacao).create(:horario => horario_de_aula.horario, status_presenca: StatusPresenca.falta.direito_reposicao.first)
+    if falta.valid?
+      falta.justificativa_de_falta.create(:descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
+    end
+
+    # Criar o adiantamento
+    aluno.presencas.falta.realocacao.na_data(data).create(:data_de_realocacao => data_de_realocacao, :horario => params[:horario])
     horario_valido = true
 
-    if params[:data].blank?
-      error << "<strong>Campo Data</strong> não pode ficar vazio!\n"
-    end
-    if params[:horario].blank?
-      horario_valido = false
-      error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
-    elsif not hora_valida?(params[:horario])
-      horario_valido = false
-      error << "<strong>Horário da Aula</strong> Inválido!\n"
-    end
-    if params[:data_de_realocacao].blank?
-      error << "<strong>Data do Horário a ser Adiantado</strong> não pode ficar vazio!\n"
-    else
-      data_de_realocacao = params[:data_de_realocacao].to_date
-      horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data_de_realocacao.wday)[0]
+    data_de_realocacao = params[:data_de_realocacao].to_date
+    horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data_de_realocacao.wday)[0]
 
-      if horario_de_aula.nil?
-        error << "Aluno não possui horário cadastrado para o data de #{data_de_realocacao.strftime("%d/%m/%Y")}"
-      elsif horario_valido
-        if params[:data].to_date == data_de_realocacao
-          horario_a_ser_adiantado = txt_to_seg(horario_de_aula.horario)
-          horario = txt_to_seg(params[:horario])
-          if horario >= horario_a_ser_adiantado
-            error << "<strong>Horário de Adiantamento</strong> deve ser menor que Horário da Aula a ser Adiantada!"
-          end
+    if horario_de_aula.nil?
+      falta.errors.add_to_base "Aluno não possui horário cadastrado para o data de #{data_de_realocacao.strftime("%d/%m/%Y")}"
+    elsif horario_valido
+      if params[:data].to_date == data_de_realocacao
+        horario_de_aula.horario_a_ser_realocado =params[:horario]
+        if horario >= horario_a_ser_adiantado
+          error << "<strong>Horário de Adiantamento</strong> deve ser menor que Horário da Aula a ser Adiantada!"
         end
       end
     end
-    if not error.blank?
-      render :text => error and return
+
+    if not falta.valid?
+      render :text => falta.errors.full_messages.join("\n") and return
     end
 
-    data = params[:data].to_date
-    data_de_realocacao = params[:data_de_realocacao].to_date
-
-    # Criar a falta
-    falta = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario, :tem_direito_a_reposicao => true)
-    falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
-    falta.save
-
-    # Criar o adiantamento
-    Presenca.create(:pessoa_id => aluno_id, :presenca => false, :data => data, :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
-
-    render :text => error
+    render :text => "ok"
   end
 
   def gravar_reposicao
-    error = ""
-    note = ""
-    horario_valido = true
-
-    aluno_id = params[:aluno_id].to_i
-
-    if params[:data].blank?
-      error << "<strong>Campo Data</strong> não pode ficar vazio!\n"
-    end
-    if params[:horario].blank?
-      horario_valido = false
-      error << "<strong>Horário da Aula</strong> não pode ficar vazio!\n"
-    elsif not hora_valida?(params[:horario])
-      horario_valido = false
-      error << "<strong>Horário da Aula</strong> Inválido!\n"
-    end
-
+    aluno = Pessoa.find params[:aluno_id]
     data = params[:data].to_date
     data_de_realocacao = (params[:data_de_realocacao].blank?) ? nil : params[:data_de_realocacao].to_date
     if not data_de_realocacao.nil?
       #falta = Presenca.joins(:justificativa_de_falta).where("justificativas_de_falta.descricao <> ''")
       #falta = falta.find_all_by_pessoa_id_and_data_and_presenca_and_tem_direito_a_reposicao(aluno_id, data_de_realocacao, false, true)[0]
-      falta = Presenca.where(:pessoa_id => aluno_id, :data => data_de_realocacao).where("coalesce(presenca, false) = false")[0]
-      if falta.nil?
+      if not falta = aluno.presencas.falta.na_data(data_de_realocacao)
         horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data_de_realocacao.wday)[0]
         if not horario_de_aula.nil?
-          falta_justificada = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :tem_direito_a_reposicao => true, :horario => horario_de_aula.horario)
-          falta_justificada.build_justificativa_de_falta(:descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
-          falta_justificada.save
+          falta_justificada = aluno.presencas.falta.direito_reposicao.na_data(data_de_realocacao).create :horario => horario_de_aula.horario
+          falta_justificada.justificativa_de_falta.create(:descricao => "aula reposta em #{data.strftime("%d/%m/%Y")}")
         else
-          note = "Não pôde ser criada a Falta para o dia #{data_de_realocacao.strftime("%d/%m/%Y")}, pois aluno não possui aula nesse dia."
+          falta_justificada = Presenca.new
+          falta_justificada.errors.add_to_base "Não pôde ser criada a falta para o dia #{data_de_realocacao.strftime("%d/%m/%Y")}, pois aluno não possui aula nesse dia."
         end
-      elsif horario_valido
+      else
         puts "== horario valido"
         if data == data_de_realocacao
           puts "== datas iguais"
-          horario_a_ser_reposto = txt_to_seg(falta.horario)
-          horario = txt_to_seg(params[:horario])
-          if horario <= horario_a_ser_reposto
-            error << "<strong>Horário de Reposição</strong> deve ser maior que Horário da Aula a ser Reposta!"
+          falta.horario_a_ser_realocado = params[:horario]
           else
             if not falta.tem_direito_a_reposicao
               falta.tem_direito_a_reposicao = true
@@ -172,14 +133,13 @@ class PessoasController < ApplicationController
         end
       end
     end
-    if not error.blank?
-      render :text => error and return
+    if not falta.valid?
+      render :text => falta.errors.full_messages.join("\n")
     end
 
     Presenca.create(:pessoa_id => aluno_id, :data => data, :presenca => false, :data_de_realocacao => data_de_realocacao, :horario => params[:horario], :realocacao => true)
 
-    error << note
-    render :text => error
+    render :text => "Ok"
   end
 
   def justificar_falta
@@ -242,9 +202,6 @@ class PessoasController < ApplicationController
     Time.strptime(hora, "%H:%M") rescue false
   end
 
-  def txt_to_seg hour
-    Time.strptime(hour, "%H:%M").seconds_since_midnight
-  end
 
   def registros_de_ponto_por_mes
     id = params[:funcionario_id].to_i

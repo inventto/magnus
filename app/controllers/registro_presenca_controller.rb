@@ -273,13 +273,8 @@ class RegistroPresencaController < ApplicationController
   end
 
   def marcar_falta
-    (hoje_eh_feriado?) ? gerar_falta(true) : gerar_falta(false)
-
-    render :nothing => true
-  end
-
-  def gerar_falta eh_feriado
-    today = (Rails.env.production?) ? (Time.now) : Time.now
+    eh_feriado = hoje_eh_feriado?
+    today = Time.now
     horarios = HorarioDeAula.joins(:matricula).joins("INNER JOIN pessoas ON matriculas.pessoa_id=pessoas.id")
     horarios = horarios.where(:"horarios_de_aula.dia_da_semana" => today.wday)
     horarios = horarios = horarios.where("data_inicio <= ? and (data_fim is null or data_fim >= ?) and (inativo_desde is null and inativo_ate is null or not (? between inativo_desde and inativo_ate) or inativo_desde is null and ? > inativo_desde)", today.to_date, today.to_date, today.to_date, today.to_date)
@@ -294,6 +289,8 @@ class RegistroPresencaController < ApplicationController
         end
       end
     end
+
+    render :nothing => true
   end
 
   def hoje_eh_feriado?

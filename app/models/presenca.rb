@@ -1,15 +1,38 @@
-#coding: utf-8
+#encode: utf-8
 class Presenca < ActiveRecord::Base
-  attr_accessible :pessoa_id, :pessoa, :data, :horario, :justificativa_de_falta, :presenca, :realocacao, :pontualidade, :tem_direito_a_reposicao, :data_de_realocacao, :aula_extra
+  attr_accessible :pessoa_id, :pessoa, :data, :horario, :justificativa_de_falta,  :pontualidade,  :data_de_realocacao
 
   before_create :gerar_realocacao
 
   belongs_to :pessoa
+  belongs_to :status_presenca
   has_one :justificativa_de_falta, :dependent => :destroy
+  scope :na_data,  -> {|data| where( data: data) }
+
+  delegate :presenca?, :realocacao?, :aula_extra?, :direito_reposicao?, :to => :status_presenca
+  attr_accessible :horario_a_ser_realocado
 
   validates_presence_of :pessoa
   validates_presence_of :data
   validates_presence_of :horario
+  validate :horario_interessante_para_realocacao, :if => labmda{|presenca|presenca.horario_a_ser_realocado}
+  validate :hora_valida
+
+
+  def horario_interessante_para_realocacao
+    segundos = lambda {|hour|Time.strptime(hour, "%H:%M").seconds_since_midnight}
+    if segundos.call(horario) <= segundos.call(horario_a_ser_realocado)
+      errors.add_to_base( "<strong>Horário de reposição</strong> deve ser maior que horário da aula a ser reposta!" )
+    end
+  end
+
+  def hora_valida
+    begin
+      Time.strptime(horario, "%H:%M")
+    rescue 
+      error.add(:horario, "inválido!")
+    end
+  end
 
   validates_each :data_de_realocacao do |model, attr, value|
     if not value.blank?
@@ -23,7 +46,6 @@ class Presenca < ActiveRecord::Base
 
   def quantidade_de_registros
   end
-
   def label
     "presença de " << pessoa.nome
   end

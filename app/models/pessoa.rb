@@ -38,22 +38,18 @@ class Pessoa < ActiveRecord::Base
       horario_na_matricula = txt_to_seg(matricula[0].horario)
     end
 
-    p = Presenca.where(:pessoa_id => self.id).where(:data => @data_atual)
+    presenca = nil
 
     horario_na_realocacao = 0
-    if not p.blank?
-      p.each do |presenca|
-        p = presenca
-
-        next if not hora_esta_contida_em_horario?(@hora_atual, presenca.horario)
-        if presenca.realocacao
-          horario_na_realocacao = presenca.horario
-          if not horario_na_realocacao.blank?
-            horario_na_realocacao = txt_to_seg(horario_na_realocacao)
-          end
-        else
-          return presenca
+    presencas.where(:data => @data_atual).each do |presenca|
+      next if not hora_esta_contida_em_horario?(@hora_atual, presenca.horario)
+      if presenca.realocacao
+        horario_na_realocacao = presenca.horario
+        if not horario_na_realocacao.blank?
+          horario_na_realocacao = txt_to_seg(horario_na_realocacao)
         end
+      else
+        return presenca
       end
     end
 
@@ -68,9 +64,9 @@ class Pessoa < ActiveRecord::Base
     dif_hora_matricula = dif_hora_matricula * -1 if not dif_hora_matricula.nil? and dif_hora_matricula < 0
     dif_hora_realocacao = dif_hora_realocacao * -1 if not dif_hora_realocacao.nil? and dif_hora_realocacao < 0
 
-    if not p.blank? and not dif_hora_realocacao.nil?
+    if not presenca.blank? and not dif_hora_realocacao.nil?
       if (not dif_hora_matricula.nil? and dif_hora_realocacao < dif_hora_matricula) or dif_hora_matricula.nil?
-        return p
+        return presenca
       else
         return nil
       end
