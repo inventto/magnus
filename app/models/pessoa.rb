@@ -1,4 +1,5 @@
 #coding: utf-8
+require 'time'
 class Pessoa < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :e_funcionario
 
@@ -402,6 +403,9 @@ class Pessoa < ActiveRecord::Base
   end
 
   def eh_feriado? data
+    if is_a? String
+      data = Time.strptime(data, "%d-%m-%Y") {|year| year + (year < 70 ? 2000 : 1900)}
+    end
     feriado = Feriado.where(:dia => data.day).where(:mes => data.month).last
     feriado and (feriado.repeticao_anual or feriado.ano == data.year)
   end
