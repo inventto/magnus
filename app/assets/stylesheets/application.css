@@ -258,6 +258,7 @@ i{
   border: 1px solid black;
   padding: 3px;
   width: 14%;
+  white-space: nowrap;
 }
 .vip, .horario_ocupado {
   background-color: #D99694;
@@ -442,4 +443,20 @@ i{
 }
 .type-number {
   text-align: right;
+}
+#title-aniversariantes {
+  border: none;
+}
+#aniversariantes li{
+  list-style: none;
+}
+.day {
+  font-weight: bold;
+  line-height: 15px;
+  float: left;
+  padding: 3px
+}
+#aniversariante li {
+  display: block;
+  height: 20px;
 }
