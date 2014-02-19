@@ -22,8 +22,11 @@ body{
   margin-bottom: 15px;
 }
 #top .menu{
-  margin: 77px auto;
+  margin: 5.7% auto;
   white-space: nowrap;
+}
+.menu{
+  width: 102%;
 }
 .menu ul {
   margin: 0 auto;
@@ -31,7 +34,7 @@ body{
 }
 .menu ul li {
   float: left;
-  margin: 0 5px;
+  margin: 0 0.2%;
 }
 .menu ul li a {
   font-size: 16px;
