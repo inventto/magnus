@@ -1,7 +1,15 @@
 <style>
   @media print {
-    #top{
+    #top,
+    #displayN,
+    #display_names{
       display: none;
+    }
+    tbody{
+      page-break-inside: avoid;
+      page-break-before: auto;
+      page-break-after: auto;
+      display: block;
     }
   }
 </style>
@@ -11,23 +19,20 @@
     <input type="checkbox" name="display_names" value="Exibir Nomes" id="display_names" onclick="displayNames();" />
     <label for="display_names" id="displayN">Exibir Nomes</label>
   </p>
-  <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
-    <h4><%= title %></h4>
     <table>
-      <thead>
+  <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
+      <tbody>
         <tr>
-          <th></th>
+          <th><h4><%= title %></h4></th>
           <% (1..6).each do |day| %>
             <% if not (day == 6 and periodo != (6..12)) %>
               <th><%= Date::DAYNAMES[day] %></th>
             <% end %>
           <% end %>
         </tr>
-      </thead>
-      <tbody>
         <% periodo.each do |hora| %>
           <tr>
-            <td><%= hr = format("%.2d", hora) + ":00" %> - <%= final_do_horario(hr) %></td>
+            <td align=center ><%= hr = format("%.2d", hora) + ":00" %> - <%= final_do_horario(hr) %></td>
             <% achou = false %>
             <% (1..6).each do |dia| %>
               <% if dia == 6 and hora > 12 %>
@@ -85,8 +90,8 @@
           </tr>
         <% end %>
       </tbody>
-    </table>
   <% end %>
+    </table>
 </div>
 <script type="text/javascript">
   function displayNames() {
