@@ -302,7 +302,11 @@ i{
   display: none;
 }
 #agenda.compact {
-  width: 450px
+  display: table;
+  min-width: 450px;
+}
+#agenda table{
+  width: 100%
 }
 #horarios.compact table tr {
   white-space: nowrap;

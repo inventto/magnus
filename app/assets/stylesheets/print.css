@@ -2,9 +2,6 @@
   .menu, #login, .filtros, #agenda #horarios table img {
     display: none;
   }
-  #agenda {
-    width: 790px;
-  }
   #agenda #horarios {
     width: 790px;
     -moz-column-count: 2;
@@ -22,9 +19,6 @@
 
   #horarios.compact table tr {
     margin-bottom: 30px;
-  }
-  #agenda #horarios table {
-    width: 380px;
   }
   #agenda, #aniversariantes {
     border: none;

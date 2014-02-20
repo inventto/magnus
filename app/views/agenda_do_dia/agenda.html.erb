@@ -43,15 +43,15 @@
       <% primeiro = true %>
       <% while(dia_atual <= @data_final) %>
         <% @agenda_do_dia.each do |dia, agenda| %>
-          <table>
-            <% next if primeiro and dia < dia_atual.wday %>
+          <% next if primeiro and dia < dia_atual.wday %>
             <% if (dia_atual.wday > dia)
                  dia_atual += 7 - (dia_atual.wday - dia)
                else
                  dia_atual += dia - dia_atual.wday
                end
             %>
-            <% break if dia_atual > @data_final %>
+          <% break if dia_atual > @data_final %>
+          <table>
             <tr><td class="titulo_dia" colspan="3"><%= Date::DAYNAMES[dia] %>  <%= dia_atual.strftime("%d/%m/%Y") %></td></tr>
             <% agenda.group_by{|a| a.horario}.each do |hora, horarios_de_aula| %>
               <% if horario_possui_aluno_valido?(horarios_de_aula, dia_atual) %> <!-- Se houver pelo menos um aluno válido nesse horario o horario é exibido caso contrário não. -->
