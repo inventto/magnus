@@ -21,10 +21,8 @@
   }
 
   #horarios.compact table tr {
-    margin-bottom: 20px;
-    display: block;
+    margin-bottom: 30px;
   }
-
   #agenda #horarios table {
     width: 380px;
   }

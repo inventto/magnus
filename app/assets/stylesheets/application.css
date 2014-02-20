@@ -301,15 +301,18 @@ i{
 #horarios.compact table img {
   display: none;
 }
+#agenda.compact {
+  width: 450px
+}
+#horarios.compact table tr {
+  white-space: nowrap;
+}
 #horarios.compact table #esta_de_aniver {
   font-weight: bold;
 }
 #horarios.compact table #segundo_nome_hidden,
 #horarios.compact table div {
   display: inline;
-}
-#horarios.compact table tr {
-  line-height: 175%;
 }
 #horarios.compact table div:after {
   content: "/";
