@@ -33,7 +33,7 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_presenca
-    matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @data_atual.wday)
+    matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @data_atual.wday).matricula_ativa
     horario_na_matricula = 0
     if not matricula.blank?
       horario_na_matricula = txt_to_seg(matricula[0].horario)
@@ -81,7 +81,7 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_pontualidade
-    horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0].horario
+    horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday).matriucla_ativa[0].horario
     horario_de_aula = txt_to_seg(horario_de_aula)
     hora_atual_in_sec = txt_to_seg(@hora_atual)
     ((horario_de_aula - hora_atual_in_sec) / 60).round # div por 60 para retornar em min. Retorna negativo se estiver atrasado e positivo adiantado
@@ -104,7 +104,7 @@ class Pessoa < ActiveRecord::Base
     min_in_secs = seconds % 3600
     if min_in_secs > 1800 # se maior que 30 minutos
       return Time.at((seconds - min_in_secs) + 3600).gmtime.strftime("%H:%M")
-    else
+    elsenn
       return Time.at(seconds - min_in_secs).gmtime.strftime("%H:%M")
     end
   end
@@ -181,7 +181,7 @@ class Pessoa < ActiveRecord::Base
             data = get_data(data)
           end
 
-          horario_da_aula_da_matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data.wday)
+          horario_da_aula_da_matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data.wday).matricula_ativa
 
           criar_falta_com_justificativa_de_adiantamento(data, hora_da_aula, horario_da_aula_da_matricula.first.horario)
 
@@ -340,7 +340,7 @@ class Pessoa < ActiveRecord::Base
   end
   def esta_fora_de_horario?
     @hora_registrada = @hora_certa
-    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday)[0]
+    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday).matricula_ativa[0]
 
     if not @presenca.nil? and @presenca.realocacao# se for reposição, adiantamento
       p "@presenca #{@presenca}"

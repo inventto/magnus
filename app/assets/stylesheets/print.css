@@ -23,7 +23,7 @@
     font-size: 16px;
   }
   #quadro_de_horarios table td{
-    line-height: 97%;
+    line-height:86%;
   }
   #agenda, #aniversariantes {
     border: none;

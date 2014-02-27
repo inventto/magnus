@@ -33,7 +33,7 @@ class RegistroPresencaController < ApplicationController
     notice = []
     error = []
 
-    @matricula_standby = Matricula.where("inativo_desde < inativo_ate")
+    @matricula_standby = Matricula.where("data_fim is null and (? between inativo_desde and inativo_ate) and pessoa_id = ?", Time.now, @aluno.id)
 
     if @aluno.passe_livre?
       flash[:notice] = "Presença registrada!"
@@ -83,7 +83,7 @@ class RegistroPresencaController < ApplicationController
         notice << "Você faltou aula passada e justificou."
       end
 
-    if @matricula_standby
+    if @matricula_standby and @matricula_standby.size > 0
       @mensagem_sonora << "Matrícula em estado inativo."
       notice << "Matrícula em estado inativo."
     end
