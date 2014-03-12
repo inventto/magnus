@@ -2,12 +2,19 @@
 <html>
   <head>
     <title>Controle De Presenca Magnus</title>
-
+    <%= csrf_meta_tag %>
     <%= stylesheet_link_tag    "application", :media => "all" %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
     <script src='http://code.highcharts.com/stock/highstock.js'></script>
     <script src='http://code.highcharts.com/stock/modules/exporting.js'></script>
+
+    <%= javascript_tag do %>
+      jQuery(document).ajaxSend(function(e, xhr, options) {
+             var token = jQuery("meta[name='csrf-token']").attr("content");
+                     xhr.setRequestHeader("X-CSRF-Token", token);
+                           });
+    <% end %>
 
     <script type="text/javascript">
       function verificaUltimaPaginaAcessada() {

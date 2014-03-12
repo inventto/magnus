@@ -7,6 +7,7 @@ gem 'devise', '3.0.3'
 gem 'pg'
 gem 'active_scaffold'
 gem 'carrierwave'
+gem 'rmagick'
 gem 'unicorn'
 gem "rails3-jquery-autocomplete"
 gem 'nifty-generators'

@@ -4,7 +4,7 @@ class ListaDeAlunosAtivosInativosController < ApplicationController
   def ativos_inativos
     conditions = [[]]
     if params[:ativos_matriculados] == "on"
-      conditions[0] << "exists (select 1 from matriculas where not (now() between inativo_desde and coalesce(inativo_ate, now()) and data_fim is null) and pessoa_id = pessoas.id)"
+      conditions[0] << "exists (select 1 from matriculas where (inativo_desde is null or not (now() between inativo_desde and coalesce(inativo_ate, now()))) and pessoa_id = pessoas.id and data_fim is null)"
     end
     if params[:inativos] == "on"
       conditions[0] << "exists (select 1 from matriculas where (now() between inativo_desde and coalesce(inativo_ate, now()) and data_fim is null) and pessoa_id = pessoas.id)"
