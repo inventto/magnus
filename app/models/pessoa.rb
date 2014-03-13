@@ -104,7 +104,7 @@ class Pessoa < ActiveRecord::Base
     min_in_secs = seconds % 3600
     if min_in_secs > 1800 # se maior que 30 minutos
       return Time.at((seconds - min_in_secs) + 3600).gmtime.strftime("%H:%M")
-    elsenn
+    else
       return Time.at(seconds - min_in_secs).gmtime.strftime("%H:%M")
     end
   end
@@ -152,7 +152,10 @@ class Pessoa < ActiveRecord::Base
       #presenca.fora_de_horario = true
       presenca.realocacao = true
       hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
+      puts "PRESENCA <<<<<<<<<<<<< #{hora_da_aula}"
       presenca.horario = hora_da_aula
+      puts "TXT TO SEG #{txt_to_seg(hora_da_aula)}"
+      puts "TXT_T0_SEG <<<<< #{txt_to_seg(@hora_atual)}"
       presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
       if fora_do_horario # registrou a presença no mesmo dia mas no horário diferente do da aula
         if txt_to_seg(@horario_de_aula.horario) > txt_to_seg(hora_da_aula)  # adiantamento, pois registrou a presença antes do horário da aula
