@@ -162,7 +162,7 @@ class RegistroPresencaController < ApplicationController
     registros = RegistroDePonto.where("pessoa_id = #{employee.id}").order(:id)
     ultimo_ponto = registros.last
 
-    if ultimo_ponto.hora_de_saida.nil? and ultimo_ponto.data.to_date != Time.now.to_date
+    if ultimo_ponto and ultimo_ponto.hora_de_saida.nil? and ultimo_ponto.data.to_date != Time.now.to_date
       ultimo_ponto.hora_de_saida = ultimo_ponto.hora_de_chegada
       ultimo_ponto.save
     end
