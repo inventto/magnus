@@ -69,6 +69,7 @@ module PessoasHelper
       count_faltas_com_direto_a_repos_permitidas = Presenca.where("pessoa_id = ? and tem_direito_a_reposicao = true and presenca = false and data >= ? ", record.id, Time.now() - 28.days).count
       count_ultimas_realocacoes = Presenca.where("pessoa_id = ? and realocacao = true and data >= ? ", record.id, Time.now() - 28.days).count
 
+
       count_faltas_com_direto_a_repos_permitidas -= count_ultimas_realocacoes
 
       #@count_faltas_sem_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, false) - count_feriados(presencas)
@@ -91,7 +92,7 @@ module PessoasHelper
 
       @count_faltas_sem_direito_a_reposicao = @count_faltas_com_direito_a_reposicao - @count_aulas_realocadas - @count_aulas_a_repor
 
-      @total_de_aulas = presencas.count - count_feriados(presencas)
+      @total_de_aulas = presencas.count
 
       if column
         render :partial => 'estatistica'
