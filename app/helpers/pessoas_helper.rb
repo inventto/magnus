@@ -1,5 +1,6 @@
 #coding: utf-8
 module PessoasHelper
+
   def foto_column(model, column)
     "<img src='#{model.foto}' height='48'>".html_safe
   end
@@ -48,56 +49,58 @@ module PessoasHelper
   end
 
   def estatisticas_column(record, column)
-    if record.instance_of?(Pessoa)
-      return if record.presencas.blank?
+    if not consulta_alunos_com_matriculas_canceladas
+      if record.instance_of?(Pessoa)
+        return if record.presencas.blank?
 
-      @count_presencas = 0
-      @count_aulas_extras = 0
+        @count_presencas = 0
+        @count_aulas_extras = 0
 
-      presencas = record.presencas
+        presencas = record.presencas
 
-      presencas.each do |presenca|
-        if presenca.presenca?
-          if presenca.aula_extra?
-            @count_aulas_extras += 1
-          else
-            @count_presencas += 1
+        presencas.each do |presenca|
+          if presenca.presenca?
+            if presenca.aula_extra?
+              @count_aulas_extras += 1
+            else
+              @count_presencas += 1
+            end
           end
         end
-      end
 
-      count_faltas_com_direto_a_repos_permitidas = Presenca.where("pessoa_id = ? and tem_direito_a_reposicao = true and presenca = false and data >= ? ", record.id, Time.now() - 28.days).count
-      count_ultimas_realocacoes = Presenca.where("pessoa_id = ? and realocacao = true and data >= ? ", record.id, Time.now() - 28.days).count
+        count_faltas_com_direto_a_repos_permitidas = Presenca.where("pessoa_id = ? and tem_direito_a_reposicao = true and presenca = false and data >= ? ", record.id, Time.now() - 28.days).count
+        count_ultimas_realocacoes = Presenca.where("pessoa_id = ? and realocacao = true and data >= ? ", record.id, Time.now() - 28.days).count
 
 
-      count_faltas_com_direto_a_repos_permitidas -= count_ultimas_realocacoes
+        count_faltas_com_direto_a_repos_permitidas -= count_ultimas_realocacoes
 
-      #@count_faltas_sem_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, false) - count_feriados(presencas)
+        #@count_faltas_sem_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, false) - count_feriados(presencas)
 
-      @count_faltas_com_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, true)
+        @count_faltas_com_direito_a_reposicao = get_faltas_direito_a_reposicao(presencas, true)
 
-      count_aulas_repostas = get_aulas_repostas(presencas)
+        count_aulas_repostas = get_aulas_repostas(presencas)
 
-      count_faltas_de_realocacoes_sem_direito_a_repos = get_faltas_de_realocacoes_sem_direito_a_reposicao(presencas)
+        count_faltas_de_realocacoes_sem_direito_a_repos = get_faltas_de_realocacoes_sem_direito_a_reposicao(presencas)
 
-      count_faltas_de_realocacoes_com_direito_a_repos = get_faltas_de_realocacoes_com_direito_a_reposicao(presencas)
+        count_faltas_de_realocacoes_com_direito_a_repos = get_faltas_de_realocacoes_com_direito_a_reposicao(presencas)
 
-      #@count_aulas_a_repor = @count_faltas_com_direito_a_reposicao - count_aulas_repostas
-      #@count_aulas_a_repor -= get_amount_of_expired_classes(@count_aulas_a_repor, count_faltas_com_direto_a_repos_permitidas)
-      #@count_aulas_a_repor -= count_faltas_de_realocacoes_sem_direito_a_repos - count_faltas_de_realocacoes_com_direito_a_repos
+        #@count_aulas_a_repor = @count_faltas_com_direito_a_reposicao - count_aulas_repostas
+        #@count_aulas_a_repor -= get_amount_of_expired_classes(@count_aulas_a_repor, count_faltas_com_direto_a_repos_permitidas)
+        #@count_aulas_a_repor -= count_faltas_de_realocacoes_sem_direito_a_repos - count_faltas_de_realocacoes_com_direito_a_repos
 
-      @count_aulas_a_repor = count_faltas_com_direto_a_repos_permitidas
+        @count_aulas_a_repor = count_faltas_com_direto_a_repos_permitidas
 
-      @count_aulas_realocadas = presencas.where(:realocacao => true).count
+        @count_aulas_realocadas = presencas.where(:realocacao => true).count
 
-      @count_faltas_sem_direito_a_reposicao = @count_faltas_com_direito_a_reposicao - @count_aulas_realocadas - @count_aulas_a_repor
+        @count_faltas_sem_direito_a_reposicao = @count_faltas_com_direito_a_reposicao - @count_aulas_realocadas - @count_aulas_a_repor
 
-      @total_de_aulas = presencas.count
+        @total_de_aulas = presencas.count
 
-      if column
-        render :partial => 'estatistica'
-      else
-        render :partial => 'pessoas/estatistica'
+        if column
+          render :partial => 'estatistica'
+        else
+          render :partial => 'pessoas/estatistica'
+        end
       end
     end
   end
@@ -233,11 +236,13 @@ module PessoasHelper
       @registros_de_ponto = @registros_de_ponto.where("data BETWEEN ? AND ?", Date.today.beginning_of_month, Date.today.end_of_month).order("data desc")
       render :partial => "registros_de_ponto_por_mes"
     else
-      @pessoa = record
-      if column
-        render :partial => "presenca"
-      else
-        render :partial => "pessoas/presenca"
+      if not consulta_alunos_com_matriculas_canceladas
+        @pessoa = record
+        if column
+          render :partial => "presenca"
+        else
+          render :partial => "pessoas/presenca"
+        end
       end
     end
   end
@@ -540,5 +545,10 @@ module PessoasHelper
     end
     m = 0
     "#{hour.to_i.to_s.rjust(2, '0')}:#{m.to_i.to_s.rjust(2, '0')}"
+  end
+
+  private
+  def consulta_alunos_com_matriculas_canceladas
+    pessoasComMatriculasCanceladas = Pessoa.joins(:matriculas).joins(:presencas).where("pessoas.id = ? and data_fim is not null",params[:id])
   end
 end

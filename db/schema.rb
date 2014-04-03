@@ -138,9 +138,9 @@ ActiveRecord::Schema.define(:version => 20131213131817) do
   create_table "relatorios", :force => true do |t|
     t.string   "titulos"
     t.string   "nome"
-    t.string   "consulta"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.string   "consulta",   :limit => nil
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
   create_table "telefones", :force => true do |t|
