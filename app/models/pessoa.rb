@@ -469,6 +469,10 @@ class Pessoa < ActiveRecord::Base
     nome
   end
 
+  def matricula_valida
+    matriculas.joins(:presencas).valida.first
+  end
+
   private
 
   def chk_codigo_de_acesso

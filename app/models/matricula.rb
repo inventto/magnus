@@ -4,6 +4,7 @@ class Matricula < ActiveRecord::Base
 
   belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
+  has_many :presencas, :through => :pessoa, :conditions => "presencas.created_at >= matriculas.created_at"
 
   validates_presence_of :pessoa
   #validates_presence_of :horario_de_aula
@@ -12,6 +13,7 @@ class Matricula < ActiveRecord::Base
   validate :data_final
   validate :validar_matricula, :on => :create
   validate :validar_data_inativa
+  scope :valida, where(:data_fim => nil)
 
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio
