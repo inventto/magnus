@@ -14,6 +14,7 @@ class Matricula < ActiveRecord::Base
   validate :validar_matricula, :on => :create
   validate :validar_data_inativa
   scope :valida, where(:data_fim => nil)
+  scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
 
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio

@@ -49,7 +49,7 @@ module PessoasHelper
   end
 
   def estatisticas_column(record, column)
-    if get_consulta
+    if get_consulta_matricula_valida
       if record.instance_of?(Pessoa)
         return if record.presencas.blank?
 
@@ -236,7 +236,7 @@ module PessoasHelper
       @registros_de_ponto = @registros_de_ponto.where("data BETWEEN ? AND ?", Date.today.beginning_of_month, Date.today.end_of_month).order("data desc")
       render :partial => "registros_de_ponto_por_mes"
     else
-      if get_consulta
+      if get_consulta_matricula_valida
         @pessoa = record
         if column
           render :partial => "presenca"
@@ -548,7 +548,7 @@ module PessoasHelper
   end
 
   private
-  def get_consulta
+  def get_consulta_matricula_valida
     @record.matricula_valida
   end
 end

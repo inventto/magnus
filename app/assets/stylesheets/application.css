@@ -311,7 +311,7 @@ i{
 #horarios.compact table tr {
   white-space: nowrap;
 }
-#horarios.compact table #esta_de_aniver {
+#horarios.compact table .esta_de_aniver {
   font-weight: bold;
 }
 #horarios.compact table #segundo_nome_hidden,
@@ -366,8 +366,14 @@ i{
   margin: 0 auto;
   white-space: nowrap;
 }
+.matricula_standby {
+  text-decoration: line-through;
+}
 .nome_do_aluno {
   height: 20px;
+}
+.nome_do_aluno > a {
+  text-decoration: none;
 }
 .nome_do_aluno:hover {
   text-decoration: underline;

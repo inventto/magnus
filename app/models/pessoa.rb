@@ -473,6 +473,22 @@ class Pessoa < ActiveRecord::Base
     matriculas.joins(:presencas).valida.first
   end
 
+  def com_matricula_standby?
+    matriculas.em_standby?(Time.now).exists?
+  end
+
+  def get_funcionario_horario_de_aula(hora)
+    today = (Rails.env.production?) ? (Time.now) : Time.now
+    registro_ponto = RegistroDePonto.where("? between hora_de_chegada and hora_de_saida and data = ?",hora,today.to_date)
+    if registro_ponto.length >= 2
+      for pessoa in registro_ponto
+        funcionario_nome = Pessoa.where("e_funcionario = true and id = ?",pessoa.pessoa_id)
+      end
+    else
+       funcionario_nome = Pessoa.where("e_funcionario = true and id = ?",registro_ponto.pessoa_id)
+    end
+  end
+
   private
 
   def chk_codigo_de_acesso
