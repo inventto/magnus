@@ -212,6 +212,7 @@ module ApplicationHelper
     end
     return ok
   end
+
   def mostrar_nome_para aluno, horario, dia_atual
     _class = "nome_do_aluno"
     _class += " esta_de_aniver " if aluno.esta_de_aniversario_essa_semana?
@@ -219,6 +220,24 @@ module ApplicationHelper
     _space = "  "
     text_link = aluno.primeiro_nome + _space + content_tag(:span, aluno.segundo_nome) + _space + content_tag(:span, aluno.segundo_nome[0], :id => "segundo_nome_hidden")+ content_tag(:span,  status_presenca(horario, dia_atual),  :class =>'status_presenca')
     content_tag(:div, text_link.html_safe, :onclick => "window.location=#{pessoa_path(aluno)}", :class => _class)
+  end
+  def arredonda_hora hora
+    h,m = hora.split(":")
+    h.to_i + (m.to_i / 30)
+  end
+
+  def mostrar_cor_professor hora,today
+    h,m = hora.split(":")
+      hora_final = ("%02d" % (h.to_i + 1 ))+":"+m
+      ms = ("%02d" % (m.to_i + 05 ))
+      hora_t = h
+      professores = @pontos_do_dia.select{|registro|
+        h,m = registro.hora_de_chegada.split(":")
+        registro.data == today && arredonda_hora(hora) >=  arredonda_hora(registro.hora_de_chegada) &&
+          (registro.hora_de_saida.nil? || hora_final <= registro.hora_de_saida)}.collect(&:pessoa)
+    professores.collect do |professor|
+        content_tag(:div, professor.nome[0,1], :class => 'professor-cor', :title => "#{professor.nome} ", :style => "background-color: ##{professor.cor}; width: 10px; float: left; border-radius: 10px 18px;  font-style:bold; color: #fff;")
+    end.join("").html_safe
   end
 
 end

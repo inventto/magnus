@@ -473,3 +473,6 @@ i{
   display: block;
   height: 20px;
 }
+.cor-input{
+  display: none;
+}

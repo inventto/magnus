@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131213131817) do
+ActiveRecord::Schema.define(:version => 20140411122505) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -107,6 +107,7 @@ ActiveRecord::Schema.define(:version => 20131213131817) do
     t.string   "cpf"
     t.string   "codigo_de_acesso"
     t.boolean  "e_funcionario",    :default => false
+    t.string   "cor"
   end
 
   add_index "pessoas", ["id"], :name => "index_pessoas_on_id", :unique => true

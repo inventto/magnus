@@ -16,6 +16,28 @@ module PessoasHelper
     render :partial => "endereco"
   end
 
+  def cor_form_column(record, column)
+    script = "<input class='cor-input text-input color' id='record_cor_#{record.id}' name='record[cor]'type='text' value='#{record.cor}' >"
+    script << "
+    <script type='text/javascript'>
+      showColor = function(){
+        if ($('.e_funcionario-input').is(':checked')) {
+          $('.cor-input').show();
+        } else {
+          $('.cor-input').hide();
+        }
+      }
+    $(document).ready(function() {
+      $('.e_funcionario-input').on('click', function(){
+        showColor();
+      });
+      showColor();
+    });
+    jscolor.init();
+    </script>"
+    script.html_safe
+  end
+
   def codigo_de_acesso_form_column(record, column)
     script = "<script type='text/javascript'>
                  function gerarCodigoDeAcesso() {
@@ -538,6 +560,7 @@ module PessoasHelper
   end
 
   def round_hour secs
+    puts "SECS #{secs}"
     hour = secs / 3600
     m = secs % 3600 / 60
     if m > 30

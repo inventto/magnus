@@ -58,6 +58,7 @@
                 <tr>
                   <td class="hora">
                     <%= hora %> - <%= final_do_horario(hora) %>:
+                    <%= mostrar_cor_professor(hora, dia_atual) %>
                   </td>
                   <td>
                     <% horarios_de_aula.each do |horario| %>
