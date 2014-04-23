@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140411122505) do
+ActiveRecord::Schema.define(:version => 20140423123219) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -102,12 +102,12 @@ ActiveRecord::Schema.define(:version => 20140411122505) do
     t.string   "sexo"
     t.string   "email"
     t.integer  "endereco_id"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.string   "cpf"
     t.string   "codigo_de_acesso"
-    t.boolean  "e_funcionario",    :default => false
     t.string   "cor"
+    t.integer  "tipo_de_pessoa",   :default => 0
   end
 
   add_index "pessoas", ["id"], :name => "index_pessoas_on_id", :unique => true

@@ -1,7 +1,12 @@
 #coding: utf-8
 require 'time'
 class Pessoa < ActiveRecord::Base
-  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso, :e_funcionario
+  attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
+  TIPOS = ['Aluno', 'Professor','Auxiliar', 'Administrador']
+
+  TIPOS.each_with_index do |tipo, i|
+        scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }
+  end
 
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now).to_date, (Time.now).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
   scope :com_matricula_valida, lambda { |data| joins(:matriculas).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
@@ -23,6 +28,10 @@ class Pessoa < ActiveRecord::Base
   validates :codigo_de_acesso, :uniqueness => true
 
   SEX = %w(M F)
+
+  def eh_professor?
+    tipo_de_pessoa == 1
+  end
 
   def primeiro_nome
     nome.gsub(/ .*$/, "")
@@ -231,6 +240,16 @@ class Pessoa < ActiveRecord::Base
     faltas = faltas.where("coalesce(presenca, 'f') = 'f'")
     faltas = faltas.where("coalesce(tem_direito_a_reposicao, 'f') = 'f'").count
   end
+
+  def self.tipos_select
+    return @@tipos if defined? @@tipo
+    @@tipos = []
+    TIPOS.each_with_index do|tipo,i|
+      @@tipos << [tipo, i]
+    end
+    @@tipos
+  end
+
 
   def get_amout_allowed_fault
     valid_enrollment = Matricula.order(:id).find_all_by_pessoa_id(self.id).last # pega a última cadastrada que sempre será a válida
@@ -480,7 +499,6 @@ class Pessoa < ActiveRecord::Base
   def get_funcionario_horario_de_aula(hora, today)
     puts "hora: #{hora} data: #{today}"
     registros_ponto = RegistroDePonto.que_entrou_ate(hora, today)
-    p registros_ponto.collect(&:pessoa_id)
     conditions = {}
     conditions[:id] = registros_ponto.collect(&:pessoa_id) if not registros_ponto.empty?
     Pessoa.where(conditions)
@@ -495,7 +513,7 @@ class Pessoa < ActiveRecord::Base
     while(codigo_existe?(codigo))
       codigo << codigo[codigo.length - 1]
     end
-    codigo = "9" << codigo if self.e_funcionario?
+    codigo = "9" << codigo if self.tipo_de_pessoa > 0
     self.codigo_de_acesso = codigo
   end
 

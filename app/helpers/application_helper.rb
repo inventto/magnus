@@ -236,7 +236,9 @@ module ApplicationHelper
         registro.data == today && arredonda_hora(hora) >=  arredonda_hora(registro.hora_de_chegada) &&
           (registro.hora_de_saida.nil? || hora_final <= registro.hora_de_saida)}.collect(&:pessoa)
     professores.collect do |professor|
-        content_tag(:div, professor.nome[0,1], :class => 'professor-cor', :title => "#{professor.nome} ", :style => "background-color: ##{professor.cor}; width: 10px; float: left; border-radius: 10px 18px;  font-style:bold; color: #fff;")
+        content_tag(:div, professor.nome[0,1], :class => 'professor-cor', :title => "#{professor.nome} ", :style => "background-color: ##{professor.cor}; width: 10px; float: left; border-radius: 10px 18px; font-weight:bold; color: #fff; @media print {
+        -webkit-print-color-adjust:exact;
+        }")
     end.join("").html_safe
   end
 

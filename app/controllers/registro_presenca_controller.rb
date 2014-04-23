@@ -143,15 +143,12 @@ class RegistroPresencaController < ApplicationController
   end
 
   def registrar_ponto_android
-    begin
-      employee = Pessoa.find_by_e_funcionario_and_codigo_de_acesso(true, params[:codigo])
+      employee = Pessoa.where :tipo_de_pessoa => 1..3, :codigo_de_acesso => params[:codigo]
       if not employee
-        raise ""
-      end
-    rescue
-      logger.warn("=== .: Código do Funcionário Inválido: #{params[:codigo]} às #{(Time.now)} :.")
-      flash[:error] = "Código do Funcionário Inválido!"
-      render :text => [flash[:error], "codigo_funcionario_invalido"].join("|") and return
+        message = "Código do Funcionário Inválido: #{params[:codigo]}"
+      flash[:error] = message
+      render :text => [flash[:error], "codigo_funcionario_invalido"].join("|")
+      return
     end
 
     @msg_sonora_for_employee = ""

@@ -16,6 +16,17 @@
     -webkit-column-gap: 21px;
     column-gap: 21px;
   }
+
+  #agenda #horarios .professor-cor {
+    margin-right: 5px;
+    background: #000
+    display: block;
+  }
+  #agenda #horarios .hora {
+    float: right;
+    width: 200px;
+    white-space: nowrap;
+  }
   #quadro_de_horarios h2 {
     font-size: 16px;
   }

@@ -72,7 +72,9 @@ class AgendaDoDiaController < ApplicationController
   def agrupa_e_ordena
     @agenda_do_dia = @agenda_do_dia.group_by{ |a| a.dia_da_semana.to_i }
 
-    @pontos_do_dia =  RegistroDePonto.entre(@data_inicial, @data_final).order("data, hora_de_chegada")
+    @pontos_do_dia =  RegistroDePonto.entre(@data_inicial, @data_final).order("data, hora_de_chegada").select do |registro|
+      registro.pessoa.eh_professor?
+    end
 
     @agenda_do_dia = @agenda_do_dia.sort
 

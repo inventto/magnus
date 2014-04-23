@@ -21,14 +21,14 @@ module PessoasHelper
     script << "
     <script type='text/javascript'>
       showColor = function(){
-        if ($('.e_funcionario-input').is(':checked')) {
+        if ($('.tipo_de_pessoa-input').find(':selected').val() > 0) {
           $('.cor-input').show();
         } else {
           $('.cor-input').hide();
         }
       }
     $(document).ready(function() {
-      $('.e_funcionario-input').on('click', function(){
+      $('.tipo_de_pessoa-input').on('change', function(){
         showColor();
       });
       showColor();
@@ -41,9 +41,9 @@ module PessoasHelper
   def codigo_de_acesso_form_column(record, column)
     script = "<script type='text/javascript'>
                  function gerarCodigoDeAcesso() {
-                    eh_funcionario = ($('.e_funcionario-input').is(':checked')) ? 1 : 0;
+                 tipo_pessoa = $('.tipo_de_pessoa-input').val();
                     var jqxhr = $.ajax({
-                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&id='+$(\".id\").text()+'&eh_funcionario='+eh_funcionario
+                      url: '/gerar_codigo_de_acesso?nascimento='+$('[name=\"record[data_nascimento]\"]').val()+'&id='+$(\".id\").text()+'&tipo_pessoa='+tipo_pessoa
                     });
                     jqxhr.always(function () {
                       codigo = jqxhr.responseText
@@ -194,7 +194,7 @@ module PessoasHelper
 
   def pontualidade_column(record, column)
     if record.instance_of?(Pessoa) # se não ocorre erro ao carregar a página de Presenças
-      return if record.e_funcionario
+      return if record.tipo_de_pessoa > 0
       presencas = record.presencas.where(:presenca => true)
       total_de_presencas = presencas.count
 
@@ -253,7 +253,7 @@ module PessoasHelper
   end
 
   def presencas_column(record, column)
-    if record.e_funcionario
+    if record.tipo_de_pessoa > 0
       @registros_de_ponto = RegistroDePonto.where(:pessoa_id => record.id)
       @registros_de_ponto = @registros_de_ponto.where("data BETWEEN ? AND ?", Date.today.beginning_of_month, Date.today.end_of_month).order("data desc")
       render :partial => "registros_de_ponto_por_mes"
