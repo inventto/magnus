@@ -219,7 +219,7 @@ module ApplicationHelper
     _class += " matricula_standby" if aluno.com_matricula_standby?
     _space = "  "
     text_link = aluno.primeiro_nome + _space + content_tag(:span, aluno.segundo_nome) + _space + content_tag(:span, aluno.segundo_nome[0], :id => "segundo_nome_hidden")+ content_tag(:span,  status_presenca(horario, dia_atual),  :class =>'status_presenca')
-    content_tag(:div, text_link.html_safe, :onclick => "window.location=#{pessoa_path(aluno)}", :class => _class)
+    content_tag(:div, text_link.html_safe, :onclick => "window.location='#{pessoa_path(aluno)}'", :class => _class)
   end
   def arredonda_hora hora
     h,m = hora.split(":")
