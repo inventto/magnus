@@ -476,13 +476,6 @@ i{
 .cor-input{
   display: none;
 }
-.professor-cor {
-  width: 10px;
-  float: left;
-  border-radius: 10px 18px;
-  font-weight:bold;
-  color: #fff;
-}
 body{
   -webkit-print-color-adjust:exact;
 }
