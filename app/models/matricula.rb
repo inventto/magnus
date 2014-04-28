@@ -28,7 +28,9 @@ class Matricula < ActiveRecord::Base
   def self.faltas_por_percentual
     matriculas = []
     Matricula.com_mais_faltas.collect do |matricula|
-      matricula.falta_em_percentual = ((1.0 - (matricula.presencas_por_semana.to_f / (matricula.numero_de_aulas_previstas.to_f || 1))) * 100).round(2)
+      next if not matricula.numero_de_aulas_previstas || matricula.numero_de_aulas_previstas == 0
+      percentual = ((1.0 - (matricula.presencas_por_semana.to_f / matricula.numero_de_aulas_previstas)) * 100).round(2)
+      matricula.falta_em_percentual = percentual
       if matricula.falta_em_percentual > 0
         matriculas << matricula
       end
