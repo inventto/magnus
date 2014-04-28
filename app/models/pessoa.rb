@@ -1,8 +1,8 @@
-#coding: utf-8
+#encoding: utf-8
 require 'time'
 class Pessoa < ActiveRecord::Base
   attr_accessible :data_nascimento, :email, :endereco_id, :foto, :nome, :sexo, :cpf, :telefones, :endereco, :codigo_de_acesso
-  TIPOS = ['Aluno', 'Professor','Auxiliar', 'Administrador']
+  TIPOS = ['Aluno', 'Personal','Secretária', 'Zeladora']
 
   TIPOS.each_with_index do |tipo, i|
         scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }

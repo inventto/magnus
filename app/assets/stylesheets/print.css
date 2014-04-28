@@ -18,13 +18,12 @@
   }
 
   #agenda #horarios .professor-cor {
+    float: left;
     margin-right: 5px;
-    background: #000
-    display: block;
   }
   #agenda #horarios .hora {
     float: right;
-    width: 200px;
+    width: 250px;
     white-space: nowrap;
   }
   #quadro_de_horarios h2 {
