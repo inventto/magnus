@@ -30,4 +30,4 @@ $(document).ready ->
     context.fillText(primeiraLetra, 5,14)
     context.closePath()
 
-    professor.html(canvas)
+    professor.replaceWith(canvas)

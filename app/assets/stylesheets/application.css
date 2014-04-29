@@ -318,7 +318,7 @@ i{
 #horarios.compact table div {
   display: inline;
 }
-#horarios.compact table div:after {
+#horarios.compact table div.nome_do_aluno:after {
   content: "/";
 }
 #horarios.compact table div:nth-last-child(1):after {
@@ -475,7 +475,4 @@ i{
 }
 .cor-input{
   display: none;
-}
-body{
-  -webkit-print-color-adjust:exact;
 }
