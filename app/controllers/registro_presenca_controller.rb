@@ -143,7 +143,7 @@ class RegistroPresencaController < ApplicationController
   end
 
   def registrar_ponto_android
-      employee = Pessoa.where :tipo_de_pessoa => 1..3, :codigo_de_acesso => params[:codigo]
+      employee = Pessoa.where tipo_de_pessoa: 1..3, codigo_de_acesso: params[:codigo].to_s
       if not employee
         message = "Código do Funcionário Inválido: #{params[:codigo]}"
       flash[:error] = message

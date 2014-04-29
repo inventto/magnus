@@ -161,10 +161,7 @@ class Pessoa < ActiveRecord::Base
       #presenca.fora_de_horario = true
       presenca.realocacao = true
       hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
-      puts "PRESENCA <<<<<<<<<<<<< #{hora_da_aula}"
       presenca.horario = hora_da_aula
-      puts "TXT TO SEG #{txt_to_seg(hora_da_aula)}"
-      puts "TXT_T0_SEG <<<<< #{txt_to_seg(@hora_atual)}"
       presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
       if fora_do_horario # registrou a presença no mesmo dia mas no horário diferente do da aula
         if txt_to_seg(@horario_de_aula.horario) > txt_to_seg(hora_da_aula)  # adiantamento, pois registrou a presença antes do horário da aula
@@ -497,7 +494,6 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_funcionario_horario_de_aula(hora, today)
-    puts "hora: #{hora} data: #{today}"
     registros_ponto = RegistroDePonto.que_entrou_ate(hora, today)
     conditions = {}
     conditions[:id] = registros_ponto.collect(&:pessoa_id) if not registros_ponto.empty?

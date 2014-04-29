@@ -560,7 +560,6 @@ module PessoasHelper
   end
 
   def round_hour secs
-    puts "SECS #{secs}"
     hour = secs / 3600
     m = secs % 3600 / 60
     if m > 30
