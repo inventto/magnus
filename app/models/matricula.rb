@@ -2,6 +2,8 @@
 class Matricula < ActiveRecord::Base
   attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate, :inativo_desde
 
+  attr_accessor :falta_em_percentual
+
   belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
   has_many :presencas, :through => :pessoa, :conditions => "presencas.created_at >= matriculas.created_at"
@@ -15,7 +17,27 @@ class Matricula < ActiveRecord::Base
   validate :validar_data_inativa
   scope :valida, where(:data_fim => nil)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
-
+  scope :com_mais_faltas, -> {
+     fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
+      valida.
+        joins(:pessoa => :presencas).
+          select("#{fields}, count(1) as presencas_por_semana").
+            group(fields.gsub(/ as [^,]*/,"")).
+              order("presencas_por_semana desc")
+  }
+  def self.faltas_por_percentual
+    matriculas = []
+    Matricula.com_mais_faltas.collect do |matricula|
+      next if not matricula.numero_de_aulas_previstas || matricula.numero_de_aulas_previstas == 0
+      percentual = ((1.0 - (matricula.presencas_por_semana.to_f / matricula.numero_de_aulas_previstas)) * 100).round(2)
+      matricula.falta_em_percentual = percentual
+      if matricula.falta_em_percentual > 0
+        matriculas << matricula
+      end
+    end
+    matriculas = matriculas.sort_by{|matricula| -matricula.falta_em_percentual}
+    matriculas
+  end
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio
   end
