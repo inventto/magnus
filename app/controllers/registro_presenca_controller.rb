@@ -12,7 +12,7 @@ class RegistroPresencaController < ApplicationController
         redirect_to "/registro_presenca"
         return
       else
-        @aluno = Pessoa.com_matricula_valida((Time.now).to_date).find_by_codigo_de_acesso(params[:codigo])
+        @aluno = Pessoa.com_matricula_valida((Time.now).to_date).where(params[:codigo]).first
         if not @aluno
           raise ""
         end
@@ -143,7 +143,7 @@ class RegistroPresencaController < ApplicationController
   end
 
   def registrar_ponto_android
-      employee = Pessoa.where tipo_de_pessoa: 1..3, codigo_de_acesso: params[:codigo].to_s
+      employee = Pessoa.where(tipo_de_pessoa: 1..3, codigo_de_acesso: params[:codigo]).first
       if not employee
         message = "Código do Funcionário Inválido: #{params[:codigo]}"
       flash[:error] = message

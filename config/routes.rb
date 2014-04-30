@@ -39,6 +39,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/gerar_codigo_de_acesso", to: "pessoas#gerar_codigo_de_acesso"
 
+  match "/gerar_bkp", to: "bkp#gerar"
+
   match "/justificar_falta", to: "pessoas#justificar_falta"
 
   match "/adiantar_aula", to: "pessoas#adiantar_aula"

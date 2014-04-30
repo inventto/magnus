@@ -1,6 +1,6 @@
 class BkpController < ApplicationController
   def gerar
-    `/var/bkp/scrits/gerar_bkp_magnus.sh`
+    `/var/bkp/scrits/gera_bkp_magnus.sh`
     redirect_to :baixar
   end
   def baixar
