@@ -1,15 +1,15 @@
 class BkpController < ApplicationController
   def gerar
-    `/var/bkp/scrits/gera_bkp_magnus.sh`
-    redirect_to :baixar
+    `sh /var/bkp/scripts/gera_bkp_magnus.sh`
+    baixar
   end
+
   def baixar
-    respond_to do |format|
-      format.zip { send_file bkp_nome }
-    end
+      send_file(bkp_nome, diposition: 'inline')
   end
+
   private
   def bkp_nome
-    Dir["/var/bkp/magnus/today/*.zip"][0]
+    Dir["/var/bkp/magnus/today/*.zip"].first
   end
 end

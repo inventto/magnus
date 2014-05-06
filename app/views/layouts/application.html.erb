@@ -58,14 +58,18 @@
       <div id="logo">
         <img src="/assets/logo.png"/></img>
       </div>
-        <div class="menu">
-          <ul>
-            <li><%= link_to "Agenda do Dia", root_path %></li>
-            <li><%= link_to "Pessoas", pessoas_path %></li>
-            <li><%= link_to "Matrículas", matriculas_path %></li>
-            <li><%= link_to "Presenças", presencas_path, :onclick => "verificaUltimaPaginaAcessada();" %></li>
-            <li><%= link_to "Registros de Ponto", registros_de_ponto_path %></li>
-            <li><%= link_to "Feriados", feriados_path %></li>
+      <div class="menu">
+        <ul>
+          <li><%= link_to "Agenda do Dia", root_path %></li>
+          <li><a href="#">Cadastros</a>
+            <ul>
+              <li><%= link_to "Pessoas", pessoas_path %></li>
+              <li><%= link_to "Matrículas", matriculas_path %></li>
+              <li><%= link_to "Presenças", presencas_path, :onclick => "verificaUltimaPaginaAcessada();" %></li>
+              <li><%= link_to "Registros de Ponto", registros_de_ponto_path %></li>
+              <li><%= link_to "Feriados", feriados_path %></li>
+            </ul>
+          </li>
             <li><a href="#">Relatórios</a>
               <ul>
                 <li><%= link_to "Aniversariantes do Mês", aniversariantes_path %></li>
@@ -77,6 +81,7 @@
                 <li><%= link_to "Lista de Ativos e Inativos", lista_de_alunos_ativos_inativos_path %></li>
               </ul>
             </li>
+            <li><%= link_to "Gerar Backup", gerar_bkp_path %></li>
             <li><a href="https://www.google.com/calendar?hl=pt_BR">Calendar</a></li>
           </ul>
         </div>
