@@ -571,6 +571,6 @@ module PessoasHelper
 
   private
   def get_consulta_matricula_valida
-    @record.matricula_valida
+    @record.com_matricula_valida
   end
 end

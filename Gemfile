@@ -4,6 +4,7 @@ gem 'rails', '3.2.14'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 gem 'devise', '3.0.3'
+gem 'thin'
 gem 'pg'
 gem 'active_scaffold'
 gem 'carrierwave'

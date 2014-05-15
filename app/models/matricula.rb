@@ -38,6 +38,7 @@ class Matricula < ActiveRecord::Base
     matriculas = matriculas.sort_by{|matricula| -matricula.falta_em_percentual}
     matriculas
   end
+
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio
   end
