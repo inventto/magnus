@@ -516,4 +516,8 @@ class Pessoa < ActiveRecord::Base
   def codigo_existe?(codigo)
     Pessoa.where('id <> ?', self.id).find_by_codigo_de_acesso(codigo)
   end
+
+  def historico_contatos
+    @matriculas_com_faltas = Matricula.faltas_por_percentual
+  end
 end

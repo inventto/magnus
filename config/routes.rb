@@ -67,6 +67,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/presencas_com_matriculas_canceladas/:pessoa_id", to: "alunos_com_matriculas_canceladas#presenca_alunos_matriculas_canceladas"
 
+  match "/pessoa/historico_contatos", to: "pessoas#historico_contatos"
+
   get "/agenda_do_dia/filtrar"
 
   get "/clientes_inativos/filtrar"

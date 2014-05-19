@@ -17,13 +17,14 @@ class Matricula < ActiveRecord::Base
   validate :validar_data_inativa
   scope :valida, where(:data_fim => nil)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
-  scope :com_mais_faltas, -> {
+  scope :com_mais_faltas, ->(na_semana=5.week.ago) {
      fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
       valida.
         joins(:pessoa => :presencas).
           select("#{fields}, count(1) as presencas_por_semana").
+            where("date_trunc('week',presencas.data) = date_trunc('week',?::DATE) ", na_semana.to_date).
             group(fields.gsub(/ as [^,]*/,"")).
-              order("presencas_por_semana desc")
+              order("presencas.pessoa_id asc, presencas_por_semana desc")
   }
   def self.faltas_por_percentual
     matriculas = []

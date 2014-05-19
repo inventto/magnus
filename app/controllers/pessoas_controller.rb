@@ -289,4 +289,8 @@ class PessoasController < ApplicationController
     {"id" => pessoa.id , "nome" => pessoa.primeiro_nome.downcase, "codigo" => pessoa.codigo_de_acesso}
   end
 
+  def historico_contatos
+    @matriculas_com_faltas = Matricula.faltas_por_percentual
+  end
+
 end
