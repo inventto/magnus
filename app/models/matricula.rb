@@ -17,29 +17,34 @@ class Matricula < ActiveRecord::Base
   validate :validar_data_inativa
   scope :valida, where(:data_fim => nil)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
-  scope :com_mais_faltas, ->(na_semana=5.week.ago) {
-     fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
+  scope :com_mais_faltas_desde, lambda {|desde|
+    fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
+     sql =
       valida.
+        joins(:pessoa).joins("left join presencas on presencas.pessoa_id = pessoas.id").
         joins(:pessoa => :presencas).
           select("#{fields}, count(1) as presencas_por_semana").
-            where("date_trunc('week',presencas.data) = date_trunc('week',?::DATE) ", na_semana.to_date).
-            group(fields.gsub(/ as [^,]*/,"")).
-              order("presencas.pessoa_id asc, presencas_por_semana desc")
-  }
-  def self.faltas_por_percentual
-    matriculas = []
-    Matricula.com_mais_faltas.collect do |matricula|
-      next if not matricula.numero_de_aulas_previstas || matricula.numero_de_aulas_previstas == 0
-      percentual = ((1.0 - (matricula.presencas_por_semana.to_f / matricula.numero_de_aulas_previstas)) * 100).round(2)
-      matricula.falta_em_percentual = percentual
-      if matricula.falta_em_percentual > 0
-        matriculas << matricula
-      end
-    end
-    matriculas = matriculas.sort_by{|matricula| -matricula.falta_em_percentual}
-    matriculas
-  end
+            where("presencas.data >  ?", desde).
+              group(fields.gsub(/ as [^,]*/,"")).
+                order("presencas.pessoa_id asc, presencas_por_semana desc")
 
+  }
+  def self.com_mais_faltas(desde=2.months.ago)
+    query = "select avg((1.0 - (a.presencas_por_semana / coalesce(a.numero_de_aulas_previstas,1))*100)) as presenca_percentual, "+
+       " a.pessoa_id from (#{Matricula.com_mais_faltas_desde(desde).to_sql}) as a group by a.pessoa_id"
+
+     raw = ActiveRecord::Base.connection.exec_query(query)
+     raw.inject({}) do |h,result|
+       pessoa = Pessoa.find(result["pessoa_id"])
+       percent = result["presenca_percentual"].to_f.round(2)
+       if percent > 0
+         h[pessoa] = percent
+       else
+         logger.warn "Pessoa##{pessoa.id} está com #{percent}% de faltas. (analisar) "
+       end
+       h
+     end
+  end
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio
   end

@@ -290,7 +290,7 @@ class PessoasController < ApplicationController
   end
 
   def historico_contatos
-    @matriculas_com_faltas = Matricula.faltas_por_percentual
+    @matriculas_com_faltas = Matricula.com_mais_faltas
   end
 
 end

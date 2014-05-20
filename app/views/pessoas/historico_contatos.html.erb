@@ -1,5 +1,5 @@
 <h1>Histórico de contatos</h1>
-<% @matriculas_com_faltas.each do |matricula|%>
-  <p><%= matricula.pessoa.nome %></p>
-  <p><%= matricula.falta_em_percentual %></p>
+<% @matriculas_com_faltas.each do |pessoa, percentual|%>
+ <p><%= pessoa.nome %></p>
+  <p><%= percentual %></p>
 <% end %>
