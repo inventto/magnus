@@ -1,18 +1,11 @@
 #encoding: utf-8
 class ContatosController < ApplicationController
+  layout 'application'
   def new
     @pessoa = Pessoa.find(params[:pessoa_id])
   end
   def create
-    if  params[:contato][:descricao].blank?
-       flash[:error] = "<strong>Campo Descrição</strong> não pode ficar vazio!\n"
-    end
-
-   if  params[:contato][:data].blank?
-      flash[:error] << "<strong>Campo Data</strong> não pode ficar vazio!\n"
-   end
-
-    Contato.create(:descricao => params[:contato][:descricao], :data_contato => params[:contato][:data], :pessoa_id => params["pessoa_id"])
+    Contato.create(:descricao => params[:contato][:descricao], :data_contato => params[:contato][:data], :pessoa_id => params["pessoa_id"]).valid?
     redirect_to "/historico_contatos"
   end
 

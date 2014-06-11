@@ -1,8 +1,11 @@
-<h1>Novo contato</h1>
-<%= form_for(:contato, :class => 'form-horizontal control-group', url: pessoa_contatos_path(@pessoa)) do |f| %>
-  <p class="control-label">Descrição: <%= f.text_area :descricao, :rows => 12 %> </p>
-  <p class="control-label">Data do contato: <%= f.date_field :data %></p>
-  <div class="message-error"><%= flash[:error] if not flash[:error].blank? %></div>
-  <% flash[:error] = nil %>
-  <%= f.submit "Enviar", :class => "btn" %>
+<h2 class="text-center">Novo contato</h2>
+<%= flash[:error] %>
+<%= content_tag :div, :class => "form-contato" do %>
+  <%= form_for(:contato, :class => 'form-horizontal control-group', url: pessoa_contatos_path(@pessoa)) do |f| %>
+    <%= f.date_field :data %> <br />
+    <label>Descrição: </label> <br />
+    <%= f.text_area :descricao, :size => "30x15", :style => "width: 325px;", :autofocus => true%> <br />
+    <label class="control-label">Data do contato: </label> <br />
+    <%= f.submit "Enviar", :class => "btn" %>
+  <% end %>
 <% end %>

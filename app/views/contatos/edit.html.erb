@@ -1,6 +1,12 @@
-<h3>Edit contato</h3>
-<%= form_tag(pessoa_contato_path(@contato.pessoa_id, @contato.id), :method => "PUT", :class => 'form-horizontal control-group') do %>
-  <p>Descrição: <%= text_area_tag :descricao, @contato.descricao, :rows => 15 %> </p>
-  <p>Data do contato: <%= date_field :contato, :data, :value => @contato.data_contato%></p>
-  <%= submit_tag "Atualizar" %>
+<h3 class="text-center">Editar contato</h3>
+<%= flash[:error] %>
+<%= content_tag :div, :class => "form-contato" do %>
+  <%= form_tag(pessoa_contato_path(@contato.pessoa_id, @contato.id), :method => "PUT", :class => 'form-horizontal control-group') do %>
+    <label>Data do contato: </label><br />
+    <%= date_field :contato, :data, :value => @contato.data_contato, :style => "margin-bottom: 10px;" %><br />
+    <label>Descrição: </label><br />
+    <%= text_area_tag :descricao, @contato.descricao, :size => "30x15", :style => "width: 325px;", :autofocus => true %> <br />
+    <%= submit_tag "Atualizar", :class => "btn" %>
+    <%= link_to 'Excluir', pessoa_contato_path(@contato.pessoa_id, @contato.id), :confirm => 'Tem certeza disso?', :method => :delete, :class => "btn-link" , :style => "margin-left: 10px;"%>
+  <% end %>
 <% end %>

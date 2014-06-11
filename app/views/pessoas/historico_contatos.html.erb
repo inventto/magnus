@@ -26,10 +26,10 @@
         <%= content_tag :td, percentual[0]  %>
         <%= content_tag :td, percentual[1]  %>
         <%= content_tag :td do %>
-          <%= link_to "Listar Contatos", pessoa_contatos_path(pessoa) %>
+          <%= link_to "Listar Contatos", pessoa_contatos_path(pessoa), :class => "btn-link" %>
         <% end %>
         <%= content_tag :td do %>
-          <%= link_to 'Novo', new_pessoa_contato_path(pessoa), :class => "icon-chevron-right"%>
+          <%= link_to 'Novo', new_pessoa_contato_path(pessoa), :class => "btn-link"%>
         <% end %>
       <% end %>
     <% end %>
