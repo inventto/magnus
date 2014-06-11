@@ -7,6 +7,7 @@ ControleDePresencaMagnus::Application.routes.draw do
   devise_scope :user do
     get "sign_in", :to => "devise/sessions#new"
   end
+  match "/historico_contatos", to: "pessoas#historico_contatos"
 
   resources :feriados do as_routes end
   resources :bairros do as_routes end
@@ -22,6 +23,9 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :tipos_telefone do as_routes end
   resources :registros_de_ponto do as_routes end
   resources :relatorios do as_routes end
+  resources :pessoas do
+    resources :contatos
+  end
 
   match "/relatorios/visualizar/:id", to: "relatorios#visualizar"
 
@@ -33,7 +37,7 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/clientes_que_perdemos", to: "clientes_que_perdemos#index"
 
-  match "/agenda_do_dia", to: "agenda_do_dia#agenda"
+  match "/agenda_do_diaresources :products d", to: "agenda_do_dia#agenda"
 
   match "/registro_presenca", to: "registro_presenca#index"
 
@@ -66,8 +70,6 @@ ControleDePresencaMagnus::Application.routes.draw do
   match "/alunos_com_matriculas_canceladas", to: "alunos_com_matriculas_canceladas#matriculas_canceladas"
 
   match "/presencas_com_matriculas_canceladas/:pessoa_id", to: "alunos_com_matriculas_canceladas#presenca_alunos_matriculas_canceladas"
-
-  match "/pessoa/historico_contatos", to: "pessoas#historico_contatos"
 
   get "/agenda_do_dia/filtrar"
 

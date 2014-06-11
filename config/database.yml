@@ -15,9 +15,9 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: controle_de_presenca_magnus_development
+  database: controle_de_presenca_magnus_production
   pool: 5
-  sername: inventto
+  username: inventto
   password:
 
   # Connect on a TCP socket. Omitted by default since the client uses a

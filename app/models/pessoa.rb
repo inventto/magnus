@@ -13,6 +13,7 @@ class Pessoa < ActiveRecord::Base
   before_save :chk_codigo_de_acesso
 
   has_many :telefones, :dependent => :destroy
+  has_many :contatos, :dependent => :destroy
   belongs_to :endereco
   has_many :matriculas, :dependent => :destroy
   has_many :presencas, :dependent => :destroy

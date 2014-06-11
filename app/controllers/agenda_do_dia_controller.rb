@@ -7,8 +7,8 @@ class AgendaDoDiaController < ApplicationController
   end
 
   def filtrar
-    @data_inicial = Date.parse(params[:"data-inicial"])
-    @data_final = Date.parse(params[:"data-final"])
+    @data_inicial = Date.parse(params[:"data_inicial"])
+    @data_final = Date.parse(params[:"data_final"])
 
     if @data_inicial <= @data_final
       load_agenda

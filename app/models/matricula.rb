@@ -17,30 +17,33 @@ class Matricula < ActiveRecord::Base
   validate :validar_data_inativa
   scope :valida, where(:data_fim => nil)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
-  scope :com_mais_faltas_desde, lambda {|desde|
+  scope :faltas_por_semana_desde, lambda {|desde|
     fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
      sql =
       valida.
         joins(:pessoa).joins("left join presencas on presencas.pessoa_id = pessoas.id").
-        joins(:pessoa => :presencas).
-          select("#{fields}, count(1) as presencas_por_semana").
+          select("#{fields}, sum(case when not presencas.presenca and not presencas.realocacao then 1 else 0 end) as faltas_por_semana,
+                 sum(case when presencas.realocacao and presencas.presenca then 1 else 0 end) as realocacoes_feitas").
             where("presencas.data >  ?", desde).
               group(fields.gsub(/ as [^,]*/,"")).
-                order("presencas.pessoa_id asc, presencas_por_semana desc")
+                order("presencas.pessoa_id asc, faltas_por_semana desc")
 
   }
-  def self.com_mais_faltas(desde=2.months.ago)
-    query = "select avg((1.0 - (a.presencas_por_semana / coalesce(a.numero_de_aulas_previstas,1))*100)) as presenca_percentual, "+
-       " a.pessoa_id from (#{Matricula.com_mais_faltas_desde(desde).to_sql}) as a group by a.pessoa_id"
+  def self.com_mais_faltas(desde)
+    puts "DESDE #{desde}"
+    query = "select sum(a.faltas_por_semana) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as percentual_faltas,
+                    sum(a.faltas_por_semana - a.realocacoes_feitas) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as restante,  "+
+       " a.pessoa_id from (#{Matricula.faltas_por_semana_desde(desde).to_sql}) as a group by a.pessoa_id order by percentual_faltas desc"
 
      raw = ActiveRecord::Base.connection.exec_query(query)
      raw.inject({}) do |h,result|
        pessoa = Pessoa.find(result["pessoa_id"])
-       percent = result["presenca_percentual"].to_f.round(2)
+       percent = result["percentual_faltas"].to_f.round(2)
+       restante = result["restante"].to_f.round(2)
        if percent > 0
-         h[pessoa] = percent
+         h[pessoa] = [percent, restante]
        else
-         logger.warn "Pessoa##{pessoa.id} está com #{percent}% de faltas. (analisar) "
+         puts "Pessoa##{pessoa.id} está com #{percent}% de faltas. (analisar) "
        end
        h
      end

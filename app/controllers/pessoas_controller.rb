@@ -293,7 +293,6 @@ class PessoasController < ApplicationController
     @options = [['1 Semana',1.week.ago], ['1 Mês',1.month.ago], ['3 Meses',3.month.ago], ['6 Meses',6.month.ago], ['1 Ano', 1.year.ago]]
     @desde = params[:desde].try(:to_datetime) || @options.last.second
     @matriculas_com_faltas = Matricula.com_mais_faltas @desde
-    puts "paramsss >>>>>>>>>> #{params}"
   end
 
 end

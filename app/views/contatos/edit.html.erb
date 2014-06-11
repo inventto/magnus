@@ -1,0 +1,6 @@
+<h3>Edit contato</h3>
+<%= form_tag(pessoa_contato_path(@contato.pessoa_id, @contato.id), :method => "PUT", :class => 'form-horizontal control-group') do %>
+  <p>Descrição: <%= text_area_tag :descricao, @contato.descricao, :rows => 15 %> </p>
+  <p>Data do contato: <%= date_field :contato, :data, :value => @contato.data_contato%></p>
+  <%= submit_tag "Atualizar" %>
+<% end %>

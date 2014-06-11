@@ -1,0 +1,8 @@
+<h1>Novo contato</h1>
+<%= form_for(:contato, :class => 'form-horizontal control-group', url: pessoa_contatos_path(@pessoa)) do |f| %>
+  <p class="control-label">Descrição: <%= f.text_area :descricao, :rows => 12 %> </p>
+  <p class="control-label">Data do contato: <%= f.date_field :data %></p>
+  <div class="message-error"><%= flash[:error] if not flash[:error].blank? %></div>
+  <% flash[:error] = nil %>
+  <%= f.submit "Enviar", :class => "btn" %>
+<% end %>

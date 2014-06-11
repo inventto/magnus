@@ -21,7 +21,7 @@ module PessoasHelper
     script << "
     <script type='text/javascript'>
       showColor = function(){
-        if ($('.tipo_de_pessoa-input').find(':selected').val() > 0) {
+        if ($('.tipo_de_pessoa-input').find(':selected').val() == 1) {
           $('.cor-input').show();
         } else {
           $('.cor-input').hide();
@@ -571,6 +571,6 @@ module PessoasHelper
 
   private
   def get_consulta_matricula_valida
-    @record.com_matricula_valida
+    @record.matricula_valida
   end
 end

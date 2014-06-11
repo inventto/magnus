@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="Pragma" content="no-cache">
     <title>Controle De Presenca Magnus</title>
     <%= csrf_meta_tag %>
     <%= stylesheet_link_tag    "application", :media => "all" %>
@@ -81,7 +82,7 @@
                 <li><%= link_to "Gráficos", graficos_path %></li>
                 <li><%= link_to "Personalizados", relatorios_path %></li>
                 <li><%= link_to "Lista de Ativos e Inativos", lista_de_alunos_ativos_inativos_path %></li>
-                <li><%= link_to "Histórico de contatos", pessoa_historico_contatos_path %></li>
+                <li><%= link_to "Histórico de contatos", "/historico_contatos" %></li>
               </ul>
             </li>
             <li><a href="https://www.google.com/calendar?hl=pt_BR">Calendar</a></li>
