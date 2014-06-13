@@ -29,6 +29,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/relatorios/visualizar/:id", to: "relatorios#visualizar"
 
+  match "/agenda_do_dia", to: "agenda_do_dia#agenda"
+
   match "/graficos", to: "graficos#index"
 
   match "/quadro_de_horarios", to: "quadro_de_horarios#index"

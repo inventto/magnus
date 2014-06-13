@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140519124757) do
+ActiveRecord::Schema.define(:version => 20140612120716) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -74,6 +74,16 @@ ActiveRecord::Schema.define(:version => 20140519124757) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
   end
+
+  create_table "interesses", :force => true do |t|
+    t.string   "horario"
+    t.integer  "dia_da_semana"
+    t.integer  "matricula_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  add_index "interesses", ["matricula_id"], :name => "index_interesses_on_matricula_id"
 
   create_table "justificativas_de_falta", :force => true do |t|
     t.string   "descricao"
