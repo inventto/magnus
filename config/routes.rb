@@ -2,6 +2,14 @@ ControleDePresencaMagnus::Application.routes.draw do
 
 
 
+  get "quadro_de_interesses_nos_horarios/index"
+
+  get "interesse_no_horario/index"
+
+  get "interesse_no_horario/show"
+
+  get "interesse_no_horario/edit"
+
   devise_for :users
   devise_for :users, :path => "auth", :path_names => { :sign_in => 'login', :sign_out => 'logout', :password => 'secret', :confirmation => 'verification', :unlock => 'unblock', :registration => 'register', :sign_up => 'cmon_let_me_in' }
   devise_scope :user do

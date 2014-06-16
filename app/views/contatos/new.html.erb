@@ -4,7 +4,6 @@
   <%= form_for(:contato, :class => 'form-horizontal control-group', url: pessoa_contatos_path(@pessoa)) do |f| %>
     <label>Data: </label> <br />
     <%= f.date_field :data, :autofocus => true %> <br />
-    <input class='data' name="data_inicial" type="date"/>
     <label>Descrição: </label> <br />
     <%= f.text_area :descricao, :size => "30x15", :style => "width: 325px;", :autofocus => true%> <br />
     <label class="control-label">Data do contato: </label> <br />

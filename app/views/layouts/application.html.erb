@@ -57,7 +57,7 @@
         <strong><div id="login">Usuário: </strong><%= current_user.email %>, <%= link_to 'Sair', destroy_user_session_path, :method => :delete %></div>
       <% end %>
       <div id="logo">
-        <img src="/assets/logo.png"/></img>
+        <%= link_to (image_tag("/assets/logo.png", :alt => "Magnus Personal", :title=> "Magnus Personal")) ,agenda_do_dia_path() %>
       </div>
       <div class="menu">
         <ul>
@@ -79,6 +79,7 @@
                 <li><%= link_to "Clientes Inativos", clientes_inativos_path %></li>
                 <li><%= link_to "Clientes que Perdemos", clientes_que_perdemos_path %></li>
                 <li><%= link_to "Quadro de Horários", quadro_de_horarios_path %></li>
+                <li><%= link_to "Quadro de Interessados nos horários", interesse_no_horario_index_path() %></li>
                 <li><%= link_to "Gráficos", graficos_path %></li>
                 <li><%= link_to "Personalizados", relatorios_path %></li>
                 <li><%= link_to "Lista de Ativos e Inativos", lista_de_alunos_ativos_inativos_path %></li>

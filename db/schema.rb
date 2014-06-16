@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140612120716) do
+ActiveRecord::Schema.define(:version => 20140613172737) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -75,7 +75,9 @@ ActiveRecord::Schema.define(:version => 20140612120716) do
     t.datetime "updated_at",    :null => false
   end
 
-  create_table "interesses", :force => true do |t|
+  create_table "interesse_no_horarios", :force => true do |t|
+    t.boolean  "ativo"
+    t.string   "descricao"
     t.string   "horario"
     t.integer  "dia_da_semana"
     t.integer  "matricula_id"
@@ -83,7 +85,7 @@ ActiveRecord::Schema.define(:version => 20140612120716) do
     t.datetime "updated_at",    :null => false
   end
 
-  add_index "interesses", ["matricula_id"], :name => "index_interesses_on_matricula_id"
+  add_index "interesse_no_horarios", ["matricula_id"], :name => "index_interesse_no_horarios_on_matricula_id"
 
   create_table "justificativas_de_falta", :force => true do |t|
     t.string   "descricao"

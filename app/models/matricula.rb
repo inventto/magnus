@@ -7,6 +7,7 @@ class Matricula < ActiveRecord::Base
   belongs_to :pessoa
   has_many :horario_de_aula, :dependent => :destroy
   has_many :presencas, :through => :pessoa, :conditions => "presencas.created_at >= matriculas.created_at"
+  has_many :interesse_no_horario, :dependent => :destroy
 
   validates_presence_of :pessoa
   #validates_presence_of :horario_de_aula

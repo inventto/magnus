@@ -122,6 +122,9 @@ i{
   float: left;
   padding: 12px;
 }
+#logo a:hover{
+  background-color: transparent;
+}
 #login{
   float: right;
 }

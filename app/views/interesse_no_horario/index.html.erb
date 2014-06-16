@@ -1,0 +1,44 @@
+<h1>InteresseNoHorario#index</h1>
+<h3> Quadro de alunos interessados nos horários </h3>
+<%= content_tag :table do %>
+  <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
+    <%= content_tag :thead,  class: 'table table-striped table-bordered' do %>
+      <%= content_tag :tr do %>
+        <%= content_tag :th do %>
+          <%= content_tag :h4, title %>
+        <% end %>
+        <!-- exibindo os dias da semana-->
+        <% (1..6).each do |day| %>
+          <% if not (day == 6 and periodo != (6..12)) %>
+            <%= content_tag :th do %>
+              <%= Date::DAYNAMES[day] %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= content_tag :tbody do %>
+      <!-- listando os horários, do hash -->
+      <% periodo.each do |tempo| %>
+        <%= content_tag :tr do %>
+          <%= content_tag :td do%>
+            <%= hora = format("%.2d", tempo) + ":00" %> - <%= final_do_horario(hora) %>
+          <% end %>
+          <% (1..6).each do |dia| %>
+            <% if dia == 6 and tempo > 12 %>
+              <% break %>
+            <% end %>
+            <% if @interessados_nos_horarios[dia] %>
+              <% if  @interessados_nos_horarios[dia].each do |horario_da_aula, registros| %>
+                <% if horario_da_aula[0..1].to_i == periodo %>
+                  <%= get_nomes_no(registros) %>
+                <% end %>
+              <% end %>
+            <% else %>
+              --
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
