@@ -28,17 +28,10 @@
             <% if dia == 6 and tempo > 12 %>
               <% break %>
             <% end %>
-            <% if @interessados_nos_horarios[dia] %>
-              <% if  @interessados_nos_horarios[dia].each do |horario_da_aula, registros| %>
-                <% if horario_da_aula[0..1].to_i == periodo %>
-                  <%= get_nomes_no(registros) %>
-                <% end %>
-              <% end %>
-            <% else %>
-              --
-            <% end %>
+            <% interesse_list_table(dia, periodo) %>
           <% end %>
         <% end %>
       <% end %>
     <% end %>
   <% end %>
+<% end %>

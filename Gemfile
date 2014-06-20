@@ -13,6 +13,7 @@ gem 'unicorn'
 gem "rails3-jquery-autocomplete"
 gem 'nifty-generators'
 gem 'date-input-rails', '~> 0.0.3'
+gem 'rails-erd'
 #gem 'highcharts-rails'
 # Gems used only for assets and not required
 # in production environments by default.
