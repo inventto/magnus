@@ -16,7 +16,7 @@ class Matricula < ActiveRecord::Base
   validate :data_final
   validate :validar_matricula, :on => :create
   validate :validar_data_inativa
-  scope :valida, where(:data_fim => nil)
+  scope :valida, where("(matriculas.data_fim > ? or matriculas.data_fim is null)", Time.now)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
   scope :faltas_por_semana_desde, lambda {|desde|
     fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
@@ -31,7 +31,6 @@ class Matricula < ActiveRecord::Base
 
   }
   def self.com_mais_faltas(desde)
-    puts "DESDE #{desde}"
     query = "select sum(a.faltas_por_semana) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as percentual_faltas,
                     sum(a.faltas_por_semana - a.realocacoes_feitas) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as restante,  "+
        " a.pessoa_id from (#{Matricula.faltas_por_semana_desde(desde).to_sql}) as a group by a.pessoa_id order by percentual_faltas desc"
@@ -49,6 +48,7 @@ class Matricula < ActiveRecord::Base
        h
      end
   end
+
   def data_final
     errors.add(:data_fim, "não pode ser menor que Data Inicial!") if data_fim and data_inicio and data_fim < data_inicio
   end

@@ -19,7 +19,6 @@ module InteresseNoHorarioHelper
 
   def limite_de_alunos_por?(horario_da_aula, dia_da_semana)
     hora_atual = formata_(horario_da_aula)
-    p "HORA_ATUAL #{hora_atual} DIA DA SEMANA #{dia_da_semana}"
     InteresseNoHorario.por_horario(hora_atual, dia_da_semana).count <= 4
   end
 
