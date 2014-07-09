@@ -16,12 +16,17 @@ class Matricula < ActiveRecord::Base
   validate :data_final
   validate :validar_matricula, :on => :create
   validate :validar_data_inativa
+  scope :com_nome_parecido, ->(id) { where(pessoa_id: id) }
   scope :valida, where("(matriculas.data_fim > ? or matriculas.data_fim is null)", Time.now)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
-  scope :faltas_por_semana_desde, lambda {|desde|
+  scope :faltas_por_semana_desde, lambda {|desde, pessoa_id=nil|
     fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
+      onde = valida
+      if not pessoa_id.nil?
+        onde = onde.com_nome_parecido(pessoa_id)
+      end
      sql =
-      valida.
+       onde.
         joins(:pessoa).joins("left join presencas on presencas.pessoa_id = pessoas.id").
           select("#{fields}, sum(case when not presencas.presenca and not presencas.realocacao then 1 else 0 end) as faltas_por_semana,
                  sum(case when presencas.realocacao and presencas.presenca then 1 else 0 end) as realocacoes_feitas").
@@ -30,10 +35,10 @@ class Matricula < ActiveRecord::Base
                 order("presencas.pessoa_id asc, faltas_por_semana desc")
 
   }
-  def self.com_mais_faltas(desde)
+  def self.com_mais_faltas(desde, pessoa_id=nil)
     query = "select sum(a.faltas_por_semana) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as percentual_faltas,
                     sum(a.faltas_por_semana - a.realocacoes_feitas) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as restante,  "+
-       " a.pessoa_id from (#{Matricula.faltas_por_semana_desde(desde).to_sql}) as a group by a.pessoa_id order by percentual_faltas desc"
+       " a.pessoa_id from (#{Matricula.faltas_por_semana_desde(desde, pessoa_id).to_sql}) as a group by a.pessoa_id order by percentual_faltas desc"
 
      raw = ActiveRecord::Base.connection.exec_query(query)
      raw.inject({}) do |h,result|

@@ -479,11 +479,13 @@ i{
 .cor-input{
   display: none;
 }
-.form-contato{
+.filtro-contatos{
   width: 25%;
   background: rgba(237, 247, 247, 0.5);
-  margin: 0 auto;
-  border: 2px solid rgb(95, 201, 221);
-  border-radius: 30px 30px 30px 30px;
-  padding: 15px;
+}
+.filtro-contatos .label-pessoa-contato{
+  margin-left: 10px;
+}
+.filtro-contatos #filtro_pessoa_id{
+  margin-bottom: 4px;
 }

@@ -1,9 +1,13 @@
 <h1 class="text-center" >Histórico de contatos</h1>
-<%= content_tag :fieldset, :style => "width: 30%;" do %>
-  <%= content_tag :legend, "Filtro das faltas desde:"%>
-  <%= form_tag('/historico_contatos', :class => 'form form-inline',:method => 'post')  do%>
-    <%= select_tag "desde", options_for_select(@options, 1.week.ago) %>
-    <%= submit_tag "Filtrar", :class => "btn" %>
+<%= content_tag :fieldset, class: "filtro-contatos" do %>
+  <%= content_tag :legend, "Filtros:"%>
+  <% p "Parametros Tela #{params}"%>
+  <%= form_tag('/historico_contatos', :method => 'post')  do%>
+    <%= content_tag :label, "Período: ", class: "label-periodo"%>
+    <%= select("periodo","desde", @opcoes_periodos.collect{|periodo| [periodo[0], periodo[1]]}, {prompt: "- Selecione -"}) %><%= tag :br %>
+    <%= content_tag :label, "Aluno: ", class: "label-pessoa-contato"%>
+    <%= select("filtro", "pessoa_id", Pessoa.order(:nome).all.collect {|p| [p.nome, p.id]}, {prompt: "- Selecione -"}) %><%= tag :br %>
+    <%= submit_tag "Filtrar", class: "btn btn-info" %>
   <% end %>
 <% end %>
 
