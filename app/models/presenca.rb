@@ -1,6 +1,7 @@
 #coding: utf-8
 class Presenca < ActiveRecord::Base
   attr_accessible :pessoa_id, :pessoa, :data, :horario, :justificativa_de_falta, :presenca, :realocacao, :pontualidade, :tem_direito_a_reposicao, :data_de_realocacao, :aula_extra
+  scope :justificada_na?, ->(data, aluno){ joins(:justificativa_de_falta).where(data: data, pessoa_id: data) }
 
   before_create :gerar_realocacao
 

@@ -10,6 +10,7 @@ class Pessoa < ActiveRecord::Base
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now).to_date, (Time.now).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
   scope :com_matricula_valida, lambda { |data| joins(:matriculas).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
 
+
   before_save :chk_codigo_de_acesso
 
   has_many :telefones, :dependent => :destroy
@@ -492,6 +493,7 @@ class Pessoa < ActiveRecord::Base
   def com_matricula_standby?
     matriculas.em_standby?(Time.now).exists?
   end
+
 
   def get_funcionario_horario_de_aula(hora, today)
     registros_ponto = RegistroDePonto.que_entrou_ate(hora, today)

@@ -372,6 +372,9 @@ i{
 .matricula_standby {
   text-decoration: line-through;
 }
+.falta_justificada {
+  text-decoration: line-through;
+}
 .nome_do_aluno {
   height: 20px;
 }
