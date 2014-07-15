@@ -290,7 +290,8 @@ class PessoasController < ApplicationController
   end
 
   def historico_contatos
-    @opcoes_periodos = [['1 Semana',1.week.ago], ['1 Mês',1.month.ago], ['3 Meses',3.month.ago], ['6 Meses',6.month.ago], ['1 Ano', 1.year.ago]]
+    @opcoes_periodos = [['1 Semana',1.week.ago.to_date], ['1 Mês',1.month.ago.to_date], ['3 Meses',3.month.ago.to_date], ['6 Meses',6.month.ago.to_date], ['1 Ano', 1.year.ago.to_date]]
+    @opcoes_pessoas = Pessoa.order(:nome).all.collect {|p| [p.nome, p.id]}
     desde = params["periodo"].try(:[],"desde").try(:to_datetime) || @opcoes_periodos.last.second
     pessoa_id = nil
     if params["filtro"].present?

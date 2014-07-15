@@ -1,4 +1,4 @@
-#coding: utf-8
+#encoding: utf-8
 class CpfValidator < ActiveModel::EachValidator
   def validate_each(record, attr, value)
     record.errors.add(attr, "Inválido!") if not value.blank? and not cpf_valido?(value)

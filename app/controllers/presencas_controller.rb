@@ -1,4 +1,4 @@
-#coding: utf-8
+#encoding: utf-8
 class PresencasController < ApplicationController
   before_filter :update_config
 
@@ -10,6 +10,7 @@ class PresencasController < ApplicationController
     conf.columns[:horario].label = "Horário"
     conf.columns[:realocacao].label = "Realocação de Horário"
 #    conf.columns[:fora_de_horario].label = "Fora de Horário"
+    conf.columns[:tem_direito_a_reposicao].show_blank_record = false
     conf.columns[:tem_direito_a_reposicao].label = "Tem Direito à Reposição?"
     conf.columns[:data_de_realocacao].label = "Realocado de"
     conf.columns[:pessoa].label = "Aluno"

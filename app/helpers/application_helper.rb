@@ -26,53 +26,56 @@ module ApplicationHelper
 
       retorno = ""
       if presenca.presenca
-        retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
+        retorno = image_tag("presenca.png", title: 'Presença Registrada')
         if presenca.realocacao
-          retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+          retorno << image_tag("realocacao.png", title: get_title_realocacao(aluno_id, dia_atual, presenca) )
         elsif presenca.aula_extra
-          retorno << "<img class='realocacao' src='/assets/aula_extra.png' title='Aula Extra' />"
+          retorno << image_tag("aula_extra.png", title: "Aula Extra")
         end
         if presenca.fora_de_horario
-          retorno = "<img src='/assets/fora_de_horario.png' title='Fora de Horario' />"
+          retorno = image_tag("fora_de_horario.png", title: "Fora de Horário")
         end
         retorno = (aniversario << retorno)
-        retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
+        #retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
+        retorno = link_to(retorno.html_safe, edit_presenca_path(presenca.id))
+
         if matricula_standby
-          retorno << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
+          retorno << image_tag("inativo.png", title: "Matrícula em estado inativo")
         end
         return retorno.html_safe
       else
         if is_feriado?(dia_atual)
-          retorno = "<img src='/assets/bandeira_feriado.png' title='Feriado' />"
+          retorno = image_tag("bandeira_feriado.png", title: "Feriado")
         else
           if presenca.justificativa_de_falta.nil?
-            retorno = "<img src='/assets/falta_sem_justif.png' title='Falta Sem Justificativa' />"
+            retorno = image_tag("falta_sem_justif.png", title: "Falta sem Justificativa")
           elsif presenca.tem_direito_a_reposicao?
-            retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+            retorno = image_tag("falta_justif_com_direito_a_reposicao.png", title: get_title_realocacao(aluno_id, dia_atual,presenca))
           else
-            retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+            retorno = image_tag("falta_justif_sem_direito_a_reposicao.png", title: get_title_realocacao(aluno_id, dia_atual, presenca))
           end
           if presenca.realocacao
             hora_atual = get_in_seconds()
             hora_presenca = get_in_seconds(presenca.horario)
 
             if (((presenca.data == @hora_certa.to_date) and not (hora_atual > (hora_presenca + 300))) or (presenca.data > @hora_certa.to_date))
-              retorno = "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+              retorno = image_tag("realocacao.png", title: get_title_realocacao(aluno_id, dia_atual, presenca))
             else
-              retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+              retorno << image_tag("realocacao.png", title: get_title_realocacao(aluno_id, dia_atual, presenca))
             end
           end
         end
         if matricula_standby
-          retorno << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
+          retorno << image_tag("inativo.png", title: "Matrícula em estado inativo")
         end
         retorno = (aniversario << retorno)
-        retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
+        #retorno = "<a href='/presencas/#{presenca.id}/edit'>" << retorno << "</a>"
+        retorno = link_to(retorno.html_safe, edit_presenca_path(presenca.id))
         return retorno.html_safe
       end
     else
       if matricula_standby
-        aniversario << "<img src='/assets/inativo.png' title='Matrícula em estado inativo'/>"
+        aniversario << image_tag("inativo.png", title: "Matrícula em estado invativo")
       end
       return aniversario.html_safe # mesmo que não haja presença deve se retornar a imagem de aniversário
     end
@@ -151,7 +154,7 @@ module ApplicationHelper
     aniversario = Time.mktime(Time.now.year, data_nascimento.month, nascimento.day)
 
     retorno = ""
-    retorno << "<img src='/assets/aniversario.png' title='Aniversário Hoje' width='16px' />" if aniversario.to_date == dia.to_date
+    retorno << image_tag("aniversario.png", title: "Aniversário Hoje", size: "16px") if aniversario.to_date == dia.to_date
     retorno
   end
 
@@ -214,9 +217,7 @@ module ApplicationHelper
   end
 
   def mostrar_nome_para aluno, horario, data
-    img = status_presenca(horario, data)[/(src='[^']+')/]
-    #img = img.split("/")
-    #img_justificativa = img[2].to_s.tr(%q{"'}, "").chomp
+    img = status_presenca(horario, data)[/(src=\"[^"]+")/]
 
     _class = "nome_do_aluno"
     if img =~ /falta_justif/
