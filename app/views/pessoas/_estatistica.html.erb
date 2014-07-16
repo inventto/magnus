@@ -1,46 +1,69 @@
 <div id='estatisticas_table' class='active-scaffold'>
+  <h2>Presenças</h2>
   <table>
     <thead>
       <tr>
         <th>Presenças</th>
+        <th>Aulas realocadas</th>
         <th>Aulas Extras</th>
-        <th>Treinamento com direito à realocação(+)</th>
-        <th>Faltas sem comunicar com antecedência e/ou expirados</th>
-        <th>Treinamentos realocados(-)</th>
-        <th>Saldo de Treinamentos para realocação(+)</th>
+        <th>Saldo para realocação</th>
+        <th title='Não avisadas com antecedência ou Ultrapassaram o limite'>Faltas sem direito<br/>à realocação</th>
         <th>Total de aulas</th>
+        <th></th>
+        <th>Faltas com direito<br/>à realocação</th>
+        <th>Aulas realocadas</th>
+        <th>Saldo para realocação</th>
+        <% if current_user.admin %>
+        <th>Presenças errôneas</th>
+        <% end %>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class='tip_trigger' style='background-color: green;'>
           <%= @count_presencas %>
-          <span class='tip'><%= @perc_presencas = calcular_percentual(@count_presencas, @total_de_aulas) %>%</span>
-        </td>
-        <td class='tip_trigger' style='background-color: lightblue;'>
-          <%= @count_aulas_extras %>
-          <span class='tip'><%= @perc_aulas_extras = calcular_percentual(@count_aulas_extras, @total_de_aulas) %>%</span>
-        </td>
-        <td class='tip_trigger' style='background-color: yellow;'>
-          <%= @count_faltas_com_direito_a_reposicao %>
-          <span class='tip'><%= calcular_percentual(@count_faltas_com_direito_a_reposicao, @total_de_aulas) %>%</span>
-        </td>
-        <td class='tip_trigger' style='background-color: red; color: black;'>
-          <%= @count_faltas_sem_direito_a_reposicao %>
-          <span class='tip'><%= @perc_faltas_sem_direito_a_reposicao = calcular_percentual(@count_faltas_sem_direito_a_reposicao, @total_de_aulas) %>%</span>
+          <span class='tip'><%= @perc_presencas = calcular_percentual(@count_presencas, @total_geral) %>%</span>
         </td>
         <td class='tip_trigger' style='background-color: lightgreen;'>
-          <%= @count_aulas_realocadas %>
-          <span class='tip'><%= @perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_de_aulas) %>%</span>
+          + <%= @count_aulas_realocadas %>
+          <span class='tip'><%= @perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_geral) %>%</span>
         </td>
-        <td class='tip_trigger' style='background-color: white;'>
-          <%= @count_aulas_a_repor %>
-          <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_aulas_a_repor, @total_de_aulas) %>%</span>
+        <td class='tip_trigger' style='background-color: lightblue;'>
+          + <%= @count_aulas_extras %>
+          <span class='tip'><%= @perc_aulas_extras = calcular_percentual(@count_aulas_extras, @total_geral) %>%</span>
         </td>
-        <td><%= @total_de_aulas %></td>
+        <td class='tip_trigger' style='background-color: #f5e9e9;'>
+          + <%= @count_saldo_realocacao %>
+          <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_saldo_realocacao, @total_geral) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: red; color: black;'>
+          + <%= @count_faltas_sem_direito_a_reposicao %>
+          <span class='tip'><%= @perc_faltas_sem_direito_a_reposicao = calcular_percentual(@count_faltas_sem_direito_a_reposicao, @total_geral) %>%</span>
+        </td>
+        <td>= <%= @total_geral %></td>
+        <td></td>
+        <td class='tip_trigger' style='background-color: yellow;'>
+          <%= @count_faltas_com_direito_a_reposicao %>
+          <span class='tip'><%= calcular_percentual(@count_faltas_com_direito_a_reposicao, @total_geral) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: lightgreen;'>
+          - <%= @count_aulas_realocadas %>
+          <span class='tip'><%= @perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_geral) %>%</span>
+        </td>
+        <td class='tip_trigger' style='background-color: #f5e9e9;'>
+          = <%= @count_saldo_realocacao %>
+          <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_saldo_realocacao, @total_geral) %>%</span>
+        </td>
+        <% if current_user.admin %>
+          <td class='tip_trigger' style='background-color: white;'>
+            <%= @count_presencas_erroneas %>
+          </td>
+        <% end %>
       </tr>
     </tbody>
   </table>
+
+  <h2>Realocações</h2>
 </div>
 <br/>
 <div id='grafico_das_estatisticas_do_aluno' style='height: 400px; min-width: 600px'></div>
@@ -50,6 +73,7 @@
     function graph() {
         colors= [
             '#109415', // verde escuro
+            'lightblue', // azul claro
             '#8fee90', // verde claro
             '#f5e9e9', // branco
             '#F00C0C'  // vermelho
@@ -93,10 +117,11 @@
                 type: 'pie',
                 name: 'Estatísticas',
                 data: [
-                    ['Presenças', <%= @perc_presencas + @perc_aulas_extras %>],
+                    ['Presenças', <%= @perc_presencas %>],
+                    ['Aulas Extras', <%= @perc_aulas_extras %>],
                     ['Aulas Realocadas', <%= @perc_de_aulas_realocadas %>],
-                    ['Aulas a serem Realocadas', <%= @perc_aulas_a_repor %>],
-                    ['Faltas não Avisadas', <%= @perc_faltas_sem_direito_a_reposicao %>],
+                    ['Saldo para Realocação', <%= @perc_aulas_a_repor %>],
+                    ['Faltas sem direito<br/>a realocação', <%= @perc_faltas_sem_direito_a_reposicao %>],
                 ]
             }]
         });
