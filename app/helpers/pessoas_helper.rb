@@ -266,7 +266,7 @@ module PessoasHelper
   def get_realocacao aluno_id, data
     presenca = Presenca.joins(:justificativa_de_falta).where(:pessoa_id => aluno_id, :presenca => false, :tem_direito_a_reposicao => true)
     presenca = presenca.where("justificativas_de_falta.descricao <> ''")
-    presenca = presenca.where("data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.pessoa_id=presencas.pessoa_id)").order("id")
+    presenca = presenca.where("presencas.data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.pessoa_id=presencas.pessoa_id)").order("id")
 
     data_reposicao = (presenca.blank?) ? "" : presenca.first.data.to_date
 
