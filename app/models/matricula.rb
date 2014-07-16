@@ -1,10 +1,11 @@
-#coding: utf-8
+#encoding: utf-8
 class Matricula < ActiveRecord::Base
   attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate, :inativo_desde
 
   attr_accessor :falta_em_percentual
 
   belongs_to :pessoa
+  before_save :validar_numero_de_aulas_previstas
   has_many :horario_de_aula, :dependent => :destroy
   has_many :presencas, :through => :pessoa, :conditions => "presencas.created_at >= matriculas.created_at"
   has_many :interesse_no_horario, :dependent => :destroy
@@ -36,8 +37,8 @@ class Matricula < ActiveRecord::Base
 
   }
   def self.com_mais_faltas(desde, pessoa_id=nil)
-    query = "select sum(a.faltas_por_semana) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as percentual_faltas,
-                    sum(a.faltas_por_semana - a.realocacoes_feitas) / sum(coalesce(a.numero_de_aulas_previstas,1)) * 100 as restante,  "+
+    query = "select sum(a.faltas_por_semana) / sum(coalesce(a.numero_de_aulas_previstas + 0.00001,1)) * 100 as percentual_faltas,
+                    sum(a.faltas_por_semana - a.realocacoes_feitas) / sum(coalesce(a.numero_de_aulas_previstas + 0.00001,1)) * 100 as restante,  "+
        " a.pessoa_id from (#{Matricula.faltas_por_semana_desde(desde, pessoa_id).to_sql}) as a group by a.pessoa_id order by percentual_faltas desc"
 
      raw = ActiveRecord::Base.connection.exec_query(query)
@@ -93,6 +94,13 @@ class Matricula < ActiveRecord::Base
 
   def standby
     inativo_desde and inativo_ate and inativo_desde < inativo_ate
+  end
+
+  private
+  def validar_numero_de_aulas_previstas
+     if self.numero_de_aulas_previstas.nil?
+      self.numero_de_aulas_previstas = self.horario_de_aula.size
+     end
   end
 
 end
