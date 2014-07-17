@@ -445,7 +445,7 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_ultimas_aulas
-    Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:pessoa_id => self.id).where("data < ?", @hora_certa.to_date).order("data DESC").order("horario DESC")
+    Presenca.joins("LEFT JOIN justificativas_de_falta AS jus ON jus.presenca_id = presencas.id").where(:pessoa_id => self.id).where("presencas.data < ?", @hora_certa.to_date).order("presencas.data DESC").order("horario DESC")
   end
 
   def txt_to_seg hora

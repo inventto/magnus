@@ -45,26 +45,25 @@
 
   <h2>Realocações</h2>
   <table>
-      <tr>
-        <th>Faltas com direito<br/>à realocação</th>
-        <th>Aulas realocadas</th>
-        <th>Saldo para realocação</th>
-      </tr>
-      <tr>
-
-        <td class='tip_trigger' style='background-color: yellow;'>
-          <%= @count_faltas_com_direito_a_reposicao %>
-          <span class='tip'><%= calcular_percentual(@count_faltas_com_direito_a_reposicao, @total_geral) %>%</span>
-        </td>
-        <td class='tip_trigger' style='background-color: lightgreen;'>
-          - <%= @count_aulas_realocadas %>
-        <span class='tip'><%= @perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_geral) %>%</span>
+    <tr>
+      <th>Faltas com direito<br/>à realocação</th>
+      <th>Aulas realocadas</th>
+      <th>Saldo para realocação</th>
+    </tr>
+    <tr>
+      <td class='tip_trigger' style='background-color: yellow;'>
+        <%= @count_faltas_com_direito_a_reposicao %>
+        <span class='tip'><%= calcular_percentual(@count_faltas_com_direito_a_reposicao, @total_geral) %>%</span>
       </td>
-      <td class='tip_trigger' style='background-color: #f5e9e9;'>
-        = <%= @count_saldo_realocacao %>
-      <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_saldo_realocacao, @total_geral) %>%</span>
+      <td class='tip_trigger' style='background-color: lightgreen;'>
+        - <%= @count_aulas_realocadas %>
+      <span class='tip'><%= @perc_de_aulas_realocadas = calcular_percentual(@count_aulas_realocadas, @total_geral) %>%</span>
     </td>
-  </tr>
+    <td class='tip_trigger' style='background-color: #f5e9e9;'>
+      = <%= @count_saldo_realocacao %>
+    <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_saldo_realocacao, @total_geral) %>%</span>
+  </td>
+</tr>
   </table>
 </div>
 <br/>
