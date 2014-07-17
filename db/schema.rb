@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140714115053) do
+ActiveRecord::Schema.define(:version => 20140717134659) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -148,6 +148,7 @@ ActiveRecord::Schema.define(:version => 20140714115053) do
     t.boolean  "tem_direito_a_reposicao"
     t.date     "data_de_realocacao"
     t.boolean  "aula_extra",              :default => false
+    t.boolean  "expirada"
   end
 
   create_table "registros_de_ponto", :force => true do |t|

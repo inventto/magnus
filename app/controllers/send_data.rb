@@ -30,7 +30,7 @@ class SendData
         puts "=== .: Erro ao enviar dados ao Academais - Aluno ID #{aluno.id}:. ==="
         puts msg
         @errors = msg
-      puts "MATRICULA2"+matricula_standby
+      puts "MATRICULA2 #{matricula_standby}"
       else
         puts "=== .: Aluno ID #{aluno.id} Enviado ao Academias com Sucesso! :. ==="
       end
