@@ -41,19 +41,25 @@ class PessoasController < ApplicationController
   end
 
   def before_update_save record
-    set_bairro(record)
+    if record
+      set_bairro(record)
+    end
   end
 
   def before_create_save record
-    set_bairro(record)
+    if record
+      set_bairro(record)
+    end
   end
 
   def set_bairro record
-     bairro = Bairro.find_by_nome_and_cidade_id(params[:bairro_nome], record.endereco.cidade_id)
-     if bairro.nil?
-       bairro = Bairro.create :nome => params[:bairro_nome], :cidade_id => record.endereco.cidade_id
-     end
-     record.endereco.bairro = bairro
+   if record and record.endereco
+    bairro = Bairro.find_by_nome_and_cidade_id(params[:bairro_nome], record.endereco.cidade_id)
+    if bairro.nil?
+      bairro = Bairro.create :nome => params[:bairro_nome], :cidade_id => record.endereco.cidade_id
+    end
+    record.endereco.bairro = bairro
+   end
   end
 
 
