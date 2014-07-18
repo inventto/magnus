@@ -55,7 +55,7 @@ class Presenca < ActiveRecord::Base
   end
 
   def expira_reposicoes
-    return unless self.tem_direito_a_reposicao
+    return if self.tem_direito_a_reposicao
 
     self.set_faltas_expiradas(pessoa_id)
   end
