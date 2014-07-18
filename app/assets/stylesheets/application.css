@@ -422,6 +422,9 @@ i{
   float: left;
   margin-right: 65px;
 }
+.checkbox_direito_reposicao{
+  cursor: pointer;
+}
 #gerar_realocacao label {
   font: bold 13px verdana !important;
   color: #312323;
