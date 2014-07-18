@@ -1,4 +1,4 @@
-#coding: utf-8
+#encoding: utf-8
 class RegistroPresencaController < ApplicationController
   skip_before_filter :authenticate_user!
 
