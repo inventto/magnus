@@ -30,21 +30,21 @@ module PresencasHelper
           retorno = "<img src='/assets/falta_sem_justif.png' title='Falta Sem Justificativa' />"
           hint << "F"
           if presenca.expirada
-            retorno << "<img src='/assets/expirada.png' title='Falta Expirada' width='16px'/>"
+            retorno << "<img src='/assets/expirada.png' title='Direito a reposição expirado' width='16px'/>"
             hint << "Ex"
           end
         elsif presenca.tem_direito_a_reposicao?
           retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "CD"
           if presenca.expirada
-            retorno << "<img src='/assets/expirada.png' title='Falta Expirada' width='16px' />"
+            retorno << "<img src='/assets/expirada.png' title='Direito a reposição expirado' width='16px' />"
             hint << "Ex"
           end
         else
           retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "SD"
           if presenca.expirada
-            retorno << "<img src='/assets/expirada.png' title='Falta Expirada' width='16px'/>"
+            retorno << "<img src='/assets/expirada.png' title='Direito a reposição expirado' width='16px'/>"
             hint << "Ex"
           end
         end

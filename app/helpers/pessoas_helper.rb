@@ -223,6 +223,10 @@ module PessoasHelper
     "<input type='checkbox' disabled='enabled' checked='checked' />".html_safe
   end
 
+  def input_checkbox_direito_reposicao
+    "<input type='checkbox' checked='checked' class='checkbox_direito_reposicao'/>".html_safe
+  end
+
   def inputDisabled
     "<input type='checkbox' disabled='disabled' />".html_safe
   end
@@ -255,7 +259,7 @@ module PessoasHelper
     end
 
     # Próxima Aula
-    justify_next_class = get_next_class(data, inputEnabled)
+    justify_next_class = get_next_class(data, input_checkbox_direito_reposicao)
 
     # realocacao
     realocacao = get_realocacao(aluno_id, data)
@@ -290,7 +294,7 @@ module PessoasHelper
                   </div>"
   end
 
-  def get_next_class data, inputEnabled
+  def get_next_class data, input_checkbox_direito_reposicao
     next_class = "<div id='justify_next_class'>
                     <br /><h4>Justificar Próxima Aula</h4>
                     <p>
@@ -302,7 +306,7 @@ module PessoasHelper
                     <p>Justificativa</p>
                     <p><input autocomplete='off' class='text-input' id='justificativa_de_falta' maxlength='255' name='descricao' size='30' type='text'></p>
                     <p>Tem Direito à Reposição
-                    #{inputEnabled}</p>
+                    #{input_checkbox_direito_reposicao}</p>
                     <br /><input type='button' id='justificar' value='Justificar Falta' onclick='justificarFalta()' />
                   </div>"
   end
