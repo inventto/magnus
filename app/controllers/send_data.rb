@@ -1,4 +1,4 @@
-#coding: utf-8
+#encoding: utf-8
 class SendData
   def send aluno
     if Rails.env.production?

@@ -22,7 +22,7 @@ class PresencasController < ApplicationController
     conf.columns[:justificativa_de_falta].allow_add_existing = false
     conf.actions.swap :search, :field_search
     conf.field_search.human_conditions = true
-    conf.field_search.columns = [:pessoa, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :tem_direito_a_reposicao, :aula_extra, :justificativa_de_falta, :quantidade_de_registros]
+    conf.field_search.columns = [:pessoa, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :tem_direito_a_reposicao, :aula_extra, :justificativa_de_falta, :quantidade_de_registros, :expirada]
     list.sorting = [{:data => 'DESC'}, {:horario => 'DESC'}]
   end
 
