@@ -34,6 +34,7 @@ module PresencasHelper
             hint << "Ex"
           end
         elsif presenca.tem_direito_a_reposicao?
+          p ">>>>>>>>>>>>>>>>>> Falta com direito a reposição"
           retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "CD"
           if presenca.expirada
@@ -41,6 +42,7 @@ module PresencasHelper
             hint << "Ex"
           end
         else
+          p ">>>>>>>>>>>>>>>>>> Falta com direito a reposição 2"
           retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "SD"
           if presenca.expirada

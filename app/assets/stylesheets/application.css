@@ -342,13 +342,13 @@ i{
   margin: 0 auto;
 }
 #tabela_ativos_inativos .tabela_colunas_brancas {
-  width: 900px;
+  width: 1200px;
 }
 
 #tabela_ativos_inativos tr th,
 #tabela_ativos_inativos tr td {
   line-height: 175%;
-  width: 300px;
+  width: 100%;
   border-collapse: collapse;
   border: 1px solid rgb(95, 201, 221);
 }
