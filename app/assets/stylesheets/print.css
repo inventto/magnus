@@ -1,5 +1,5 @@
 @media print {
-  .menu, #login, .filtros, #agenda #horarios table img {
+  .menu, #login, .filtros, .filtro-ativo-inativo, #agenda #horarios table img {
     display: none;
   }
   #agenda #horarios {
@@ -22,6 +22,11 @@
     width:150px;
     white-space: nowrap;
   }
+
+  .tabela-ativos-inativos tr {
+    page-break-after: always;
+  }
+
   #agenda #horarios .hora {
     float: right;
     width: 200px;

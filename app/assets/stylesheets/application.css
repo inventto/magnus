@@ -338,23 +338,18 @@ i{
   text-align: center;
 }
 #ativos_inativos {
-  width: 80%;
+  width: 100%;
   margin: 0 auto;
 }
-#tabela_ativos_inativos .tabela_colunas_brancas {
-  width: 1200px;
+.tabela_colunas_brancas {
+  width: 60%;
 }
 
-#tabela_ativos_inativos tr th,
-#tabela_ativos_inativos tr td {
-  line-height: 175%;
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid rgb(95, 201, 221);
+.filtro-ativo-inativo {
+  width: 40%;
+  background: rgba(237, 247, 247, 0.5);
 }
-#tabela_ativos_inativos tr td span {
-  margin: 0 15px 0 0;
-}
+
 .periodo .data, #compactar_nomes, #display_names,
 #tipo-tempo input, #filtro-dias-da-semana input {
   vertical-align: middle;
