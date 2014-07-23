@@ -80,8 +80,8 @@
           <th>Realocação: </th>
           <th> &nbsp; </th>
         </tr>
-        <tr>
-          <% @presencas_erroneas.each do |presenca| %>
+        <% @presencas_erroneas.each do |presenca| %>
+          <tr>
             <td><%= presenca.id %></td>
             <td><%= presenca.data.strftime("%d/%m/%Y") %></td>
             <td><%= presenca.horario %></td>
@@ -89,8 +89,8 @@
             <td><%= presenca.tem_direito_a_reposicao %></td>
             <td><%= presenca.realocacao %></td>
             <td><a href="<%= edit_presenca_path(presenca.id)%>">Editar</a></td>
-          <% end %>
-        </tr>
+          </tr>
+        <% end %>
       </table>
     <% end %>
   <% end %>
