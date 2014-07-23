@@ -13,7 +13,7 @@
           <%= content_tag :td, contato.data_contato.strftime("%d/%m/%Y") %>
           <%= content_tag :td, contato.descricao %>
           <%= content_tag :td do%>
-            <%= link_to 'Edit', edit_pessoa_contato_path(contato.pessoa_id, contato.id), :class => "btn-link" %>
+            <%= link_to 'Editar', edit_pessoa_contato_path(contato.pessoa_id, contato.id), :class => "btn-link" %>
           <%end%>
         <%end%>
       <%end%>

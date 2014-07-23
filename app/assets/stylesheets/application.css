@@ -341,8 +341,17 @@ i{
   width: 100%;
   margin: 0 auto;
 }
+
 .tabela_colunas_brancas {
   width: 60%;
+}
+
+.tabela-ativos-inativos{
+  border-collapse: separate;
+}
+.table.tabela-ativos-inativos td,
+.table.tabela-ativos-inativos th{
+  padding: 0 3px;
 }
 
 .filtro-ativo-inativo {
@@ -479,6 +488,14 @@ i{
 }
 .cor-input{
   display: none;
+}
+.form-contato{
+  width: 25%;
+  background: rgba(237, 247, 247, 0.5);
+  margin: 0 auto;
+  border: 2px solid rgb(95, 201, 221);
+  border-radius: 30px 30px 30px 30px;
+  padding: 15px;
 }
 .filtro-contatos{
   width: 25%;

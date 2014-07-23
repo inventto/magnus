@@ -177,7 +177,7 @@ module PresencasHelper
   end
 
   def data__justificativa_de_falta_form_column(record, column)
-    calendario = datetime_select("record", "data__justificativa_de_falta")
-    raw(calendario)
+   html = %{<input autocomplete="off" class="data-input text-input datetime_picker hasDateTimepicker" data-dateformat="D, dd 'de' MM 'de' yy," data-timeformat="HH:mm:ss" id="record_data__justificativa_de_falta" name="record[justificativa_de_falta][data]" size="30" type="text">}
+   raw html
   end
 end

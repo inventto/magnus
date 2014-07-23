@@ -17,3 +17,6 @@
 //= require jquery.ui.datepicker
 //= require jquery.ui.datepicker-pt-BR
 //= require autocomplete-rails
+window.onload = function(){
+     jQuery.noConflict();
+};

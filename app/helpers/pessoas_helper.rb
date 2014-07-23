@@ -550,6 +550,10 @@ module PessoasHelper
     "#{hour.to_i.to_s.rjust(2, '0')}:#{m.to_i.to_s.rjust(2, '0')}"
   end
 
+  def contem_contato pessoa
+    @count_contatos = Contato.joins(:pessoa).where(pessoa_id: pessoa).count
+  end
+
   private
   def get_consulta_matricula_valida record
     record.matricula_valida

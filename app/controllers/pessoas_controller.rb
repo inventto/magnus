@@ -1,6 +1,6 @@
 #encoding: utf-8
 class PessoasController < ApplicationController
-  skip_before_filter :authenticate_user!
+  skip_before_filter :authenticate_user!, only: [:alunos_xml, :export_xml_data]
 
   active_scaffold :pessoa do |conf|
     conf.columns[:endereco].label = "Endereço"
@@ -307,5 +307,4 @@ class PessoasController < ApplicationController
     end
     @matriculas_com_faltas = Matricula.com_mais_faltas(desde, pessoa_id)
   end
-
 end

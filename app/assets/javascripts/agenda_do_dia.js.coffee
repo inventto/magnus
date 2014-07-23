@@ -3,7 +3,6 @@ TAU = 2 * pi
 cos = Math.cos
 sin = Math.sin
 $(document).ready ->
-  console.log "professores ::: ", $(".professor-cor").length
   for tag_professor in $(".professor-cor")
     size = 20
     professor = $(tag_professor)

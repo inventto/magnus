@@ -20,15 +20,15 @@ class ContatosController < ApplicationController
   end
 
   def edit
-      @contato = Contato.por_id(params[:id]).first
+    @contato = Contato.por_id(params[:id]).first
   end
 
   def update
-      contato = Contato.por_id(params[:id])
-      if contato.update(params[:id], :descricao => params[:descricao], :data_contato => params[:contato][:data])
+    contato = Contato.por_id(params[:id])
+    if contato.update(params[:id], :descricao => params[:descricao], :data_contato => params[:contato][:data])
       redirect_to :action => 'index'
-      else
+    else
       redirect_to :action => 'edit'
-      end
+    end
   end
 end
