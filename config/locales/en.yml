@@ -2,4 +2,11 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  active_scaffold:
+    datetime_picker_options:
+      showMinute: false
+en:
+  date:
+    time:
+      formats:
+        default: "%d.%m.%Y %H:%M"

@@ -92,7 +92,7 @@ ActiveRecord::Schema.define(:version => 20140717163702) do
     t.integer  "presenca_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
-    t.date     "data"
+    t.datetime "data"
   end
 
   create_table "logradouros", :force => true do |t|

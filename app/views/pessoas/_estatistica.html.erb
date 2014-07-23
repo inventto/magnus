@@ -8,7 +8,7 @@
       <th>Saldo para realocação</th>
       <th title='Não avisadas com antecedência ou Ultrapassaram o limite'>Faltas sem direito<br/>à realocação</th>
       <th>Total de aulas</th>
-      <% if current_user.admin %>
+      <% if current_user %>
         <th>Presenças errôneas</th>
       <% end %>
     </tr>
@@ -34,7 +34,7 @@
         <span class='tip'><%= @perc_faltas_sem_direito_a_reposicao = calcular_percentual(@count_faltas_sem_direito_a_reposicao, @total_geral) %>%</span>
       </td>
       <td> <%= "= #{@total_geral}" %></td>
-      <% if current_user.admin %>
+      <% if current_user %>
         <td class='tip_trigger' style='background-color: white;'>
           <%= @count_presencas_erroneas %>
         </td>
@@ -67,6 +67,33 @@
 
     </tr>
   </table>
+  <% if current_user %>
+    <% if @presencas_erroneas %>
+      <h2> Presenças Errôneas</h2>
+      <table>
+        <tr>
+          <th>ID: </th>
+          <th>Data: </th>
+          <th>Horario: </th>
+          <th>Presença: </th>
+          <th>Tem direito a reposição: </th>
+          <th>Realocação: </th>
+          <th> &nbsp; </th>
+        </tr>
+        <tr>
+          <% @presencas_erroneas.each do |presenca| %>
+            <td><%= presenca.id %></td>
+            <td><%= presenca.data.strftime("%d/%m/%Y") %></td>
+            <td><%= presenca.horario %></td>
+            <td><%= presenca.presenca %></td>
+            <td><%= presenca.tem_direito_a_reposicao %></td>
+            <td><%= presenca.realocacao %></td>
+            <td><a href="<%= edit_presenca_path(presenca.id)%>">Editar</a></td>
+          <% end %>
+        </tr>
+      </table>
+    <% end %>
+  <% end %>
 </div>
 <br/>
 <div id='grafico_das_estatisticas_do_aluno' style='height: 400px; min-width: 600px'></div>

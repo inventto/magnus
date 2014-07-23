@@ -89,7 +89,9 @@ module PessoasHelper
         @count_aulas_realocadas = presencas.where(:realocacao => true, :presenca => true).count
         @count_saldo_realocacao = @count_faltas_com_direito_a_reposicao - @count_aulas_realocadas
 
-        @count_presencas_erroneas = presencas.where("(presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true)").count
+        @presencas_erroneas = presencas.where("(presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true)")
+        @count_presencas_erroneas = @presencas_erroneas.count
+
         @total_de_aulas = presencas.size
         @total_geral = @count_presencas + @count_aulas_realocadas + @count_aulas_extras + @count_saldo_realocacao + @count_faltas_sem_direito_a_reposicao
 

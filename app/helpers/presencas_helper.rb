@@ -34,7 +34,6 @@ module PresencasHelper
             hint << "Ex"
           end
         elsif presenca.tem_direito_a_reposicao?
-          p ">>>>>>>>>>>>>>>>>> Falta com direito a reposição"
           retorno = "<img src='/assets/falta_justif_com_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "CD"
           if presenca.expirada
@@ -42,7 +41,6 @@ module PresencasHelper
             hint << "Ex"
           end
         else
-          p ">>>>>>>>>>>>>>>>>> Falta com direito a reposição 2"
           retorno = "<img src='/assets/falta_justif_sem_direito_a_reposicao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
           hint << "SD"
           if presenca.expirada
@@ -176,5 +174,10 @@ module PresencasHelper
       link_justificativa = link_to("Criar novo", new_justificativa_de_falta_path(), action: "new", class: "justificativa_de_falta new as_action", id: "as_presencas-justificativas_de_falta-new-justificativa_de_falta-#{record.id}-link")
     end
     raw(link_justificativa)
+  end
+
+  def data__justificativa_de_falta_form_column(record, column)
+    calendario = datetime_select("record", "data__justificativa_de_falta")
+    raw(calendario)
   end
 end
