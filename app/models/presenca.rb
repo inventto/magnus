@@ -9,6 +9,8 @@ class Presenca < ActiveRecord::Base
 
   after_save :expira_reposicoes
 
+  regex_horario =/(^\d{2})+([:])(\d{2}$)/
+  validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
   validates_presence_of :pessoa
   validates_presence_of :data
   validates_presence_of :horario

@@ -165,8 +165,13 @@ module PresencasHelper
     if record.justificativa_de_falta
       descricao = record.justificativa_de_falta.descricao
       data = record.justificativa_de_falta.data
-      if descricao and data
-        link_justificativa = link_to("#{descricao} #{data.strftime("%d/%m/%Y")}", edit_justificativa_de_falta_path(record.justificativa_de_falta.id), action: "edit", class:"justificativa_de_falta edit as_action", id: "as_presencas-justificativas_de_falta-edit-justificativa_de_falta-#{record.justificativa_de_falta.id}-#{record.id}-link" )
+      hora = record.justificativa_de_falta.hora
+      if descricao and data and hora
+        link_justificativa = link_to("#{descricao} #{data.strftime("%d/%m/%Y")} #{hora}", edit_justificativa_de_falta_path(record.justificativa_de_falta.id), action: "edit", class:"justificativa_de_falta edit as_action", id: "as_presencas-justificativas_de_falta-edit-justificativa_de_falta-#{record.justificativa_de_falta.id}-#{record.id}-link" )
+      elsif descricao and hora
+        link_justificativa = link_to("#{descricao} #{hora}", edit_justificativa_de_falta_path(record.justificativa_de_falta.id), action: "edit", class:"justificativa_de_falta edit as_action", id: "as_presencas-justificativas_de_falta-edit-justificativa_de_falta-#{record.justificativa_de_falta.id}-#{record.id}-link" )
+      elsif descricao and data
+        link_justificativa = link_to("#{descricao} #{data.strftime('%d/%m/%Y')}", edit_justificativa_de_falta_path(record.justificativa_de_falta.id), action: "edit", class:"justificativa_de_falta edit as_action", id: "as_presencas-justificativas_de_falta-edit-justificativa_de_falta-#{record.justificativa_de_falta.id}-#{record.id}-link" )
       else
         link_justificativa = link_to("#{descricao}", edit_justificativa_de_falta_path(record.justificativa_de_falta.id), action: "edit", class:"justificativa_de_falta edit as_action", id: "as_presencas-justificativas_de_falta-edit-justificativa_de_falta-#{record.justificativa_de_falta.id}-#{record.id}-link" )
       end
@@ -174,10 +179,5 @@ module PresencasHelper
       link_justificativa = link_to("Criar novo", new_justificativa_de_falta_path(), action: "new", class: "justificativa_de_falta new as_action", id: "as_presencas-justificativas_de_falta-new-justificativa_de_falta-#{record.id}-link")
     end
     raw(link_justificativa)
-  end
-
-  def data__justificativa_de_falta_form_column(record, column)
-   html = %{<input autocomplete="off" class="data-input text-input datetime_picker hasDateTimepicker" data-dateformat="D, dd 'de' MM 'de' yy," data-timeformat="HH:mm:ss" id="record_data__justificativa_de_falta" name="record[justificativa_de_falta][data]" size="30" type="text">}
-   raw html
   end
 end
