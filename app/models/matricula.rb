@@ -17,6 +17,7 @@ class Matricula < ActiveRecord::Base
   validate :data_final
   validate :validar_matricula, :on => :create
   validate :validar_data_inativa
+  scope :clientes_que_ganhamos, where("data_inicio <= ?", Time.now).group_by{|data| [data.data_inicio.month, data.data_inicio.year]}
   scope :com_nome_parecido, ->(id) { where(pessoa_id: id) }
   scope :valida, where("(matriculas.data_fim > ? or matriculas.data_fim is null)", Time.now)
   scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}

@@ -47,6 +47,8 @@ ControleDePresencaMagnus::Application.routes.draw do
 
   match "/clientes_que_perdemos", to: "clientes_que_perdemos#index"
 
+  match "/clientes_que_ganhamos_e_perdemos", to: "clientes_ganhamos_e_perdemos#index"
+
   match "/agenda_do_diaresources :products d", to: "agenda_do_dia#agenda"
 
   match "/registro_presenca", to: "registro_presenca#index"

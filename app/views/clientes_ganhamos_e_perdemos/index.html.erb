@@ -1,0 +1,53 @@
+<div class="active-scaffold" style="display: table; margin: 0 auto">
+  <% anos_ordenados = @years.keys.sort %>
+  <table>
+    <tr>
+      <th><a href="#">Mês</a></th>
+      <% anos_ordenados.each do |ano| %>
+        <th><a href="#"><%= ano %> <br />Desistentes</a></th>
+        <th><a href="#"><%= ano %> <br />Entraram</a></th>
+      <% end %>
+    </tr>
+    <% even_record = false %>
+    <% (1..12).each do |mes| %>
+      <% matriculas_mes = @matriculas[mes] %>
+      <tr class="record <%= "even-record" if even_record%>">
+        <td><%= Date::MONTHNAMES[mes % 12] %></td>
+        <% anos_ordenados.each do |ano| %>
+          <td>
+            <% if matriculas_mes and matriculas_mes[ano] %>
+              <%= c = matriculas_mes[ano].count %>
+              <% @years[ano] += c %>
+            <% end %>
+          </td>
+          <td>
+            <% @clientes_que_entraram.collect do |data_inicio, matricula| %>
+              <% if data_inicio[0] == mes and data_inicio[1] == ano %>
+                <%= matricula.count %>
+                <% count_alunos_que_entraram_no(mes,ano,matricula.count) %>
+              <% end %>
+            <% end %>
+          </td>
+        <% end %>
+      </tr>
+      <% even_record = !even_record %>
+    <% end %>
+    <tr class="record">
+      <td><a href="#">Total ano</a></td>
+      <% anos_ordenados.each do |ano| %>
+        <td><%= @years[ano] %></td>
+        <td>
+         <%= @total_alunos_que_entraram[ano] %>
+        </td>
+      <% end %>
+    </tr>
+    <tr class="record">
+      <td><a href="#">Média mensal</a></td>
+      <% anos_ordenados.each do |ano| %>
+        <td><%= (@years[ano] / 12.0).round(2) %></td>
+        <td><%= (@total_alunos_que_entraram[ano] / 12.0).round(2) %> </td>
+      <% end %>
+    </tr>
+  </table>
+  Total Acumulado: <%= @years.values.sum %>
+</div>
