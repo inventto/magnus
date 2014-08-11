@@ -49,5 +49,6 @@
       <% end %>
     </tr>
   </table>
-  Total Acumulado: <%= @years.values.sum %>
+  Total Acumulado, dos clientes que desistiram: <%= @years.values.sum %> <br />
+  Total Acumulado, dos clientes que entraram: <%= @total_alunos_que_entraram.values.sum  %>
 </div>
