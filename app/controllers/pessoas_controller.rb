@@ -198,8 +198,14 @@ class PessoasController < ApplicationController
     if not error.blank?
       render :text => error and return
     end
-    data = Date.parse(params[:data_da_falta])
-    data_fim =  (params[:data_da_falta_fim].blank?) ? data : Date.parse(params[:data_da_falta_fim])
+
+    begin
+      data = Date.parse(params[:data_da_falta])
+      data_fim =  (params[:data_da_falta_fim].blank?) ? data : Date.parse(params[:data_da_falta_fim])
+    rescue => exception
+      puts "Ocorreu um erro do tipo #{exception.class}: #{exception}"
+    end
+
     aluno_id = params[:aluno_id].to_i
     while (data <= data_fim)
       aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(aluno_id, data.wday)
