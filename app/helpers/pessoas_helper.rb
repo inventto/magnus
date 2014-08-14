@@ -77,6 +77,7 @@ module PessoasHelper
 
         @count_presencas = 0
         @count_aulas_extras = 0
+        p ">>>>>>>>>>>>>>>>>>>>>#{record.id}"
 
         presencas = record.presencas.where("data >= ?", matricula.data_inicio)
 
@@ -87,7 +88,15 @@ module PessoasHelper
         @count_faltas_sem_direito_a_reposicao = presencas.where(:tem_direito_a_reposicao => false, :presenca => false).count
 
         @count_aulas_realocadas = presencas.where(:realocacao => true, :presenca => true).count
-        @count_saldo_realocacao = @count_faltas_com_direito_a_reposicao - @count_aulas_realocadas
+        saldo_realocacao = (@count_faltas_com_direito_a_reposicao - @count_aulas_realocadas)
+        p ">>>>>>>>>>>>>>>>>. #{saldo_realocacao}"
+        if saldo_realocacao < 0
+          p "entrou"
+          @count_aulas_extras -= saldo_realocacao
+          @count_saldo_realocacao = 0
+        else
+          @count_saldo_realocacao = saldo_realocacao
+        end
 
         @presencas_erroneas = presencas.where("(presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true)")
         @count_presencas_erroneas = @presencas_erroneas.count
