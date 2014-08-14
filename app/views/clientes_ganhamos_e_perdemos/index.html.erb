@@ -1,19 +1,19 @@
-<div class="active-scaffold" style="display: table; margin: 0 auto">
+<div>
   <% anos_ordenados = @years.keys.sort %>
-  <table>
+  <table class="table table-striped table-bordered">
     <tr>
-      <th><a href="#">Mês</a></th>
-      <% anos_ordenados.each do |ano| %>
-        <th><a href="#"><%= ano %> <br />Desistentes</a></th>
-        <th><a href="#"><%= ano %> <br />Entraram</a></th>
+      <th>Ano</th>
+      <% (1..12).each do |mes| %>
+        <th><%= Date::MONTHNAMES[mes % 12] %><br />Desistiram</th>
+        <th><%= Date::MONTHNAMES[mes % 12] %> <br/>Entraram</th>
       <% end %>
     </tr>
     <% even_record = false %>
-    <% (1..12).each do |mes| %>
-      <% matriculas_mes = @matriculas[mes] %>
+    <% anos_ordenados.each do |ano| %>
       <tr class="record <%= "even-record" if even_record%>">
-        <td><%= Date::MONTHNAMES[mes % 12] %></td>
-        <% anos_ordenados.each do |ano| %>
+        <td><%= ano %></td>
+        <% (1..12).each do |mes| %>
+          <% matriculas_mes = @matriculas[mes] %>
           <td>
             <% if matriculas_mes and matriculas_mes[ano] %>
               <%= c = matriculas_mes[ano].count %>
@@ -32,19 +32,23 @@
       </tr>
       <% even_record = !even_record %>
     <% end %>
-    <tr class="record">
-      <td><a href="#">Total ano</a></td>
+  </table>
+
+  <table class="table table-striped table-bordered">
+    <tr>
       <% anos_ordenados.each do |ano| %>
-        <td><%= @years[ano] %></td>
-        <td>
-         <%= @total_alunos_que_entraram[ano] %>
-        </td>
+        <th>Total <%= ano %> Desistiram </th>
+        <th>Média mensal <%= ano %> Desistiram </th>
+        <th>Total <%= ano %> Entraram </th>
+        <th>Média mensal <%= ano %> Entraram </th>
       <% end %>
     </tr>
-    <tr class="record">
-      <td><a href="#">Média mensal</a></td>
+
+    <tr>
       <% anos_ordenados.each do |ano| %>
+        <td><%= @years[ano] %></td>
         <td><%= (@years[ano] / 12.0).round(2) %></td>
+        <td><%= @total_alunos_que_entraram[ano] %></td>
         <td><%= (@total_alunos_que_entraram[ano] / 12.0).round(2) %> </td>
       <% end %>
     </tr>

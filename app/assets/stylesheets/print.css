@@ -1,7 +1,13 @@
 @media print {
-  .menu, #login, .filtros, .filtro-ativo-inativo, #agenda #horarios table img {
+  .menu, #login, .filtros, .filtro-ativo-inativo, #top, #agenda #horarios table img {
     display: none;
   }
+
+  #tabela-interessados {
+    page-break-after: always;
+    display: block !important;
+  }
+
   #agenda #horarios {
     width: 790px;
     -moz-column-count: 2;
@@ -26,6 +32,7 @@
   .tabela-ativos-inativos tr {
     page-break-after: always;
   }
+
 
   #agenda #horarios .hora {
     float: right;

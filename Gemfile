@@ -47,4 +47,4 @@ gem 'rails3-jquery-autocomplete'
 # gem 'capistrano'
 
 # To use debugger
-gem 'debugger'
+#gem 'debugger'

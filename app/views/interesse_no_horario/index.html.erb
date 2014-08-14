@@ -1,5 +1,5 @@
-<h2 class="text-center"> Quadro de interessados </h2>
-<%= content_tag :table, :class => "table table-bordered table-striped" do %>
+<h3 class="text-center"> Quadro de interessados </h3>
+<%= content_tag :table, :class => "table table-bordered table-striped", :id => "tabela-interessados" do %>
   <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..22  }.each do |title, periodo| %>
     <%= content_tag :thead,  class: 'table table-striped table-bordered' do %>
       <%= content_tag :tr do %>
