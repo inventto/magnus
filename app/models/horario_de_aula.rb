@@ -2,8 +2,8 @@
 class HorarioDeAula < ActiveRecord::Base
   attr_accessible :dia_da_semana, :horario, :matricula_id
 
-  scope :do_aluno_pelo_dia_da_semana, lambda { |aluno_id, dia| joins(:matricula).where(:"matriculas.pessoa_id" => aluno_id).where(:dia_da_semana => dia) }
-  scope :matricula_ativa, lambda { joins(:matricula).where("matriculas.data_fim is null") }
+  scope :do_aluno_pelo_dia_da_semana, lambda { |aluno_id, dia| joins(:matricula).matricula_ativa.where(:"matriculas.pessoa_id" => aluno_id).where(:dia_da_semana => dia) }
+  scope :matricula_ativa, lambda { joins(:matricula).where("(matriculas.data_fim > ? or matriculas.data_fim is null)", Time.now) }
 
   belongs_to :matricula
   #validates_presence_of :horario

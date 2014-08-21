@@ -8,7 +8,7 @@ class Pessoa < ActiveRecord::Base
         scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }
   end
   scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now).to_date, (Time.now).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
-  scope :com_matricula_valida, lambda { |data| joins(:matriculas).where("matriculas.data_fim >= ? or matriculas.data_fim is null", data) }
+  scope :com_matricula_valida, -> { joins(:matriculas).where("(matriculas.data_fim >= ? or matriculas.data_fim is null)", Time.now) }
 
 
   before_save :chk_codigo_de_acesso
@@ -160,11 +160,11 @@ class Pessoa < ActiveRecord::Base
       presenca.horario = Time.now.strftime("%H:%M")
     elsif (fora_do_horario = esta_fora_de_horario?) || (dia_errado = esta_no_dia_errado?)
       #presenca.fora_de_horario = true
-      presenca.realocacao = true
       hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
       presenca.horario = hora_da_aula
       presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
       if fora_do_horario # registrou a presença no mesmo dia mas no horário diferente do da aula
+      presenca.realocacao = true
         if txt_to_seg(@horario_de_aula.horario) > txt_to_seg(hora_da_aula)  # adiantamento, pois registrou a presença antes do horário da aula
           # Cria a falta justificada para o horário da aula
           criar_falta_com_justificativa_de_adiantamento(@data_atual, hora_da_aula, @horario_de_aula.horario)
@@ -180,24 +180,7 @@ class Pessoa < ActiveRecord::Base
         end
         presenca.data_de_realocacao = @data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
       elsif dia_errado
-        # verificar quantas aulas a repor ainda possui
-        count_aulas_a_repor = get_count_aulas_a_repor
-
-        if count_aulas_a_repor < 1 # se não há aulas a repor deve-se gerar adiantamento
-          # pegar a data da próxima aula para adiantá-la
-          data = get_data(@hora_certa)
-
-          while not Presenca.where(:pessoa_id => self.id).where(:data => data).blank?
-            data = get_data(data)
-          end
-
-          horario_da_aula_da_matricula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, data.wday).matricula_ativa
-
-          criar_falta_com_justificativa_de_adiantamento(data, hora_da_aula, horario_da_aula_da_matricula.first.horario)
-
-          presenca.data_de_realocacao = data
-          # else não precisa fazer pois a reposição é apenas uma presença como realocação já que a falta teoricamente já é para estar lançada
-        end
+          presenca.aula_extra = true
       end
     else
       presenca.horario = @horario_de_aula.horario

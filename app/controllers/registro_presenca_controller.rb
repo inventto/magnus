@@ -12,12 +12,13 @@ class RegistroPresencaController < ApplicationController
         redirect_to "/registro_presenca"
         return
       else
-        @aluno = Pessoa.com_matricula_valida((Time.now).to_date).where(params[:codigo]).first
+        @aluno = Pessoa.com_matricula_valida.where(codigo_de_acesso: params[:codigo]).first
         if not @aluno
           raise ""
         end
       end
-    rescue
+    rescue => exception
+      puts "Opa, problemas aqui (#{exception.class}), error: #{exception}."
       flash[:error] = "Erro interno. Código do Aluno Inválido ou Aluno sem matrícula!"
       redirect_to "/registro_presenca"
       return
@@ -190,7 +191,7 @@ class RegistroPresencaController < ApplicationController
 
   def registro_android
     begin
-      aluno = Pessoa.com_matricula_valida((Time.now).to_date).find_by_codigo_de_acesso(params[:codigo])
+      aluno = Pessoa.com_matricula_valida.find_by_codigo_de_acesso(params[:codigo])
       if not aluno
         raise ""
       end
