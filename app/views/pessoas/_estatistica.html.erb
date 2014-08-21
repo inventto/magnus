@@ -11,6 +11,7 @@
       <% if current_user %>
         <th>Presenças errôneas</th>
       <% end %>
+      <th>Aulas expiradas</th>
     </tr>
     <tr>
       <td class='tip_trigger' style='background-color: green;'>
@@ -39,6 +40,9 @@
           <%= @count_presencas_erroneas %>
         </td>
       <% end %>
+      <td class='tip_trigger' style='background-color: #fff;'>
+        <%= " #{@count_presencas_expiradas}"%>
+      </td>
     </tr>
   </table>
 
@@ -64,7 +68,6 @@
         <%= "= #{@count_saldo_realocacao}"%>
         <span class='tip'><%= @perc_aulas_a_repor = calcular_percentual(@count_saldo_realocacao, @total_geral) %>%</span>
       </td>
-
     </tr>
   </table>
   <% if current_user %>
