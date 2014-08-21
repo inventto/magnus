@@ -97,6 +97,8 @@ module PessoasHelper
         end
 
         @presencas_erroneas = presencas.where("(presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true)")
+
+        @count_presencas_expiradas = presencas.where(expirada: true).count
         @count_presencas_erroneas = @presencas_erroneas.count
 
         @total_de_aulas = presencas.size
