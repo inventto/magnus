@@ -71,7 +71,7 @@
     </tr>
   </table>
   <% if current_user %>
-    <% if @presencas_erroneas %>
+    <% if not @presencas_erroneas.empty? %>
       <h2> Presenças Errôneas</h2>
       <table>
         <tr>
