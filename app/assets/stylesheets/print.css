@@ -4,10 +4,15 @@
   }
 
   #tabela-interessados {
-    page-break-after: always;
+    white-space: nowrap;
     display: block !important;
   }
 
+  #tabela-interessados tr{
+    page-break-after: always;
+  }
+
+  #tabela-interessados {
   #agenda #horarios {
     width: 790px;
     -moz-column-count: 2;
