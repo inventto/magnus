@@ -180,7 +180,12 @@ class Pessoa < ActiveRecord::Base
         end
         presenca.data_de_realocacao = @data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
       elsif dia_errado
-          presenca.aula_extra = true
+         # verificar quantas aulas a repor ainda possui
+          count_aulas_a_repor = get_count_aulas_a_repor
+
+          if count_aulas_a_repor < 1
+            presenca.aula_extra = true
+          end
       end
     else
       presenca.horario = @horario_de_aula.horario
