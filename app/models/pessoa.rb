@@ -182,10 +182,7 @@ class Pessoa < ActiveRecord::Base
       elsif dia_errado
          # verificar quantas aulas a repor ainda possui
           count_aulas_a_repor = get_count_aulas_a_repor
-          puts "Chegou aqui!"
-          puts "Count >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> #{count_aulas_a_repor}"
           if count_aulas_a_repor < 1
-            puts "Entrou!!"
             presenca.aula_extra = true
           else
             presenca.realocacao = true
