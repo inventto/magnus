@@ -26,7 +26,7 @@ class RelatoriosController < ApplicationController
     resultado = ActiveRecord::Base.connection.select_rows(consulta)
     retorno = "<div class='active-scaffold'>"
     retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
-    retorno << "<table><tr>"
+    retorno << "<table id='tabela_porcentagem_presencas'><tr>"
     relatorio.titulos.split(/[,;]/).each do |titulo|
       retorno << "<th><a href='#'>#{titulo}</a></th>"
     end
@@ -43,6 +43,60 @@ class RelatoriosController < ApplicationController
     retorno << "</table>"
     retorno << "#{resultado.size} Encontrado(s)"
     retorno << "</div>"
+    retorno << "<div id='graficos'>"
+    retorno << "</div>"
+    retorno <<
+    "<script>
+    Highcharts.visualize = function(table, options) {
+      options.xAxis.categories = [];
+      $('tbody th', table).each( function(i) {
+        options.xAxis.categories.push(this.innerHTML);
+      });
+
+      options.series = [];
+      $('tr', table).each( function(i) {
+        var tr = this;
+        $('th, td', tr).each( function(j) {
+          if (j == 1) {
+            if (i == 0) {
+              options.series[j - 1] = {
+                name: this.innerHTML,
+                data: []
+              };
+            }
+          } else {
+            options.series[j - 1].data.push(parseFloat(this.innerHTML));
+          }
+        });
+      });
+
+    }
+
+    $(document).ready(function() {
+      var table = document.getElementById('tabela_porcentagem_presencas'),
+      options = {
+        chart: {
+          renderTo: 'graficos',
+          defaultSeriesType: 'column'
+        },
+        title: {
+          text: 'Estatisticas de Faltas por dia da semana'
+        },
+        yAxis: {
+          title: {
+            text: 'Units'
+          }
+        },
+        tooltip: {
+          formatter: function() {
+            return '<b>'+ this.series.name +'</b><br/>'+
+            this.y +' '+ this.x.toLowerCase();
+          }
+        }
+      };
+      Highcharts.visualize(table, options);
+    });
+    </script>"
     render :inline => retorno.html_safe, :layout => true
   end
 end
