@@ -24,9 +24,14 @@ class RelatoriosController < ApplicationController
       end
     end
     resultado = ActiveRecord::Base.connection.select_rows(consulta)
+    p ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resultado #{resultado}"
     retorno = "<div class='active-scaffold'>"
     retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
+    if relatorio.id == 2
     retorno << "<table id='tabela_porcentagem_presencas'><tr>"
+    else
+    retorno << "<table><tr>"
+    end
     relatorio.titulos.split(/[,;]/).each do |titulo|
       retorno << "<th><a href='#'>#{titulo}</a></th>"
     end
@@ -43,42 +48,48 @@ class RelatoriosController < ApplicationController
     retorno << "</table>"
     retorno << "#{resultado.size} Encontrado(s)"
     retorno << "</div>"
-    retorno << "<div id='graficos'>"
-    retorno << "</div>"
+    if relatorio.id == 2
+      retorno << "<div id='graficos'>"
+      retorno << "</div>"
+    end
     retorno <<
     "<script>
+    ignorar_primeiras_x_colunas = 2;
     Highcharts.visualize = function(table, options) {
      console.log(options);
       options.xAxis.categories = new Array();
-      $('tbody th', table).each( function(i) {
-        options.xAxis.categories.push(this.innerHTML);
-      });
-      console.log(table);
-      console.log(options);
       options.series = [];
-      $('tr', table).each( function(i) {
-        var tr = this;
-        $('th, td', tr).each( function(j) {
-          if (j == 2) {
-            if (i == 0) {
-              options.series[j - 1] = {
+      $('tbody th', table).each( function(i) {
+        if (i >= ignorar_primeiras_x_colunas) {
+          options.series[i - ignorar_primeiras_x_colunas] = {
+                // Legenda
                 name: this.innerHTML,
                 data: []
               };
-            }
-          } else {
-            options.series[j - 1].data.push(parseFloat(this.innerHTML));
+        }
+      });
+      $('tr', table).each( function(i) {
+        var tr = this;
+        $('td', tr).each( function(j) {
+          if (j == 0) {
+            // valores eixo X
+            options.xAxis.categories.push(this.innerHTML);
+          }
+          if (j >= ignorar_primeiras_x_colunas) {
+            options.series[j - ignorar_primeiras_x_colunas].data.push(parseFloat(this.innerHTML));
           }
         });
       });
+
       var chart = new Highcharts.Chart(options);
-    }
+    };
 
     $(document).ready(function() {
       var table = document.getElementById('tabela_porcentagem_presencas'),
       options = {
         chart: {
           renderTo: 'graficos',
+          type: 'column',
           defaultSeriesType: 'column'
         },
         title: {
@@ -89,7 +100,7 @@ class RelatoriosController < ApplicationController
         },
         yAxis: {
           title: {
-            text: 'Units'
+            text: '%'
           }
         },
         tooltip: {
