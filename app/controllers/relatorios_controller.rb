@@ -48,16 +48,18 @@ class RelatoriosController < ApplicationController
     retorno <<
     "<script>
     Highcharts.visualize = function(table, options) {
-      options.xAxis.categories = [];
+     console.log(options);
+      options.xAxis.categories = new Array();
       $('tbody th', table).each( function(i) {
         options.xAxis.categories.push(this.innerHTML);
       });
-
+      console.log(table);
+      console.log(options);
       options.series = [];
       $('tr', table).each( function(i) {
         var tr = this;
         $('th, td', tr).each( function(j) {
-          if (j == 1) {
+          if (j == 2) {
             if (i == 0) {
               options.series[j - 1] = {
                 name: this.innerHTML,
@@ -69,7 +71,7 @@ class RelatoriosController < ApplicationController
           }
         });
       });
-
+      var chart = new Highcharts.Chart(options);
     }
 
     $(document).ready(function() {
@@ -81,6 +83,9 @@ class RelatoriosController < ApplicationController
         },
         title: {
           text: 'Estatisticas de Faltas por dia da semana'
+        },
+        xAxis: {
+
         },
         yAxis: {
           title: {
