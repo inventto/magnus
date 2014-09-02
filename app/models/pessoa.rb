@@ -156,11 +156,11 @@ class Pessoa < ActiveRecord::Base
 
   def verifica_e_gera_presenca_realocada
     presenca = Presenca.new(:pessoa_id => self.id, :data => @data_atual, :presenca => true)
+    hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
     if passe_livre?
       presenca.horario = Time.now.strftime("%H:%M")
     elsif (fora_do_horario = esta_fora_de_horario?) || (dia_errado = esta_no_dia_errado?)
       #presenca.fora_de_horario = true
-      hora_da_aula = get_hora_fora_de_horario # faz a aproximação do horário, se maior que 30min soma 1 hora se não pega a hora dos minutos
       presenca.horario = hora_da_aula
       presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
       if fora_do_horario # registrou a presença no mesmo dia mas no horário diferente do da aula
@@ -181,6 +181,7 @@ class Pessoa < ActiveRecord::Base
         presenca.data_de_realocacao = @data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
       elsif dia_errado
          # verificar quantas aulas a repor ainda possui
+          presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
           count_aulas_a_repor = get_count_aulas_a_repor
           if count_aulas_a_repor < 1
             presenca.aula_extra = true
@@ -190,7 +191,7 @@ class Pessoa < ActiveRecord::Base
       end
     else
       presenca.horario = @horario_de_aula.horario
-      presenca.pontualidade = get_pontualidade
+      presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
     end
     presenca.save
   end
@@ -352,14 +353,11 @@ class Pessoa < ActiveRecord::Base
     @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday).matricula_ativa[0]
 
     if not @presenca.nil? and @presenca.realocacao# se for reposição, adiantamento
-      p "@presenca #{@presenca}"
       hora_da_aula = @presenca.horario
       @horario_de_aula = @presenca
     elsif not @horario_de_aula.nil?
-      p "@hora_da_aula"
       hora_da_aula = @horario_de_aula.horario
     else
-      p "@else"
       return false # se não for um adiantamento, nem uma reposição nem uma falta é uma presença fora de horário, logo não tem hora de aula
     end
     if not hora_esta_contida_em_horario?(@hora_registrada.strftime("%H:%M"), hora_da_aula)
