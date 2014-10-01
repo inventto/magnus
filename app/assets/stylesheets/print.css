@@ -16,12 +16,8 @@
     display: block !important;
   }
 
-  #tabela-interessados td{
-    line-height: 10%;
-  }
-
-  #tabela-interessados tr {
-    page-break-after: auto;
+  #tabela-interessados tr td{
+    line-height: 12px;
   }
 
   #tabela-interessados {

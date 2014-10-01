@@ -395,10 +395,12 @@ i{
 #quadro_de_horarios .alunos.exibir {
   display: block;
   font-style: italic;
-  height: 85px;
 }
 #quadro_de_horarios .status.exibir {
   display: none;
+}
+#quadro_de_horarios .tabela-de-horarios-nomes tr td {
+  height: 85px;
 }
 .tip {
   border: 1px solid rgba(0,31, 255, 0.8);

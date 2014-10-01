@@ -1,19 +1,25 @@
 <style>
-  @media print {
-    #top,
-    #displayN,
-    #display_names{
-      display: none;
-    }
-    .tabela-de-horarios {
-      white-space: nowrap;
-      display: block !important;
-    }
+    @media print {
+        #top,
+        #displayN,
+        #display_names{
+            display: none;
+        }
+        .tabela-de-horarios {
+            white-space: nowrap;
+            display: block !important;
+        }
 
-    .tabela-de-horarios tr {
-      page-break-after: always;
-    }
-  }
+        .tabela-de-horarios tbody {
+            page-break-after: always;
+        }
+        #quadro_de_horarios .tabela-de-horarios-nomes tr td {
+          line-height: 12px;
+          height: 20px;
+        }
+        #quadro_de_horarios .alunos.exibir{
+            font-style: normal;
+        }
 </style>
 <div id="quadro_de_horarios">
   <h2>Personal Training</h2>
@@ -98,6 +104,7 @@
 <script type="text/javascript">
   function displayNames() {
     $("#quadro_de_horarios").find(".alunos").toggleClass('exibir');
+    $("#quadro_de_horarios").find(".tabela-de-horarios").toggleClass("tabela-de-horarios-nomes");
     $("#quadro_de_horarios").find(".status").toggleClass('exibir');
   }
 </script>
