@@ -3,13 +3,25 @@
     display: none;
   }
 
+  h3 {
+    font-size: 16px;
+  }
+
+  #tabela-interessados tbody {
+    page-break-after: always;
+  }
+
   #tabela-interessados {
     white-space: nowrap;
     display: block !important;
   }
 
-  #tabela-interessados tr{
-    page-break-after: always;
+  #tabela-interessados td{
+    line-height: 10%;
+  }
+
+  #tabela-interessados tr {
+    page-break-after: auto;
   }
 
   #tabela-interessados {
@@ -43,15 +55,6 @@
     float: right;
     width: 200px;
     white-space: nowrap;
-  }
-  #quadro_de_horarios h2 {
-    font-size: 16px;
-  }
-  #quadro_de_horarios h4 {
-    font-size: 16px;
-  }
-  #quadro_de_horarios table td{
-    line-height:86%;
   }
   #agenda, #aniversariantes {
     border: none;

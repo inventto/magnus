@@ -20,7 +20,7 @@ class Matricula < ActiveRecord::Base
   scope :clientes_que_ganhamos, where("data_inicio <= ?", Time.now).group_by{|data| [data.data_inicio.month, data.data_inicio.year]}
   scope :com_nome_parecido, ->(id) { where(pessoa_id: id) }
   scope :valida, where("(matriculas.data_fim > ? or matriculas.data_fim is null)", Time.now)
-  scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data.to_date)}
+  scope :em_standby?, lambda {|na_data| where("data_fim is null and ? between inativo_desde and inativo_ate", na_data)}
   scope :faltas_por_semana_desde, lambda {|desde, pessoa_id=nil|
     fields = "presencas.pessoa_id, date_trunc('week',presencas.data) as semana, matriculas.numero_de_aulas_previstas"
       onde = valida

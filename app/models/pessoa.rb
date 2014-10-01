@@ -477,8 +477,8 @@ class Pessoa < ActiveRecord::Base
     matriculas.joins(:presencas).valida.first
   end
 
-  def com_matricula_standby?
-    matriculas.em_standby?(Time.now).exists?
+  def com_matricula_standby?(data)
+    matriculas.em_standby?(data).exists?
   end
 
 

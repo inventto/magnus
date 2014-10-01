@@ -5,10 +5,13 @@
     #display_names{
       display: none;
     }
-    tbody{
-      page-break-inside: avoid;
-      page-break-before: auto;
-      page-break-after: auto;
+    .tabela-de-horarios {
+      white-space: nowrap;
+      display: block !important;
+    }
+
+    .tabela-de-horarios tr {
+      page-break-after: always;
     }
   }
 </style>
@@ -18,7 +21,7 @@
     <input type="checkbox" name="display_names" value="Exibir Nomes" id="display_names" onclick="displayNames();" />
     <label for="display_names" id="displayN">Exibir Nomes</label>
   </p>
-    <table>
+    <table class="tabela-de-horarios table">
   <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
       <tbody>
         <tr>

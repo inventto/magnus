@@ -395,6 +395,7 @@ i{
 #quadro_de_horarios .alunos.exibir {
   display: block;
   font-style: italic;
+  height: 85px;
 }
 #quadro_de_horarios .status.exibir {
   display: none;

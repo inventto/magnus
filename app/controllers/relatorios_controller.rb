@@ -24,7 +24,6 @@ class RelatoriosController < ApplicationController
       end
     end
     resultado = ActiveRecord::Base.connection.select_rows(consulta)
-    p ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resultado #{resultado}"
     retorno = "<div class='active-scaffold'>"
     retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
     if relatorio.id == 2
@@ -56,7 +55,6 @@ class RelatoriosController < ApplicationController
     "<script>
     ignorar_primeiras_x_colunas = 2;
     Highcharts.visualize = function(table, options) {
-     console.log(options);
       options.xAxis.categories = new Array();
       options.series = [];
       $('tbody th', table).each( function(i) {
