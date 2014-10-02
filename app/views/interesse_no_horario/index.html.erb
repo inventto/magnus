@@ -1,49 +1,51 @@
 <h3 class="text-center"> Quadro de interessados </h3>
-<%= content_tag :table, :class => "table table-bordered table-striped", :id => "tabela-interessados" do %>
-  <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..22  }.each do |title, periodo| %>
-    <%= content_tag :thead do %>
-      <%= content_tag :tr do %>
-        <%= content_tag :th do %>
-          <%= content_tag :h4, title %>
-        <% end %>
-        <!-- exibindo os dias da semana-->
-        <% (1..6).each do |day| %>
-          <% if not (day == 6 and periodo != (6..12)) %>
-            <%= content_tag :th do %>
-              <%= Date::DAYNAMES[day] %>
-            <% end %>
-          <% end %>
-        <% end %>
-      <% end %>
-    <% end %>
-    <%= content_tag :tbody do %>
-      <!-- listando os horários, do hash -->
-      <% periodo.each do |hora_atual| %>
-        <%= content_tag :tr do %>
-          <%= content_tag :td do%>
-            <%= hora = format("%.2d", hora_atual) + ":00" %> - <%= final_do_horario(hora) %>
-          <% end %>
-          <% (1..6).each do |dia| %>
-            <% if dia == 6 and hora_atual > 12 %>
-              <% break %>
-            <% end %>
-            <%# Consulta trazendo todos os interessados nos seus respectivos horários %>
-            <%= content_tag :td do %>
-              <% @interessados_nos_horarios.collect do |key, interessados| %>
-                <% interessados.collect do |horario_da_aula, horarios| %>
-                  <% if esta_englobado_no?(dia, horarios) %>
-                    <% if esta_contido_na(hora_atual, horario_da_aula) %>
-                      <%= content_tag :ol do %>
-                        <% get_nomes_nos(horarios) %>
-                      <% end %>
+<%= content_tag :div, :class => "table-responsive" do %>
+    <%= content_tag :table, :class => "table table-bordered table-striped", :id => "tabela-interessados" do %>
+        <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..22  }.each do |title, periodo| %>
+            <%= content_tag :thead do %>
+                <%= content_tag :tr do %>
+                    <%= content_tag :th do %>
+                        <%= content_tag :h4, title %>
                     <% end %>
-                  <% end %>
+                    <!-- exibindo os dias da semana-->
+                    <% (1..6).each do |day| %>
+                        <% if not (day == 6 and periodo != (6..12)) %>
+                            <%= content_tag :th do %>
+                                <%= Date::DAYNAMES[day] %>
+                            <% end %>
+                        <% end %>
+                    <% end %>
                 <% end %>
-              <% end %>
             <% end %>
-          <% end %>
+            <%= content_tag :tbody do %>
+                <!-- listando os horários, do hash -->
+                <% periodo.each do |hora_atual| %>
+                    <%= content_tag :tr do %>
+                        <%= content_tag :td do%>
+                            <%= hora = format("%.2d", hora_atual) + ":00" %> - <%= final_do_horario(hora) %>
+                        <% end %>
+                        <% (1..6).each do |dia| %>
+                            <% if dia == 6 and hora_atual > 12 %>
+                                <% break %>
+                            <% end %>
+                            <% #Consulta trazendo todos os interessados nos seus respectivos horários %>
+                            <%= content_tag :td do %>
+                                <% @interessados_nos_horarios.collect do |key, interessados| %>
+                                    <% interessados.collect do |horario_da_aula, horarios| %>
+                                        <% if esta_englobado_no?(dia, horarios) %>
+                                            <% if esta_contido_na(hora_atual, horario_da_aula) %>
+                                                <%= content_tag :ol do %>
+                                                    <% get_nomes_nos(horarios) %>
+                                                <% end %>
+                                            <% end %>
+                                        <% end %>
+                                    <% end %>
+                                <% end %>
+                            <% end %>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            <% end %>
         <% end %>
-      <% end %>
     <% end %>
-  <% end %>
 <% end %>

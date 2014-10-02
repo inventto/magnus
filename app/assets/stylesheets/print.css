@@ -16,10 +16,10 @@
     display: block !important;
   }
 
-  #tabela-interessados tr td{
-    line-height: 12px;
+  #tabela-interessados tr td ol li{
+   font-style: normal;
+   font-size: 16px;
   }
-
   #tabela-interessados {
   #agenda #horarios {
     width: 790px;
