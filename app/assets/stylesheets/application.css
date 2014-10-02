@@ -510,3 +510,7 @@ i{
 .filtro-contatos #filtro_pessoa_id{
   margin-bottom: 4px;
 }
+.form-filtro-data {
+    margin: 0 auto;
+    width: 15%;
+}
