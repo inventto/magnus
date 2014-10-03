@@ -509,5 +509,8 @@ i{
 }
 .form-filtro-data {
     margin: 0 auto;
-    width: 15%;
+    width: 5%;
+}
+.foto-column > img{
+ width: 65px;
 }
