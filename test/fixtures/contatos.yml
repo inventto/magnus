@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  descricao: MyText
+  data_contato: 2014-05-19
+  pessoa: 
+
+two:
+  descricao: MyText
+  data_contato: 2014-05-19
+  pessoa: 

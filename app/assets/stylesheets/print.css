@@ -1,88 +1,87 @@
 @media print {
-  .menu, #login, .filtros, .filtro-ativo-inativo, #top, #agenda #horarios table img {
-    display: none;
-  }
+    .menu, #login, .filtros, .filtro-ativo-inativo, #top, #agenda #horarios table img {
+        display: none;
+    }
 
-  h3 {
-    font-size: 16px;
-  }
+    h3 {
+        font-size: 16px;
+    }
 
-  #tabela-interessados tbody {
-    page-break-after: always;
-  }
+    #tabela-interessados tbody {
+        page-break-after: always;
+    }
 
-  #tabela-interessados {
-    white-space: nowrap;
-    display: block !important;
-  }
+    #tabela-interessados {
+        white-space: nowrap;
+        display: block !important;
+    }
 
-  #tabela-interessados tr td ol li{
-   font-style: normal;
-   font-size: 16px;
-  }
-  #tabela-interessados {
-  #agenda #horarios {
-    width: 790px;
-    -moz-column-count: 2;
-    -webkit-column-count: 2;
-    column-count: 2;
+    #tabela-interessados tr td ol li{
+        font-style: normal;
+        font-size: 16px;
+    }
+    #agenda #horarios {
+        width: 790px;
+        -moz-column-count: 2;
+        -webkit-column-count: 2;
+        column-count: 2;
 
-    -webkit-column-rule: thin solid #000;
-    -moz-column-rule: thin solid #000;
-    column-rule: thin solid #000;
+        -webkit-column-rule: thin solid #000;
+        -moz-column-rule: thin solid #000;
+        column-rule: thin solid #000;
 
-    -moz-column-gap: 21px;
-    -webkit-column-gap: 21px;
-    column-gap: 21px;
-  }
-  #horarios.compact .hora{
-    float: right;
-    max-width: 250px;
-    width:150px;
-    white-space: nowrap;
-  }
+        -moz-column-gap: 21px;
+        -webkit-column-gap: 21px;
+        column-gap: 21px;
+    }
+    #horarios.compact .hora{
+        float: right;
+        max-width: 250px;
+        width:150px;
+        white-space: nowrap;
+    }
 
-  .tabela-ativos-inativos tr {
-    page-break-after: always;
-  }
+    .tabela-ativos-inativos tr {
+        page-break-after: always;
+    }
 
 
-  #agenda #horarios .hora {
-    float: right;
-    width: 200px;
-    white-space: nowrap;
-  }
-  #agenda, #aniversariantes {
-    border: none;
-  }
-  .aniver-title {
-    border: thin solid black;
-    border-radius: 0px;
-    padding: 5px;
-  }
-  #horarios * {
-    font-size: 14px;
-  }
-  #aniversariantes * {
-    font-size: 18px;
-  }
-  td:nth-child(1) {
-    /*width: 100px !important;*/
-  }
-  #logo {
-    float: none;
-    margin: 0 auto !important;
-  }
-  .aluno-column a{
-    white-space: nowrap;
-  }
-  .fones, .hint {
-    display: block;
-  }
-  .show, .destroy, .edit {
-    display: none;
-  }
-  .edit.pessoa, .edit.justificativa_de_falta {
-    display: inline;
-  }
+    #agenda #horarios .hora {
+        float: right;
+        width: 200px;
+        white-space: nowrap;
+    }
+    #agenda, #aniversariantes {
+        border: none;
+    }
+    .aniver-title {
+        border: thin solid black;
+        border-radius: 0px;
+        padding: 5px;
+    }
+    #horarios * {
+        font-size: 14px;
+    }
+    #aniversariantes * {
+        font-size: 18px;
+    }
+    td:nth-child(1) {
+        /*width: 100px !important;*/
+    }
+    #logo {
+        float: none;
+        margin: 0 auto !important;
+    }
+    .aluno-column a{
+        white-space: nowrap;
+    }
+    .fones, .hint {
+        display: block;
+    }
+    .show, .destroy, .edit {
+        display: none;
+    }
+    .edit.pessoa, .edit.justificativa_de_falta {
+        display: inline;
+    }
 }

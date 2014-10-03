@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  ativo: false
+  descricao: MyString
+  horario: MyString
+  dia_da_semana: 1
+  matricula: 
+
+two:
+  ativo: false
+  descricao: MyString
+  horario: MyString
+  dia_da_semana: 1
+  matricula: 
