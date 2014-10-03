@@ -17,6 +17,7 @@
           line-height: 11px;
           height: 40px;
         }
+
         #quadro_de_horarios .alunos.exibir{
             font-style: normal;
         }
@@ -37,7 +38,7 @@
   <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
       <tbody>
         <tr>
-          <th><h4><%= title %></h4></th>
+          <th><%= title %></th>
           <% (1..6).each do |day| %>
             <% if not (day == 6 and periodo != (6..12)) %>
               <th><%= Date::DAYNAMES[day] %></th>
