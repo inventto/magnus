@@ -371,7 +371,6 @@ i{
 #input_compactar_nomes {
   width: 155px;
   margin: 0 auto;
-  white-space: nowrap;
 }
 .matricula_standby {
   text-decoration: line-through;
@@ -507,10 +506,20 @@ i{
 .filtro-contatos #filtro_pessoa_id{
   margin-bottom: 4px;
 }
-.form-filtro-data {
-    margin: 0 auto;
-    width: 5%;
-}
 .foto-column > img{
  width: 65px;
+}
+.data-inicial {
+  float: left;
+}
+.data-final {
+  float: right;
+}
+.filtros-periodos-agenda {
+  width: 40%;
+  margin: 0 auto;
+  white-space: nowrap;
+}
+.filtros-periodos-agenda form {
+    height: 70px;
 }
