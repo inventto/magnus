@@ -481,6 +481,25 @@ class Pessoa < ActiveRecord::Base
     matriculas.em_standby?(data).exists?
   end
 
+  def eh_adiantamento(data, pessoa_id, presenca)
+      if presenca
+          if presenca.data_de_realocacao
+              adiantamento = Presenca.joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :data => presenca.data_de_realocacao).where("justificativas_de_falta.descricao ilike '%adiantado%'").first
+              p "Presenca Model ************************************"
+              p adiantamento
+              return adiantamento
+          end
+      end
+
+  end
+
+  def eh_realocacao?(data, pessoa_id)
+      pre = Presenca.eh_realocacao_na_data?(data, pessoa_id).first
+      presenca = eh_adiantamento(data, pessoa_id, pre)
+
+      return presenca
+  end
+
 
   def get_funcionario_horario_de_aula(hora, today)
     registros_ponto = RegistroDePonto.que_entrou_ate(hora, today)

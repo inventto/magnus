@@ -5,6 +5,8 @@ class Presenca < ActiveRecord::Base
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
 
+  scope :eh_realocacao_na_data?, ->(data, pessoa_id) { where(pessoa_id: pessoa_id, realocacao: true, data: data, tem_direito_a_reposicao: nil)}
+
   after_save :expira_reposicoes
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/

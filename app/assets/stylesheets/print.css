@@ -1,10 +1,14 @@
 @media print {
-    .menu, #login, .filtros, .filtro-ativo-inativo, #top, #agenda #horarios table img {
+    .menu, #login, .filtros, .filtro-ativo-inativo, #top, .status_presenca, #input_compactar_nomes, .filtros-periodos-agenda, #agenda #horarios table img {
         display: none;
     }
 
     h3 {
         font-size: 16px;
+    }
+
+    .eh-realocacao {
+      background: #1DBECF !important;
     }
 
     #tabela-interessados tbody {

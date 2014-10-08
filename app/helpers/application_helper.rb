@@ -225,6 +225,11 @@ module ApplicationHelper
     end
     _class += " esta_de_aniver " if aluno.esta_de_aniversario_essa_semana?
     _class += " matricula_standby" if aluno.com_matricula_standby?(data)
+    _class += " eh-realocacao" if aluno.eh_realocacao?(data, aluno.id)
+   p = aluno.eh_realocacao?(data, aluno.id)
+
+   p ">>>>>>>>>>>>>>>> Aluno #{p}"
+
     _space = "  "
     text_link = aluno.primeiro_nome + _space + content_tag(:span, aluno.segundo_nome) + _space + content_tag(:span, aluno.segundo_nome[0], :id => "segundo_nome_hidden")+ content_tag(:span,  status_presenca(horario, data),  :class =>'status_presenca')
     content_tag(:div, text_link.html_safe, :onclick => "window.location='#{pessoa_path(aluno)}'", :class => _class)
