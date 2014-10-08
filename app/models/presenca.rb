@@ -5,7 +5,10 @@ class Presenca < ActiveRecord::Base
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
 
-  scope :eh_realocacao_na_data?, ->(data, pessoa_id) { where(pessoa_id: pessoa_id, realocacao: true, data: data, tem_direito_a_reposicao: nil)}
+  scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
+
+
+  scope :eh_adiantamento_na_data?, ->(data, pessoa_id) { joins(:justificativa_de_falta).where(pessoa_id: pessoa_id, data: data).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
 
   after_save :expira_reposicoes
 
