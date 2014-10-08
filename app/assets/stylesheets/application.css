@@ -509,6 +509,9 @@ i{
 .foto-column > img{
  width: 65px;
 }
+.foto-view > img{
+ width: 30%;
+}
 .data-inicial {
   float: left;
 }
