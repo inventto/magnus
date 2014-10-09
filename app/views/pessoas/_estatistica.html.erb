@@ -97,6 +97,27 @@
       </table>
     <% end %>
   <% end %>
+
+  <h2>Faltas Expiradas</h2>
+  <table>
+      <thead>
+          <tr>
+              <% @meses.each do |mes| %>
+                  <th><%= mes %></th>
+              <%end%>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <% (1..12).each do |mes| %>
+                  <td>
+                      <%= @count_expiradas_meses[mes]%>
+                  </td>
+              <% end %>
+          </tr>
+      </tbody>
+  </table>
+
 </div>
 <br/>
 <div id='grafico_das_estatisticas_do_aluno' style='height: 400px; min-width: 600px'></div>

@@ -514,9 +514,11 @@ i{
 }
 .data-inicial {
   float: left;
+  margin-left: 30px;
 }
 .data-final {
   float: right;
+  margin-right: 30px;
 }
 .filtros-periodos-agenda {
   width: 44%;

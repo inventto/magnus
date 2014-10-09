@@ -96,6 +96,12 @@ module PessoasHelper
           @count_saldo_realocacao = saldo_realocacao
         end
 
+        @meses = %w(Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro)
+        @count_expiradas_meses = Hash.new
+        (1..12).each do |mes|
+          @count_expiradas_meses[mes] = Presenca.where("pessoa_id = ? and aula_extra = true and Extract('Month' from data) = ? and Extract('Year'from data) = ?", record.id, mes, Time.now.year).count
+        end
+
         @presencas_erroneas = presencas.where("(presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true)")
 
         @count_presencas_expiradas = presencas.where(expirada: true).count
