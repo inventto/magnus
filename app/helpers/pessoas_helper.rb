@@ -80,13 +80,13 @@ module PessoasHelper
 
         presencas = record.presencas.where("data >= ?", matricula.data_inicio)
 
-        @count_presencas = presencas.where(:aula_extra => false, :presenca => true).where("(realocacao = false or realocacao is null)").count
-        @count_aulas_extras = presencas.where(:aula_extra => true, :presenca => true).count
+        @count_presencas = Presenca.presencas_vinda(record.id).count
+        @count_aulas_extras = Presenca.presencas_extras(record.id).count
 
-        @count_faltas_com_direito_a_reposicao = presencas.where(:tem_direito_a_reposicao => true, :presenca => false).count
-        @count_faltas_sem_direito_a_reposicao = presencas.where(:tem_direito_a_reposicao => false, :presenca => false).count
+        @count_faltas_com_direito_a_reposicao = Presenca.faltas_com_direito_a_reposicao(record.id).count
+        @count_faltas_sem_direito_a_reposicao = Presenca.faltas_sem_direito_a_reposicao(record.id).count
 
-        @count_aulas_realocadas = presencas.where(:realocacao => true, :presenca => true).count
+        @count_aulas_realocadas = Presenca.presencas_realocadas(record.id).count
         saldo_realocacao = (@count_faltas_com_direito_a_reposicao - @count_aulas_realocadas)
 
         if saldo_realocacao < 0
@@ -96,15 +96,11 @@ module PessoasHelper
           @count_saldo_realocacao = saldo_realocacao
         end
 
-        @meses = %w(Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro)
-        @count_expiradas_meses = Hash.new
-        (1..12).each do |mes|
-          @count_expiradas_meses[mes] = Presenca.where("pessoa_id = ? and aula_extra = true and Extract('Month' from data) = ? and Extract('Year'from data) = ?", record.id, mes, Time.now.year).count
-        end
+        count_aulas_expiradas_por_mes_e_ano(record.id)
 
-        @presencas_erroneas = presencas.where("(presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true)")
+        @presencas_erroneas = Presenca.presencas_erroneas(record.id)
 
-        @count_presencas_expiradas = presencas.where(expirada: true).count
+        @count_presencas_expiradas = Presenca.presencas_expiradas(record.id).count
         @count_presencas_erroneas = @presencas_erroneas.count
 
         @total_de_aulas = presencas.size
@@ -117,6 +113,14 @@ module PessoasHelper
         end
       end
     end
+  end
+
+  def count_aulas_expiradas_por_mes_e_ano pessoa_id
+      @meses = %w(Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro)
+      @count_expiradas_meses = Hash.new
+      (1..12).each do |mes|
+          @count_expiradas_meses[mes] = Presenca.presencas_expiradas_por_mes_e_ano(pessoa_id,  mes, Time.now.year).count
+      end
   end
 
   def count_feriados presencas

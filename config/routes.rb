@@ -1,7 +1,5 @@
 ControleDePresencaMagnus::Application.routes.draw do
 
-
-
   get "quadro_de_interesses_nos_horarios/index"
 
   get "interesse_no_horario/index"

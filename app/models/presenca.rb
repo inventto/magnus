@@ -7,8 +7,23 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
-
   scope :eh_adiantamento_na_data?, ->(data, pessoa_id) { joins(:justificativa_de_falta).where(pessoa_id: pessoa_id, data: data).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
+
+  scope :presencas_vinda, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
+
+  scope :presencas_extras, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: true, presenca: true) }
+
+  scope :faltas_sem_direito_a_reposicao, ->(pessoa_id) { where("pessoa_id = ? and presenca = false and (tem_direito_a_reposicao is null or tem_direito_a_reposicao = false)", pessoa_id)}
+
+  scope :faltas_com_direito_a_reposicao, ->(pessoa_id) { where(pessoa_id: pessoa_id, tem_direito_a_reposicao: true, presenca: false) }
+
+  scope :presencas_realocadas, ->(pessoa_id) { where(pessoa_id: pessoa_id, realocacao: true, presenca: true) }
+
+  scope :presencas_erroneas, ->(pessoa_id) { where("pessoa_id = ? and ((presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true))", pessoa_id)  }
+
+  scope :presencas_expiradas, ->(pessoa_id) { where(pessoa_id: pessoa_id, expirada: true) }
+
+  scope :presencas_expiradas_por_mes_e_ano, ->(pessoa_id, mes, ano) { where("pessoa_id = ? and expirada = true and Extract('Month' from data) = ? and Extract('Year'from data) = ?", pessoa_id, mes, ano)  }
 
   after_save :expira_reposicoes
 
