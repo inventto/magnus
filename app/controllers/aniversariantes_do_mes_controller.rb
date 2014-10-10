@@ -1,6 +1,6 @@
 class AniversariantesDoMesController < ApplicationController
   def aniversariantes
-    @aniversariantes = Pessoa.de_aniversario_no_mes("extract(month from now())")
+    @aniversariantes = Pessoa.de_aniversario_no_mes(Time.now.month)
     @mes = Date.today.month
   end
 

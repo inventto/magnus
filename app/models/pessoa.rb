@@ -7,9 +7,19 @@ class Pessoa < ActiveRecord::Base
   TIPOS.each_with_index do |tipo, i|
         scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }
   end
-  scope :de_aniversario_no_mes, lambda { |mes| joins("JOIN matriculas ON matriculas.pessoa_id=pessoas.id").where("data_inicio <= ? and (data_fim >= ? or data_fim is null)", (Time.now).to_date, (Time.now).to_date).where("extract(month from data_nascimento) = #{mes}").group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)") }
   scope :com_matricula_valida, -> { joins(:matriculas).where("(matriculas.data_fim >= ? or matriculas.data_fim is null)", Time.now) }
 
+  def self.de_aniversario_no_mes mes
+      p "chegou"
+      pessoas = Pessoa.where("extract(month from data_nascimento) = ?", mes).group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)")
+      aniversariantes = Array.new
+      pessoas.each do |pessoa|
+          if (pessoa.eh_aluno? and pessoa.matricula_valida) or (pessoa.eh_professor? or pessoa.eh_secretaria? or pessoa.eh_zeladora?)
+              aniversariantes << pessoa
+          end
+      end
+      return aniversariantes
+  end
 
   before_save :chk_codigo_de_acesso
 
@@ -30,8 +40,21 @@ class Pessoa < ActiveRecord::Base
 
   SEX = %w(M F)
 
+
+  def eh_aluno?
+      tipo_de_pessoa == 0
+  end
+
   def eh_professor?
-    tipo_de_pessoa == 1
+      tipo_de_pessoa == 1
+  end
+
+  def eh_secretaria?
+      tipo_de_pessoa == 2
+  end
+
+  def eh_zeladora?
+      tipo_de_pessoa == 3
   end
 
   def primeiro_nome

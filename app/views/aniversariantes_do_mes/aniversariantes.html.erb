@@ -1,35 +1,37 @@
 <div class="filtros mes">
-  <form action="<%= aniversariantes_do_mes_filtrar_path %>" method="GET" accept-charset="utf-8">
-    <label for="lbl_mes">Mês:</label>
-    <select name="mes" id="mes">
-      <% for i in 0..(Date::MONTHNAMES.length - 1) %>
-        <% if i == @mes.to_i %>
-          <option selected value="<%= i %>"><%= Date::MONTHNAMES[i] %></option>
-        <% else %>
-          <option value="<%= i %>"><%= Date::MONTHNAMES[i] %></option>
-        <% end %>
-      <% end %>
-    </select>
-    <input type="submit" value="Filtrar"/>
-  </form>
+    <form action="<%= aniversariantes_do_mes_filtrar_path %>" method="GET" accept-charset="utf-8">
+        <label for="lbl_mes">Mês:</label>
+        <select name="mes" id="mes">
+            <% for i in 0..(Date::MONTHNAMES.length - 1) %>
+                <% if i == @mes.to_i %>
+                    <option selected value="<%= i %>"><%= Date::MONTHNAMES[i] %></option>
+                <% else %>
+                    <option value="<%= i %>"><%= Date::MONTHNAMES[i] %></option>
+                <% end %>
+            <% end %>
+        </select>
+        <input type="submit" value="Filtrar"/>
+    </form>
 </div>
 <div id="aniversariantes">
-  <div id="title-aniversariantes">
-    ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i].upcase %>
-  </div>
-  <ul>
-  <% @aniversariantes.each do |aniversariante| %>
-    <li>
-        <span class='day'>
-          <%= aniversariante.data_nascimento.day %>
-        </span>
-        -
-        <%if aniversariante.data_nascimento.day == Time.now.day%>
-          <strong><%= aniversariante.nome %></strong>
-        <%else%>
-          <%= aniversariante.nome %>
-        <%end%>
-    </li>
-  <% end %>
-   </ul>
+    <div id="title-aniversariantes">
+        ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i].upcase %>
+</div>
+<ul>
+    <% if @aniversariantes %>
+        <% @aniversariantes.each do |aniversariante| %>
+            <li>
+            <span class='day'>
+                <%= aniversariante.data_nascimento.day %>
+            </span>
+            -
+            <%if aniversariante.data_nascimento.day == Time.now.day%>
+                <strong><%= aniversariante.nome %></strong>
+            <%else%>
+                <%= aniversariante.nome %>
+            <%end%>
+            </li>
+        <% end %>
+    <% end %>
+</ul>
 </div>
