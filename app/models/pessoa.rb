@@ -10,7 +10,6 @@ class Pessoa < ActiveRecord::Base
   scope :com_matricula_valida, -> { joins(:matriculas).where("(matriculas.data_fim >= ? or matriculas.data_fim is null)", Time.now) }
 
   def self.de_aniversario_no_mes mes
-      p "chegou"
       pessoas = Pessoa.where("extract(month from data_nascimento) = ?", mes).group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)")
       aniversariantes = Array.new
       pessoas.each do |pessoa|

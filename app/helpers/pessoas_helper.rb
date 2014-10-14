@@ -293,14 +293,14 @@ module PessoasHelper
     presenca = presenca.where("justificativas_de_falta.descricao <> ''")
     presenca = presenca.where("presencas.data NOT IN (SELECT p2.data_de_realocacao FROM presencas p2 WHERE p2.data_de_realocacao = presencas.data AND p2.pessoa_id=presencas.pessoa_id)").order("id")
 
-    data_reposicao = (presenca.blank?) ? "" : presenca.first.data.to_date
+    data_reposicao = (presenca.blank?) ? "" : presenca.where(tem_direito_a_reposicao: true).last.data  - 1.month
 
     realocacao = "<div id='gerar_realocacao'>
                     <br /><h4>Gerar Reposição/Adiantamento</h4>
                     <p>Data</p>
                     <p><input  class='text-input' id='data_aula_realocacao' name='data' type='date' value='' /></p>
                     <p>Horário<p>
-                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_realocacao' maxlength='255' name='horario' size='30' type='text' value=''><p>
+                    <p><input autocomplete='off' class='horario-input text-input' id='record_horario_realocacao' maxlength='255' name='horario' size='30' type='text' value=''></p>
                     <p>Data da Falta/Horário a ser Adiantado</p>
                     <p><input  class='text-input' id='data_de_realocacao' name='data' type='date' value='#{data}' /></p>
                     <p>Sugerir Data para:</p>
@@ -412,7 +412,7 @@ module PessoasHelper
                          }
                          jAlert(error, 'Atenção');
                       } else {
-                        window.location.href = '/pessoas';
+                        window.location.href = '/agenda_do_dia';
                       }
                     });"
 

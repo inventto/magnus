@@ -25,6 +25,8 @@ class Presenca < ActiveRecord::Base
 
   scope :presencas_expiradas_por_mes_e_ano, ->(pessoa_id, mes, ano) { where("pessoa_id = ? and expirada = true and Extract('Month' from data) = ? and Extract('Year'from data) = ?", pessoa_id, mes, ano)  }
 
+  scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
+
   after_save :expira_reposicoes
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
