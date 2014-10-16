@@ -4,6 +4,7 @@ class Presenca < ActiveRecord::Base
 
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
+  has_many :concilios, foreign_key: "de_id"
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
@@ -27,7 +28,7 @@ class Presenca < ActiveRecord::Base
 
   scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
 
-  after_save :expira_reposicoes
+  after_save :expira_reposicoes, :concilio_presenca
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
@@ -80,6 +81,12 @@ class Presenca < ActiveRecord::Base
         falta.expirada = true
         falta.save
       end
+    end
+  end
+
+  def concilio_presenca
+    if self.tem_direito_a_reposicao
+        concilios.reposicao.create
     end
   end
 end
