@@ -28,6 +28,8 @@ class Presenca < ActiveRecord::Base
 
   scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
 
+  scope :pessoa_com_concilio_em_aberto, ->(pessoa_id) { joins(:concilios).where(pessoa_id: pessoa_id).where("para_id is null") }
+
   after_save :expira_reposicoes, :concilio_presenca
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
@@ -85,8 +87,22 @@ class Presenca < ActiveRecord::Base
   end
 
   def concilio_presenca
-    if self.tem_direito_a_reposicao
-        concilios.reposicao.create
-    end
+      if Concilio.exists?(self.id)
+          if self.realocacao and self.presenca
+              autalizar_concilio_para_id
+          end
+      else
+          if self.tem_direito_a_reposicao
+              concilios.reposicao.create
+          end
+      end
+  end
+
+  def autalizar_concilio_para_id
+      presencas = Presenca.pessoa_com_concilio_em_aberto(self.pessoa_id)
+      presencas.each do |presenca|
+          concilio = Concilio.where(de_id: presenca.id).first
+          concilio.update_attributes(para_id: self.id)
+      end
   end
 end
