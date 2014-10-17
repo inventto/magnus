@@ -4,7 +4,7 @@ class Presenca < ActiveRecord::Base
 
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
-  has_many :concilios, foreign_key: "de_id"
+  has_one :conciliamento, foreign_key: "de_id"
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
@@ -28,9 +28,9 @@ class Presenca < ActiveRecord::Base
 
   scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
 
-  scope :pessoa_com_concilio_em_aberto, ->(pessoa_id) { joins(:concilios).where(pessoa_id: pessoa_id).where("para_id is null") }
+  scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento).order(:id).where(pessoa_id: pessoa_id).where("para_id is null") }
 
-  after_save :expira_reposicoes, :concilio_presenca
+  after_save :expira_reposicoes, :conciliamentos_presenca
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
@@ -86,23 +86,26 @@ class Presenca < ActiveRecord::Base
     end
   end
 
-  def concilio_presenca
-      if Concilio.exists?(self.id)
-          if self.realocacao and self.presenca
-              autalizar_concilio_para_id
-          end
-      else
-          if self.tem_direito_a_reposicao
-              concilios.reposicao.create
-          end
+  def conciliamentos_presenca
+      if self.tem_direito_a_reposicao and not self.conciliamento
+         conciliamento = Conciliamento.new
+         conciliamento.de_id = self.id
+         conciliamento.tipo = 'reposicao'
+         conciliamento.save
+      elsif self.realocacao and self.presenca
+          atualizar_conciliamentos_para_id
       end
   end
 
-  def autalizar_concilio_para_id
-      presencas = Presenca.pessoa_com_concilio_em_aberto(self.pessoa_id)
-      presencas.each do |presenca|
-          concilio = Concilio.where(de_id: presenca.id).first
-          concilio.update_attributes(para_id: self.id)
+  def atualizar_conciliamentos_para_id
+      presenca = Presenca.pessoa_com_conciliamentos_em_aberto(self.pessoa_id).first
+      if presenca
+          conciliamento = presenca.conciliamento
+          if conciliamento
+              conciliamento.update_attributes(para_id: self.id)
+          end
+      else
+          self.errors.add(self.id, "O aluno não pode gerar mais aulas com realocação.")
       end
   end
 end
