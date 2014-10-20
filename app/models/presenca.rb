@@ -31,7 +31,6 @@ class Presenca < ActiveRecord::Base
   scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento).order(:id).where(pessoa_id: pessoa_id).where("para_id is null") }
 
   after_save :expira_reposicoes, :conciliamentos_presenca
-
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
   validates_presence_of :pessoa
@@ -87,25 +86,26 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamentos_presenca
-      if self.tem_direito_a_reposicao and not self.conciliamento
-         conciliamento = Conciliamento.new
-         conciliamento.de_id = self.id
-         conciliamento.tipo = 'reposicao'
-         conciliamento.save
-      elsif self.realocacao and self.presenca
-          atualizar_conciliamentos_para_id
-      end
+    if self.tem_direito_a_reposicao and not self.conciliamento
+       conciliamento = Conciliamento.new
+       conciliamento.de_id = self.id
+       conciliamento.tipo = 'reposicao'
+       conciliamento.save
+    elsif self.realocacao and self.presenca
+        atualizar_conciliamentos_para_id
+    end
   end
 
   def atualizar_conciliamentos_para_id
-      presenca = Presenca.pessoa_com_conciliamentos_em_aberto(self.pessoa_id).first
-      if presenca
-          conciliamento = presenca.conciliamento
-          if conciliamento
-              conciliamento.update_attributes(para_id: self.id)
-          end
-      else
-          self.errors.add(self.id, "O aluno não pode gerar mais aulas com realocação.")
-      end
+    presenca = Presenca.pessoa_com_conciliamentos_em_aberto(self.pessoa_id).first
+    if presenca
+        conciliamento = presenca.conciliamento
+        if conciliamento
+            conciliamento.update_attributes(para_id: self.id)
+        end
+    else
+        self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")
+    end
   end
+
 end
