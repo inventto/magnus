@@ -87,9 +87,11 @@ class Presenca < ActiveRecord::Base
 
   def conciliamentos_presenca
     if self.tem_direito_a_reposicao and not self.conciliamento
-       Conciliamento.create de_id: self.id, tipo: 0
+      reposicao = Reposicao.new
+      reposicao.de_id = self.id
+      reposicao.save
     elsif self.realocacao and self.presenca
-        atualizar_conciliamentos_para_id
+      atualizar_conciliamentos_para_id
     end
   end
 

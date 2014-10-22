@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141022123225) do
+ActiveRecord::Schema.define(:version => 20141022165232) do
 
   create_table "bairros", :force => true do |t|
     t.string   "nome"
@@ -29,10 +29,12 @@ ActiveRecord::Schema.define(:version => 20141022123225) do
 
   create_table "conciliamentos", :force => true do |t|
     t.string   "tipo"
-    t.integer  "de_id",      :null => false
+    t.integer  "de_id",                        :null => false
     t.integer  "para_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.integer  "conciliamento_condition_id"
+    t.string   "conciliamento_condition_type"
   end
 
   add_index "conciliamentos", ["de_id"], :name => "index_conciliamentos_on_de_id"
@@ -181,12 +183,9 @@ ActiveRecord::Schema.define(:version => 20141022123225) do
   end
 
   create_table "reposicoes", :force => true do |t|
-    t.integer  "conciliamento_id"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
-
-  add_index "reposicoes", ["conciliamento_id"], :name => "index_reposicoes_on_conciliamento_id"
 
   create_table "telefones", :force => true do |t|
     t.string   "ddd"
