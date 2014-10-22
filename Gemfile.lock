@@ -35,10 +35,6 @@ GEM
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
     builder (3.0.4)
-    byebug (3.5.1)
-      columnize (~> 0.8)
-      debugger-linecache (~> 1.2)
-      slop (~> 3.6)
     carrierwave (0.10.0)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -53,21 +49,26 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.8.0)
-    columnize (0.8.9)
     commonjs (0.2.7)
     daemons (1.1.9)
+    database_cleaner (1.3.0)
     date-input-rails (0.0.3)
       jquery-ui-rails
       rails (~> 3.2.8)
-    debugger-linecache (1.2.0)
     devise (3.0.3)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
       railties (>= 3.2.6, < 5)
       warden (~> 1.2.3)
+    diff-lcs (1.2.5)
     erubis (2.7.0)
     eventmachine (1.0.3)
     execjs (2.2.1)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
     hike (1.2.3)
     i18n (0.6.11)
     journey (1.0.4)
@@ -133,12 +134,30 @@ GEM
       json (~> 1.4)
     ref (1.0.5)
     rmagick (2.13.3)
+    rspec-core (3.1.7)
+      rspec-support (~> 3.1.0)
+    rspec-expectations (3.1.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.1.0)
+    rspec-mocks (3.1.3)
+      rspec-support (~> 3.1.0)
+    rspec-rails (3.1.0)
+      actionpack (>= 3.0)
+      activesupport (>= 3.0)
+      railties (>= 3.0)
+      rspec-core (~> 3.1.0)
+      rspec-expectations (~> 3.1.0)
+      rspec-mocks (~> 3.1.0)
+      rspec-support (~> 3.1.0)
+    rspec-support (3.1.2)
     ruby-graphviz (1.0.9)
     sass (3.4.5)
     sass-rails (3.2.6)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
+    shoulda-matchers (2.7.0)
+      activesupport (>= 3.0.0)
     slop (3.6.0)
     sprockets (2.2.2)
       hike (~> 1.2)
@@ -178,11 +197,12 @@ PLATFORMS
 
 DEPENDENCIES
   active_scaffold
-  byebug (= 3.5.1)
   carrierwave
   coffee-rails (~> 3.2.1)
+  database_cleaner
   date-input-rails (~> 0.0.3)
   devise (= 3.0.3)
+  factory_girl_rails
   jquery-rails (= 2.1.4)
   jquery-ui-rails
   less-rails
@@ -194,7 +214,9 @@ DEPENDENCIES
   rails-erd
   rails3-jquery-autocomplete
   rmagick
+  rspec-rails
   sass-rails (~> 3.2.3)
+  shoulda-matchers
   therubyracer
   thin
   twitter-bootstrap-rails

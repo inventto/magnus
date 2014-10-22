@@ -34,6 +34,13 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+group :development, :test do
+    gem 'rspec-rails'
+    gem 'shoulda-matchers'
+    gem 'factory_girl_rails'
+    gem 'database_cleaner'
+end
+
 gem 'jquery-rails', '2.1.4'
 gem 'jquery-ui-rails'
 gem 'rails3-jquery-autocomplete'
@@ -51,4 +58,3 @@ gem 'rails3-jquery-autocomplete'
 # gem 'capistrano'
 
 # To use debugger
-gem 'byebug', '3.5.1'
