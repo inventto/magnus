@@ -4,7 +4,8 @@ class Presenca < ActiveRecord::Base
 
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
-  has_one :conciliamento, foreign_key: "de_id"
+  has_one :conciliamento_de, foreign_key: "de_id", class_name: Conciliamento
+  has_one :conciliamento_para, foreign_key: "para_id", class_name: Conciliamento
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
@@ -28,7 +29,7 @@ class Presenca < ActiveRecord::Base
 
   scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
 
-  scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento).where("para_id is null").where(pessoa_id: pessoa_id).order(:id) }
+  scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento_de).where("para_id is null").where(pessoa_id: pessoa_id).order(:id) }
 
   after_save :expira_reposicoes, :conciliamentos_presenca
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
@@ -86,14 +87,11 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamentos_presenca
-    puts ">"*80
-    puts self.inspect
-    if self.tem_direito_a_reposicao and not self.conciliamento
-      puts "ENTROU"
+    if self.tem_direito_a_reposicao and not self.conciliamento_de
       reposicao = Reposicao.new
       reposicao.de_id = self.id
       reposicao.save
-      self.conciliamento = reposicao.conciliamento
+      self.conciliamento_de = reposicao.conciliamento
       self.save
     elsif self.realocacao and self.presenca
       atualizar_conciliamentos_para_id
@@ -102,16 +100,10 @@ class Presenca < ActiveRecord::Base
 
   def atualizar_conciliamentos_para_id
     presenca = Presenca.pessoa_com_conciliamentos_em_aberto(self.pessoa_id).first
-    p "Achou a presença?"
-    p presenca.inspect
     if presenca
-      conciliamento = presenca.conciliamento
-      if conciliamento
-        p "*"*80
-        puts conciliamento.inspect
-        conciliamento.update_attributes(para_id: self.id)
-        self.conciliamento = conciliamento
-        self.save
+      _conciliamento = presenca.conciliamento_de
+      if _conciliamento
+        _conciliamento.update_attributes(para_id: self.id)
       end
     else
       self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")

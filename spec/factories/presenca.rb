@@ -1,6 +1,5 @@
 FactoryGirl.define do
   factory :presenca do
-    pessoa
     horario "08:00"
     data Time.now
     presenca true
@@ -13,6 +12,11 @@ FactoryGirl.define do
     trait :realocacao do
       presenca true
       realocacao true
+    end
+
+    after(:build) do |instance, evaluator|
+      FactoryGirl.create(:pessoa) if Pessoa.count == 0
+      instance.pessoa ||= Pessoa.first
     end
   end
 end
