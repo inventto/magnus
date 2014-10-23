@@ -28,7 +28,7 @@ class Presenca < ActiveRecord::Base
 
   scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
 
-  scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento).order(:id).where(pessoa_id: pessoa_id).where("para_id is null") }
+  scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento).where("para_id is null").where(pessoa_id: pessoa_id).order(:id) }
 
   after_save :expira_reposicoes, :conciliamentos_presenca
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
@@ -86,10 +86,15 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamentos_presenca
+    puts ">"*80
+    puts self.inspect
     if self.tem_direito_a_reposicao and not self.conciliamento
+      puts "ENTROU"
       reposicao = Reposicao.new
       reposicao.de_id = self.id
       reposicao.save
+      self.conciliamento = reposicao.conciliamento
+      self.save
     elsif self.realocacao and self.presenca
       atualizar_conciliamentos_para_id
     end
@@ -97,13 +102,19 @@ class Presenca < ActiveRecord::Base
 
   def atualizar_conciliamentos_para_id
     presenca = Presenca.pessoa_com_conciliamentos_em_aberto(self.pessoa_id).first
+    p "Achou a presença?"
+    p presenca.inspect
     if presenca
-        conciliamento = presenca.conciliamento
-        if conciliamento
-            conciliamento.update_attributes(para_id: self.id)
-        end
+      conciliamento = presenca.conciliamento
+      if conciliamento
+        p "*"*80
+        puts conciliamento.inspect
+        conciliamento.update_attributes(para_id: self.id)
+        self.conciliamento = conciliamento
+        self.save
+      end
     else
-        self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")
+      self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")
     end
   end
 
