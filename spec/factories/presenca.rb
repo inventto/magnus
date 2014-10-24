@@ -14,6 +14,10 @@ FactoryGirl.define do
       realocacao true
     end
 
+    trait :com_justificativa_adiantado do
+      association :justificativa_de_falta, descricao: "adiantado para o dia #{Time.now} às 10:00"
+    end
+
     after(:build) do |instance, evaluator|
       FactoryGirl.create(:pessoa) if Pessoa.count == 0
       instance.pessoa ||= Pessoa.first

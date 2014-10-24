@@ -113,12 +113,14 @@ class PessoasController < ApplicationController
     data_de_realocacao = params[:data_de_realocacao].to_date
 
     # Criar a falta
-    falta = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, :presenca => false, :horario => horario_de_aula.horario, :tem_direito_a_reposicao => true)
+    falta = Presenca.create(:pessoa_id => aluno_id, :data => data_de_realocacao, 
+                            :presenca => false, :horario => horario_de_aula.horario, :tem_direito_a_reposicao => true)
     falta.build_justificativa_de_falta(:descricao => "adiantado para o dia #{data.strftime("%d/%m/%Y")} às #{params[:horario]}")
     falta.save
 
     # Criar o adiantamento
-    Presenca.create(:pessoa_id => aluno_id, :presenca => false, :data => data, :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
+    Presenca.create(:pessoa_id => aluno_id, :presenca => false, :data => data, 
+                    :realocacao => true, :data_de_realocacao => data_de_realocacao, :horario => params[:horario])
 
     render :text => error
   end

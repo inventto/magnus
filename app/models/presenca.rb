@@ -9,7 +9,7 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
-  scope :eh_adiantamento_na_data?, ->(data, pessoa_id) { joins(:justificativa_de_falta).where(pessoa_id: pessoa_id, data: data).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
+  scope :eh_adiantamento_na_data?, ->(data, pessoa_id) { joins(:justificativa_de_falta).where(pessoa_id: pessoa_id, data: data, tem_direito_a_reposicao: true).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
 
   scope :presencas_vinda, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
 
@@ -86,13 +86,31 @@ class Presenca < ActiveRecord::Base
     end
   end
 
+  def save_adiantamento
+    puts "SELF ID #{self.id}"
+    puts "self conciliamento #{self.conciliamento_de.inspect}"
+    adiantamento = Adiantamento.new
+    adiantamento.de_id = self.id
+    adiantamento.save
+    self.conciliamento_de = adiantamento.conciliamento
+    self.save
+  end
+
+  def save_reposicao
+    reposicao = Reposicao.new
+    reposicao.de_id = self.id
+    reposicao.save
+    self.conciliamento_de = reposicao.conciliamento
+    self.save
+  end
+
   def conciliamentos_presenca
-    if self.tem_direito_a_reposicao and not self.conciliamento_de
-      reposicao = Reposicao.new
-      reposicao.de_id = self.id
-      reposicao.save
-      self.conciliamento_de = reposicao.conciliamento
-      self.save
+    eh_adiantamento = !Presenca.eh_adiantamento_na_data?(self.data, self.pessoa_id).empty?
+    p "EH ADIANTAMENTO #{eh_adiantamento}"
+    if eh_adiantamento and not self.conciliamento_de 
+      save_adiantamento
+    elsif self.tem_direito_a_reposicao and not self.conciliamento_de and not self.presenca
+      save_reposicao      
     elsif self.realocacao and self.presenca
       atualizar_conciliamentos_para_id
     end

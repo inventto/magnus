@@ -18,9 +18,7 @@ RSpec.describe Reposicao, type: :model do
       expect(presenca_realocacao.conciliamento_para.conciliamento_condition).to be_a(Reposicao)
     end
 
-    it "Conciliamento com para id" do
-      p presenca_realocacao
-      p Conciliamento.all
+    it "Conciliamento com para id é nil?" do
       expect(presenca_realocacao.conciliamento_para).not_to be_nil
     end
   end
