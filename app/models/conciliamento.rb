@@ -6,4 +6,11 @@ class Conciliamento < ActiveRecord::Base
 
   scope :em_aberto, -> { where(para_id: nil) }
 
+  def expirar!
+   expirada = Expirada.new 
+   expirada.conciliamento = self
+   expirada.save
+   conciliamento_condition.destroy 
+  end
+
 end

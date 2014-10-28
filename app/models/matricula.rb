@@ -97,6 +97,10 @@ class Matricula < ActiveRecord::Base
     inativo_desde and inativo_ate and inativo_desde < inativo_ate
   end
 
+  def count_maximo_reposicoes 
+    horario_de_aula.count * 4
+  end
+
   private
   def validar_numero_de_aulas_previstas
      if self.numero_de_aulas_previstas.nil?

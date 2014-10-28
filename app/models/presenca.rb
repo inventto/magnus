@@ -29,6 +29,8 @@ class Presenca < ActiveRecord::Base
 
   scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
 
+  scope :com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null").order(:id)}
+
   scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento_de).where("para_id is null").where(pessoa_id: pessoa_id).order(:id) }
 
   after_save :expira_reposicoes, :conciliamentos_presenca
@@ -53,42 +55,7 @@ class Presenca < ActiveRecord::Base
   end
 
   private
-  def expira_reposicoes
-    return unless self.tem_direito_a_reposicao
-
-    Presenca.set_faltas_expiradas(self.pessoa_id)
-  end
-
-  def self.set_faltas_expiradas pessoa_id
-    matricula = Matricula.where(pessoa_id: pessoa_id).valida.first
-    return unless matricula
-    #limite de reposições
-    count_maximo_reposicoes = HorarioDeAula.where(matricula_id: matricula.id).count * 4
-
-    # todas as faltas do aluno com direito a reposição
-    faltas_com_direito_reposicao = Presenca.where(tem_direito_a_reposicao: true, presenca: false, pessoa_id: pessoa_id).where("presencas.data >= ?",matricula.data_inicio)
-
-    saldo_reposicoes = faltas_com_direito_reposicao.count
-
-    aulas_repostas = Presenca.where(presenca: true, realocacao: true, pessoa_id: pessoa_id).where("presencas.data >= ?", matricula.data_inicio)
-    count_aulas_repostas = aulas_repostas.count
-
-    #Quantidade de faltas que tem direito a reposição
-    saldo_reposicoes -= count_aulas_repostas
-
-    # verifica se saldo e negativo
-    if saldo_reposicoes > 0
-      faltas_com_direito_reposicao.order(:data)[-saldo_reposicoes ... -count_maximo_reposicoes].each do |falta|
-        falta.tem_direito_a_reposicao = false
-        falta.expirada = true
-        falta.save
-      end
-    end
-  end
-
   def save_adiantamento
-    puts "SELF ID #{self.id}"
-    puts "self conciliamento #{self.conciliamento_de.inspect}"
     adiantamento = Adiantamento.new
     adiantamento.de_id = self.id
     adiantamento.save
@@ -104,9 +71,23 @@ class Presenca < ActiveRecord::Base
     self.save
   end
 
+  def expira_reposicoes
+    matricula = pessoa.matriculas.valida.first
+    return unless matricula
+    #limite de reposições
+    count_maximo_reposicoes = matricula.count_maximo_reposicoes
+
+    # todas as faltas do aluno com direito a reposição e com conciliamento
+    presenca_com_conciliamento = pessoa.presencas.com_conciliamentos_em_aberto
+    count_presenca_com_conciliamento = presenca_com_conciliamento.count
+
+    presenca_com_conciliamento.order(:data)[-count_presenca_com_conciliamento ... -count_maximo_reposicoes].each  do |falta|
+      falta.conciliamento_de.expirar!
+    end
+  end
+
   def conciliamentos_presenca
     eh_adiantamento = !Presenca.eh_adiantamento_na_data?(self.data, self.pessoa_id).empty?
-    p "EH ADIANTAMENTO #{eh_adiantamento}"
     if eh_adiantamento and not self.conciliamento_de 
       save_adiantamento
     elsif self.tem_direito_a_reposicao and not self.conciliamento_de and not self.presenca
