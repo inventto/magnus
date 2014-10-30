@@ -9,8 +9,6 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
-  scope :eh_adiantamento_na_data?, ->(data, pessoa_id) { joins(:justificativa_de_falta).where(pessoa_id: pessoa_id, data: data, tem_direito_a_reposicao: true).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
-
   scope :presencas_vinda, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
 
   scope :presencas_extras, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: true, presenca: true) }
@@ -31,7 +29,9 @@ class Presenca < ActiveRecord::Base
 
   scope :com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null").order(:id)}
 
-  scope :pessoa_com_conciliamentos_em_aberto, ->(pessoa_id) { joins(:conciliamento_de).where("para_id is null").where(pessoa_id: pessoa_id).order(:id) }
+  scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null and conciliamento_condition_type <> 'Expirada'").order(:id) }
+
+  scope :eh_adiantamento_na_data?, ->(data) { joins(:justificativa_de_falta).where(data: data, tem_direito_a_reposicao: true).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
 
   after_save :expira_reposicoes, :conciliamentos_presenca
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
@@ -56,6 +56,8 @@ class Presenca < ActiveRecord::Base
 
   private
   def save_adiantamento
+    puts ">>**"*80
+    p self.inspect
     adiantamento = Adiantamento.new
     adiantamento.de_id = self.id
     adiantamento.save
@@ -64,6 +66,8 @@ class Presenca < ActiveRecord::Base
   end
 
   def save_reposicao
+    puts "*"*80
+    p self.inspect
     reposicao = Reposicao.new
     reposicao.de_id = self.id
     reposicao.save
@@ -78,7 +82,7 @@ class Presenca < ActiveRecord::Base
     count_maximo_reposicoes = matricula.count_maximo_reposicoes
 
     # todas as faltas do aluno com direito a reposição e com conciliamento
-    presenca_com_conciliamento = pessoa.presencas.com_conciliamentos_em_aberto
+    presenca_com_conciliamento = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto
     count_presenca_com_conciliamento = presenca_com_conciliamento.count
 
     presenca_com_conciliamento.order(:data)[-count_presenca_com_conciliamento ... -count_maximo_reposicoes].each  do |falta|
@@ -87,18 +91,24 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamentos_presenca
-    eh_adiantamento = !Presenca.eh_adiantamento_na_data?(self.data, self.pessoa_id).empty?
+    eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).empty?
+    p pessoa.presencas.eh_adiantamento_na_data?(self.data).inspect
+    p "ADIANTAMENTOS #{eh_adiantamento}"
     if eh_adiantamento and not self.conciliamento_de 
+      p "Adian"
       save_adiantamento
     elsif self.tem_direito_a_reposicao and not self.conciliamento_de and not self.presenca
+      p "Reposição"
       save_reposicao      
-    elsif self.realocacao and self.presenca
+    elsif self.realocacao or self.presenca and not self.conciliamento_para
+      p ">"*80
+      p "Realocação"
       atualizar_conciliamentos_para_id
     end
   end
 
   def atualizar_conciliamentos_para_id
-    presenca = Presenca.pessoa_com_conciliamentos_em_aberto(self.pessoa_id).first
+    presenca = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto.first
     if presenca
       _conciliamento = presenca.conciliamento_de
       if _conciliamento
