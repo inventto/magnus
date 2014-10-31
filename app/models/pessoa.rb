@@ -5,19 +5,19 @@ class Pessoa < ActiveRecord::Base
   TIPOS = ['Aluno', 'Personal','Secretária', 'Zeladora']
 
   TIPOS.each_with_index do |tipo, i|
-        scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }
+    scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }
   end
   scope :com_matricula_valida, -> { joins(:matriculas).where("(matriculas.data_fim >= ? or matriculas.data_fim is null)", Time.now) }
 
   def self.de_aniversario_no_mes mes
-      pessoas = Pessoa.where("extract(month from data_nascimento) = ?", mes).group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)")
-      aniversariantes = Array.new
-      pessoas.each do |pessoa|
-          if (pessoa.eh_aluno? and pessoa.matricula_valida) or (pessoa.eh_professor? or pessoa.eh_secretaria? or pessoa.eh_zeladora?)
-              aniversariantes << pessoa
-          end
+    pessoas = Pessoa.where("extract(month from data_nascimento) = ?", mes).group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)")
+    aniversariantes = Array.new
+    pessoas.each do |pessoa|
+      if (pessoa.eh_aluno? and pessoa.matricula_valida) or (pessoa.eh_professor? or pessoa.eh_secretaria? or pessoa.eh_zeladora?)
+        aniversariantes << pessoa
       end
-      return aniversariantes
+    end
+    return aniversariantes
   end
 
   before_save :chk_codigo_de_acesso
@@ -41,19 +41,19 @@ class Pessoa < ActiveRecord::Base
 
 
   def eh_aluno?
-      tipo_de_pessoa == 0
+    tipo_de_pessoa == 0
   end
 
   def eh_professor?
-      tipo_de_pessoa == 1
+    tipo_de_pessoa == 1
   end
 
   def eh_secretaria?
-      tipo_de_pessoa == 2
+    tipo_de_pessoa == 2
   end
 
   def eh_zeladora?
-      tipo_de_pessoa == 3
+    tipo_de_pessoa == 3
   end
 
   def primeiro_nome
@@ -142,7 +142,7 @@ class Pessoa < ActiveRecord::Base
   end
 
   def get_current_time time_millis
-     if time_millis.nil?
+    if time_millis.nil?
       @hora_certa = (Time.now)
       @hora_atual = @hora_certa.strftime("%H:%M")
       @data_atual = @hora_certa.to_date
@@ -186,7 +186,7 @@ class Pessoa < ActiveRecord::Base
       presenca.horario = hora_da_aula
       presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
       if fora_do_horario # registrou a presença no mesmo dia mas no horário diferente do da aula
-      presenca.realocacao = true
+        presenca.realocacao = true
         if txt_to_seg(@horario_de_aula.horario) > txt_to_seg(hora_da_aula)  # adiantamento, pois registrou a presença antes do horário da aula
           # Cria a falta justificada para o horário da aula
           criar_falta_com_justificativa_de_adiantamento(@data_atual, hora_da_aula, @horario_de_aula.horario)
@@ -202,14 +202,14 @@ class Pessoa < ActiveRecord::Base
         end
         presenca.data_de_realocacao = @data_atual # pois tanto no adiantamento como na reposição existirá a data realocada
       elsif dia_errado
-         # verificar quantas aulas a repor ainda possui
-          presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
-          count_aulas_a_repor = get_count_aulas_a_repor
-          if count_aulas_a_repor < 1
-            presenca.aula_extra = true
-          else
-            presenca.realocacao = true
-          end
+        # verificar quantas aulas a repor ainda possui
+        presenca.pontualidade = ((txt_to_seg(hora_da_aula) - txt_to_seg(@hora_atual)) / 60).round
+        count_aulas_a_repor = get_count_aulas_a_repor
+        if count_aulas_a_repor < 1
+          presenca.aula_extra = true
+        else
+          presenca.realocacao = true
+        end
       end
     else
       presenca.horario = @horario_de_aula.horario
@@ -488,7 +488,7 @@ class Pessoa < ActiveRecord::Base
   end
 
   def gravar_ponto
-      reg_ponto = RegistroDePonto.create(:pessoa_id => self.id, :data => @data_atual, :hora_de_chegada => @hora_atual)
+    reg_ponto = RegistroDePonto.create(:pessoa_id => self.id, :data => @data_atual, :hora_de_chegada => @hora_atual)
   end
 
   def label
@@ -504,12 +504,12 @@ class Pessoa < ActiveRecord::Base
   end
 
   def eh_realocacao?(data, horario, pessoa_id)
-      realocacao = Presenca.eh_realocacao_na_data?(data, horario, pessoa_id).first
-      if realocacao
-          return true
-      else
-          return false
-      end
+    realocacao = Presenca.eh_realocacao_na_data?(data, horario, pessoa_id).first
+    if realocacao
+      return true
+    else
+      return false
+    end
   end
 
 
@@ -518,6 +518,14 @@ class Pessoa < ActiveRecord::Base
     conditions = {}
     conditions[:id] = registros_ponto.collect(&:pessoa_id) if not registros_ponto.empty?
     Pessoa.where(conditions)
+  end
+
+  def justificar_falta_de_adiantamento opts
+    falta = presencas.eh_falta.com_direito_a_reposicao.new(horario: opts[:do_horario], data: opts[:para_dia])
+    falta.build_justificativa_de_falta(descricao: "adiantado para o dia #{opts[:do_dia].strftime("%d/%m/%Y")} às #{opts[:para_horario]}")
+    falta.save
+    presenca_com_realocacao = presencas.eh_falta.eh_realocacao.build(data: opts[:do_dia], :data_de_realocacao => opts[:para_dia], :horario => opts[:para_horario])
+    presenca_com_realocacao.save
   end
 
   private
@@ -536,5 +544,4 @@ class Pessoa < ActiveRecord::Base
   def codigo_existe?(codigo)
     Pessoa.where('id <> ?', self.id).find_by_codigo_de_acesso(codigo)
   end
-
 end

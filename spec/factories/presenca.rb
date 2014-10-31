@@ -7,13 +7,26 @@ FactoryGirl.define do
     trait :direito_a_reposicao do
       presenca false
       tem_direito_a_reposicao true
+      horario "07:00"
     end
 
     trait :realocacao do
       presenca true
       realocacao true
+      horario "09:00"
     end
 
+    trait :realocacao_de_adiantamento do
+      presenca true
+      realocacao true
+      horario "10:00"
+    end
+
+    trait :direito_a_reposicao_de_adiantamento do
+      presenca false
+      tem_direito_a_reposicao true
+      horario "07:00"
+    end
     trait :com_justificativa_adiantado do
       association :justificativa_de_falta, descricao: "adiantado para o dia #{Time.now} às 10:00"
     end

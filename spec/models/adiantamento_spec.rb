@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Adiantamento, :type => :model do
   let(:adiantamento){FactoryGirl.build(:adiantamento)}
-  let!(:presenca_direito_reposicao_com_justificativa){FactoryGirl.create(:presenca, :direito_a_reposicao, :com_justificativa_adiantado)}
-  let(:presenca_realocacao_adiantamento){FactoryGirl.create(:presenca, :realocacao)}
+  let!(:presenca_direito_reposicao_com_justificativa){FactoryGirl.create(:presenca, :direito_a_reposicao_de_adiantamento, :com_justificativa_adiantado)}
+  let(:presenca_realocacao_adiantamento){FactoryGirl.create(:presenca, :realocacao_de_adiantamento)}
 
   it "Cria um adiantamento" do
     expect(adiantamento).to be_valid
@@ -14,8 +14,21 @@ RSpec.describe Adiantamento, :type => :model do
       expect(presenca_direito_reposicao_com_justificativa.conciliamento_de.conciliamento_condition).to be_a(Adiantamento)
     end
 
-    it "Vincula um Adiantamento com conciliamento" do
-      expect(presenca_realocacao_adiantamento.conciliamento_para.conciliamento_condition).to be_a(Adiantamento)
+    it "Cria apenas um adiantamento" do
+      expect(Adiantamento.count).to eq(1)
+    end
+
+    it "Cria apenas um conciliamento" do
+      expect(Conciliamento.count).to eq(1)
+    end
+
+    it "Verifica se a reposição cria um novo conciliamento" do
+      expect(presenca_realocacao_adiantamento)
+      p Conciliamento.all
+    end
+
+    it "Não deve criar uma repoisção" do
+      expect(Reposicao.count).to eq(0)
     end
   end
 end

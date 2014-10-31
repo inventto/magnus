@@ -7,6 +7,12 @@ class Presenca < ActiveRecord::Base
   has_one :conciliamento_de, foreign_key: "de_id", class_name: Conciliamento
   has_one :conciliamento_para, foreign_key: "para_id", class_name: Conciliamento
 
+  scope :eh_falta, -> { where(presenca: false) }
+
+  scope :com_direito_a_reposicao, -> { where(tem_direito_a_reposicao: true)}
+
+  scope :eh_realocacao, -> { where(realocacao: true) }
+
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
   scope :presencas_vinda, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
@@ -31,9 +37,14 @@ class Presenca < ActiveRecord::Base
 
   scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null and conciliamento_condition_type <> 'Expirada'").order(:id) }
 
-  scope :eh_adiantamento_na_data?, ->(data) { joins(:justificativa_de_falta).where(data: data, tem_direito_a_reposicao: true).where("justificativas_de_falta.descricao ilike '%adiantado%'")}
+  scope :eh_adiantamento_na_data?, ->(data) { 
+    joins(:justificativa_de_falta).
+    where(presenca: false, data: data, tem_direito_a_reposicao: true).
+    where("justificativas_de_falta.descricao ilike '%adiantado%'")
+  }
 
   after_save :expira_reposicoes, :conciliamentos_presenca
+
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
   validates_presence_of :pessoa
@@ -56,8 +67,6 @@ class Presenca < ActiveRecord::Base
 
   private
   def save_adiantamento
-    puts ">>**"*80
-    p self.inspect
     adiantamento = Adiantamento.new
     adiantamento.de_id = self.id
     adiantamento.save
@@ -66,8 +75,6 @@ class Presenca < ActiveRecord::Base
   end
 
   def save_reposicao
-    puts "*"*80
-    p self.inspect
     reposicao = Reposicao.new
     reposicao.de_id = self.id
     reposicao.save
@@ -91,18 +98,15 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamentos_presenca
-    eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).empty?
-    p pessoa.presencas.eh_adiantamento_na_data?(self.data).inspect
-    p "ADIANTAMENTOS #{eh_adiantamento}"
-    if eh_adiantamento and not self.conciliamento_de 
-      p "Adian"
+    eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
+    if eh_adiantamento and not self.conciliamento_de and not self.realocacao 
+      logger.info "Salvando adiantamento: #{self.inspect}"
       save_adiantamento
     elsif self.tem_direito_a_reposicao and not self.conciliamento_de and not self.presenca
-      p "Reposição"
+      logger.info "Salvando reposição: #{self.inspect}"
       save_reposicao      
-    elsif self.realocacao or self.presenca and not self.conciliamento_para
-      p ">"*80
-      p "Realocação"
+    elsif self.realocacao and not self.conciliamento_para 
+      logger.info "Atualizando: #{self.inspect}"
       atualizar_conciliamentos_para_id
     end
   end
@@ -113,6 +117,7 @@ class Presenca < ActiveRecord::Base
       _conciliamento = presenca.conciliamento_de
       if _conciliamento
         _conciliamento.update_attributes(para_id: self.id)
+        p _conciliamento
       end
     else
       self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")

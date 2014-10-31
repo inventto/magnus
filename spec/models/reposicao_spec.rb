@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Reposicao, type: :model do
-  let(:reposicao){FactoryGirl.build(:reposicao)}
   let!(:presenca_direito_reposicao){FactoryGirl.create(:presenca, :direito_a_reposicao)}
-  let(:presenca_realocacao){FactoryGirl.create(:presenca, :realocacao)}
+  let!(:presenca_realocacao){FactoryGirl.create(:presenca, :realocacao)}
+  let(:reposicao){FactoryGirl.build(:reposicao)}
 
   it "Criar uma reposição" do
     expect(reposicao).to be_valid
@@ -14,12 +14,13 @@ RSpec.describe Reposicao, type: :model do
       expect(presenca_direito_reposicao.conciliamento_de.conciliamento_condition).to be_a(Reposicao)
     end
 
-    it "Vincula uma reposição com um conciliamento" do 
-      expect(presenca_realocacao.conciliamento_para.conciliamento_condition).to be_a(Reposicao)
+    it "Criar a realocação" do
+      expect(presenca_realocacao)
     end
 
-    it "Conciliamento com para id é nil?" do
-      expect(presenca_realocacao.conciliamento_para).not_to be_nil
+    it "Completar conciliamento com a realocação?" do
+      expect(presenca_direito_reposicao.conciliamento_para).not_to be_nil
     end
+
   end
 end
