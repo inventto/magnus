@@ -4,7 +4,7 @@ class Presenca < ActiveRecord::Base
 
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
-  has_one :conciliamento_de, foreign_key: "de_id", class_name: Conciliamento
+  has_one :conciliamento_de, foreign_key: "de_id", class_name: Conciliamento, dependent: :destroy
   has_one :conciliamento_para, foreign_key: "para_id", class_name: Conciliamento
 
   scope :eh_falta, -> { where(presenca: false) }
@@ -100,13 +100,10 @@ class Presenca < ActiveRecord::Base
   def conciliamentos_presenca
     eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
     if eh_adiantamento and not self.conciliamento_de and not self.realocacao 
-      logger.info "Salvando adiantamento: #{self.inspect}"
       save_adiantamento
     elsif self.tem_direito_a_reposicao and not self.conciliamento_de and not self.presenca
-      logger.info "Salvando reposição: #{self.inspect}"
       save_reposicao      
     elsif self.realocacao and not self.conciliamento_para 
-      logger.info "Atualizando: #{self.inspect}"
       atualizar_conciliamentos_para_id
     end
   end
@@ -117,7 +114,6 @@ class Presenca < ActiveRecord::Base
       _conciliamento = presenca.conciliamento_de
       if _conciliamento
         _conciliamento.update_attributes(para_id: self.id)
-        p _conciliamento
       end
     else
       self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")

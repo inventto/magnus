@@ -1,17 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Expirada, :type => :model do 
-  let(:expirada){FactoryGirl.build(:expirada)}
   let!(:matricula){
     FactoryGirl.create(:matricula, horario_de_aula: [FactoryGirl.create(:horario_de_aula)])
   }
   let!(:presenca_direito_reposicao){FactoryGirl.create(:presenca, :direito_a_reposicao)}
   let(:horario_de_aula){matricula.horario_de_aula}
   let(:pessoa){matricula.pessoa}
-
-  it "Cria Expirada" do
-    expect(expirada).to be_valid
-  end
 
   it "Cria Matricula" do
     expect(matricula).to be_valid
