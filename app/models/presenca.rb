@@ -37,13 +37,17 @@ class Presenca < ActiveRecord::Base
 
   scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null and conciliamento_condition_type <> 'Expirada'").order(:id) }
 
+  scope :eh_aula_extra, -> { where(aula_extra: true).order(:id) }
+
+  scope :eh_abatimento, -> { where("conciliamento_condition_type = 'Abatimento'")}
+
   scope :eh_adiantamento_na_data?, ->(data) { 
     joins(:justificativa_de_falta).
     where(presenca: false, data: data, tem_direito_a_reposicao: true).
     where("justificativas_de_falta.descricao ilike '%adiantado%'")
   }
 
-  after_save :expira_reposicoes, :conciliamentos_presenca
+  after_save :expira_reposicoes, :conciliamentos_presencas
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
@@ -97,12 +101,28 @@ class Presenca < ActiveRecord::Base
     end
   end
 
-  def conciliamentos_presenca
+  def save_abatimento
+    abatimento = Abatimento.new
+    abatimento.de_id = self.id
+    abatimento.save
+    self.conciliamento_de = abatimento.conciliamento
+    self.save
+  end
+
+  def atualizar_abatimento
+  end
+
+  def conciliamentos_presencas
     eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
+
     if eh_adiantamento and not self.conciliamento_de and not self.realocacao 
       save_adiantamento
-    elsif self.tem_direito_a_reposicao and not self.conciliamento_de and not self.presenca
-      save_reposicao      
+    elsif self.tem_direito_a_reposicao 
+      if and not self.conciliamento_de and not self.presenca
+        save_abatimento
+      else
+        save_reposicao      
+      end
     elsif self.realocacao and not self.conciliamento_para 
       atualizar_conciliamentos_para_id
     end
@@ -110,6 +130,8 @@ class Presenca < ActiveRecord::Base
 
   def atualizar_conciliamentos_para_id
     presenca = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto.first
+    p ">"*80
+    p presenca
     if presenca
       _conciliamento = presenca.conciliamento_de
       if _conciliamento
