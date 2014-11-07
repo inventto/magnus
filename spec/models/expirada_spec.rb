@@ -12,10 +12,14 @@ RSpec.describe Expirada, :type => :model do
     expect(matricula).to be_valid
   end
 
+  it "Verifica se criou o conciliamento do tipo Reposição" do
+    expect(presenca_direito_reposicao.conciliamento_de.conciliamento_condition).to be_a(Reposicao)
+  end
+
   describe "Criar com direito a reposição além do limite máximo de repor, validando o método expira reposições" do
     let(:max_reposicoes_count){4}
     before{
-     max_reposicoes_count.times.each do 
+      max_reposicoes_count.times.each do 
         FactoryGirl.create(:presenca, :direito_a_reposicao)
       end
     } 
@@ -44,6 +48,11 @@ RSpec.describe Expirada, :type => :model do
 
     it "Validar Matricula" do
       expect(pessoa.matriculas.valida.first).to eq(matricula)
+    end
+
+    it "Verifica se expirou a presença com direito a reposição" do
+       expirada = pessoa.presencas.joins(:conciliamento_de).where("conciliamento_condition_type = 'Expirada'").first
+       expect(expirada.conciliamento_de.conciliamento_condition).not_to be_nil 
     end
   end
 end

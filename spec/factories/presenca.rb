@@ -11,13 +11,11 @@ FactoryGirl.define do
     end
 
     trait :realocacao do
-      presenca true
       realocacao true
       horario "09:00"
     end
 
     trait :realocacao_de_adiantamento do
-      presenca true
       realocacao true
       horario "10:00"
     end
@@ -27,8 +25,13 @@ FactoryGirl.define do
       tem_direito_a_reposicao true
       horario "07:00"
     end
+
     trait :com_justificativa_adiantado do
       association :justificativa_de_falta, descricao: "adiantado para o dia #{Time.now} às 10:00"
+    end
+
+    trait :aula_extra do
+      aula_extra true
     end
 
     after(:build) do |instance, evaluator|

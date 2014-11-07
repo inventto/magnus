@@ -35,7 +35,7 @@ class Presenca < ActiveRecord::Base
 
   scope :com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null").order(:id)}
 
-  scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null and conciliamento_condition_type <> 'Expirada'").order(:id) }
+  scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null and conciliamento_condition_type <> 'Expirada' and conciliamento_condition_type <> 'Abatimento'").order(:id) }
 
   scope :eh_aula_extra, -> { where(aula_extra: true).order(:id) }
 
@@ -47,7 +47,7 @@ class Presenca < ActiveRecord::Base
     where("justificativas_de_falta.descricao ilike '%adiantado%'")
   }
 
-  after_save :expira_reposicoes, :conciliamentos_presencas
+  after_save :expira_reposicoes, :conciliamento_de_presencas
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
@@ -110,28 +110,36 @@ class Presenca < ActiveRecord::Base
   end
 
   def atualizar_abatimento
-  end
-
-  def conciliamentos_presencas
-    eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
-
-    if eh_adiantamento and not self.conciliamento_de and not self.realocacao 
-      save_adiantamento
-    elsif self.tem_direito_a_reposicao 
-      if and not self.conciliamento_de and not self.presenca
-        save_abatimento
-      else
-        save_reposicao      
+    abatimento_em_aberto = pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.first
+    if abatimento_em_aberto
+      conciliamento_de_abatimento = abatimento_em_aberto.conciliamento_de
+      if conciliamento_de_abatimento
+        conciliamento_de_abatimento.update_attributes(para_id: self.id)
       end
-    elsif self.realocacao and not self.conciliamento_para 
-      atualizar_conciliamentos_para_id
     end
   end
 
-  def atualizar_conciliamentos_para_id
+  def conciliamento_de_presencas
+    eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
+    possui_abatimento_em_aberto = !pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.blank?
+
+    if self.tem_direito_a_reposicao and not self.conciliamento_de and not self.realocacao 
+      if eh_adiantamento
+        save_adiantamento
+      elsif possui_abatimento_em_aberto
+        atualizar_abatimento
+      else
+        save_reposicao
+      end
+    elsif self.realocacao and not self.conciliamento_para 
+      atualizar_conciliamento_para_id
+    elsif self.aula_extra and not self.conciliamento_de
+      save_abatimento
+    end
+  end
+
+  def atualizar_conciliamento_para_id
     presenca = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto.first
-    p ">"*80
-    p presenca
     if presenca
       _conciliamento = presenca.conciliamento_de
       if _conciliamento
