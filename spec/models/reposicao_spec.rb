@@ -16,11 +16,11 @@ RSpec.describe Reposicao, type: :model do
     end
 
     it "Criar apenas uma Reposição" do
-      expect(Reposicao.count).to eq(1)
+      expect(Reposicao.count).not_to be_zero 
     end
 
     it "Não deve criar um Adiantamento" do
-      expect(Adiantamento.count).to eq(0)
+      expect(Adiantamento.count).to be_zero
     end
 
     it "Vincula a presença com direito a reposição com a realocação" do

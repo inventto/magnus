@@ -24,11 +24,11 @@ RSpec.describe Adiantamento, :type => :model do
     end
 
     it "Cria apenas um adiantamento" do
-      expect(Adiantamento.count).to eq(1)
+      expect(Adiantamento.count).not_to be_zero
     end
 
     it "Cria apenas um conciliamento" do
-      expect(Conciliamento.count).to eq(1)
+      expect(Conciliamento.count).not_to be_zero
     end
 
     it "Verifica se a reposição cria um novo conciliamento" do
@@ -36,7 +36,7 @@ RSpec.describe Adiantamento, :type => :model do
     end
 
     it "Não deve criar uma repoisção" do
-      expect(Reposicao.count).to eq(0)
+      expect(Reposicao.count).to be_zero 
     end
 
     it "Vincula a presença com direito a reposição com justificativa com a presença de realocação" do

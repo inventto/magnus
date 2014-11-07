@@ -18,6 +18,7 @@ RSpec.describe Expirada, :type => :model do
 
   describe "Criar com direito a reposição além do limite máximo de repor, validando o método expira reposições" do
     let(:max_reposicoes_count){4}
+    let(:faltas_com_direito_expirada){pessoa.presencas.joins(:conciliamento_de).where("conciliamento_condition_type = 'Expirada'")}
     before{
       max_reposicoes_count.times.each do 
         FactoryGirl.create(:presenca, :direito_a_reposicao)
@@ -51,8 +52,7 @@ RSpec.describe Expirada, :type => :model do
     end
 
     it "Verifica se expirou a presença com direito a reposição" do
-       expirada = pessoa.presencas.joins(:conciliamento_de).where("conciliamento_condition_type = 'Expirada'").first
-       expect(expirada.conciliamento_de.conciliamento_condition).not_to be_nil 
+       expect(faltas_com_direito_expirada).not_to be_empty
     end
   end
 end
