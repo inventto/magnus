@@ -127,14 +127,6 @@ ActiveRecord::Schema.define(:version => 20141103133125) do
     t.string   "hora"
   end
 
-  create_table "logradouros", :force => true do |t|
-    t.string   "nome"
-    t.string   "cep"
-    t.integer  "bairro_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-  end
-
   create_table "matriculas", :force => true do |t|
     t.integer  "pessoa_id"
     t.string   "objetivo"
@@ -195,9 +187,9 @@ ActiveRecord::Schema.define(:version => 20141103133125) do
   create_table "relatorios", :force => true do |t|
     t.string   "titulos"
     t.string   "nome"
-    t.string   "consulta",   :limit => nil
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.string   "consulta"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "reposicoes", :force => true do |t|

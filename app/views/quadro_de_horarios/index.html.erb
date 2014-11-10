@@ -1,117 +1,125 @@
+<%= wicked_pdf_stylesheet_link_tag "pdf" -%>
+<%= wicked_pdf_javascript_include_tag "number_pages" %>
 <style>
-    @media print {
-        #top,
-        #displayN,
-        #display_names{
-            display: none;
-        }
-        .tabela-de-horarios {
-            white-space: nowrap;
-            display: block !important;
-        }
+@media print {
+  #top,
+  #displayN,
+  #display_names{
+    display: none;
+  }
+  .tabela-de-horarios {
+    white-space: nowrap;
+    display: block !important;
+  }
 
-        .tabela-de-horarios tbody tr {
-            page-break-after: always;
-        }
-        #quadro_de_horarios .tabela-de-horarios-nomes tr td {
-          line-height: 11px;
-          height: 40px;
-        }
+  .tabela-de-horarios tbody tr {
+    page-break-after: always;
+  }
+  #quadro_de_horarios .tabela-de-horarios-nomes tr td {
+    line-height: 11px;
+    height: 40px;
+  }
 
-        #quadro_de_horarios .alunos.exibir{
-            font-style: normal;
-        }
-        .horario_disponivel {
-            background-color: #DAFFCD !important;
-        }
-        h2 {
-         font-size: 20px;
-        }
+  #quadro_de_horarios .alunos.exibir{
+    font-style: normal;
+  }
+  .horario_disponivel {
+    background-color: #DAFFCD !important;
+  }
+  .horario_ocupado {
+    background-color: #D99694 !important;
+  }
+  .vip {
+    background-color: #D99694 !important;
+  }
+  h2 {
+    font-size: 20px;
+  }
 </style>
 <div id="quadro_de_horarios" class="table-responsive">
   <h2>Personal Training</h2>
   <p>
-    <input type="checkbox" name="display_names" value="Exibir Nomes" id="display_names" onclick="displayNames();" />
-    <label for="display_names" id="displayN">Exibir Nomes</label>
+  <input type="checkbox" name="display_names" value="Exibir Nomes" id="display_names" onclick="displayNames();" />
+  <label for="display_names" id="displayN">Exibir Nomes</label>
   </p>
-    <table class="tabela-de-horarios table">
-  <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
+  <table class="tabela-de-horarios table">
+    <% { "Manhã" => 6..12, "Tarde" => 13..17, "Noite" => 18..21  }.each do |title, periodo| %>
       <tbody>
-        <tr>
-          <th><%= title %></th>
-          <% (1..6).each do |day| %>
-            <% if not (day == 6 and periodo != (6..12)) %>
-              <th><%= Date::DAYNAMES[day] %></th>
-            <% end %>
+    <tr>
+      <th><%= title %></th>
+      <% (1..6).each do |day| %>
+        <% if not (day == 6 and periodo != (6..12)) %>
+        <th><%= Date::DAYNAMES[day] %></th>
+    <% end %>
+    <% end %>
+    </tr>
+    <% periodo.each do |hora| %>
+      <tr>
+      <td align=center ><%= hr = format("%.2d", hora) + ":00" %> - <%= final_do_horario(hr) %></td>
+      <% achou = false %>
+      <% (1..6).each do |dia| %>
+        <% if dia == 6 and hora > 12 %>
+        <% break %>
+    <% end %>
+      <% @horarios[dia].each do |hour, schedules| %>
+        <% achou = false %>
+      <% if hour[0..1].to_i == hora %>
+        <% achou = true %>
+      <% if schedules.first.matricula.vip? %>
+        <td class="vip">
+        <span class="status">* Vip *</span>
+        <% ultimo_nome = []
+        ultimo_nome = schedules.first.matricula.pessoa.segundo_nome.split(" ")
+        ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
+      %>
+      <span class="alunos"><%= schedules.first.matricula.pessoa.primeiro_nome %> <%= ultimo_nome %>.</span>
+      </td>
+    <% else %>
+        <% if (qtd = schedules.count) < 4 %>
+        <td class="horario_disponivel">
+        <span class="status">Disponível(<%= 4 - qtd %>)</span>
+        <span class="alunos">
+          <% schedules.each do |schedule| %>
+            <% ultimo_nome = []
+            ultimo_nome = schedule.matricula.pessoa.segundo_nome.split(" ")
+            ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
+          %>
+          <%= schedule.matricula.pessoa.primeiro_nome %> <%= ultimo_nome %>.<br/>
           <% end %>
-        </tr>
-        <% periodo.each do |hora| %>
-          <tr>
-            <td align=center ><%= hr = format("%.2d", hora) + ":00" %> - <%= final_do_horario(hr) %></td>
-            <% achou = false %>
-            <% (1..6).each do |dia| %>
-              <% if dia == 6 and hora > 12 %>
-                <% break %>
-              <% end %>
-              <% @horarios[dia].each do |hour, schedules| %>
-                <% achou = false %>
-                <% if hour[0..1].to_i == hora %>
-                  <% achou = true %>
-                  <% if schedules.first.matricula.vip? %>
-                    <td class="vip">
-                      <span class="status">* Vip *</span>
-                      <% ultimo_nome = []
-                         ultimo_nome = schedules.first.matricula.pessoa.segundo_nome.split(" ")
-                         ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
-                      %>
-                      <span class="alunos"><%= schedules.first.matricula.pessoa.primeiro_nome %> <%= ultimo_nome %>.</span>
-                    </td>
-                  <% else %>
-                    <% if (qtd = schedules.count) < 4 %>
-                      <td class="horario_disponivel">
-                        <span class="status">Disponível(<%= 4 - qtd %>)</span>
-                        <span class="alunos">
-                          <% schedules.each do |schedule| %>
-                            <% ultimo_nome = []
-                               ultimo_nome = schedule.matricula.pessoa.segundo_nome.split(" ")
-                               ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
-                             %>
-                            <%= schedule.matricula.pessoa.primeiro_nome %> <%= ultimo_nome %>.<br/>
-                          <% end %>
-                        </span>
-                      </td>
-                    <% else %>
-                      <td class="horario_ocupado">
-                        <span class="status">Ocupado</span>
-                        <span class="alunos">
-                          <% schedules.each do |schedule| %>
-                            <% ultimo_nome = []
-                               ultimo_nome = schedule.matricula.pessoa.segundo_nome.split(" ")
-                               ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
-                             %>
-                            <%= schedule.matricula.pessoa.primeiro_nome %> <%= ultimo_nome %>.<br/>
-                          <% end %>
-                        </span>
-                      </td>
-                    <% end %>
-                  <% end %>
-                  <% break %>
-                <% end %>
-              <% end %>
-              <% if not achou %>
-                <td class="horario_disponivel">Disponível</td>
-              <% end %>
+          </span>
+        </td>
+      <% else %>
+          <td class="horario_ocupado">
+          <span class="status">Ocupado</span>
+          <span class="alunos">
+            <% schedules.each do |schedule| %>
+              <% ultimo_nome = []
+              ultimo_nome = schedule.matricula.pessoa.segundo_nome.split(" ")
+              ultimo_nome = ultimo_nome[ultimo_nome.length - 1][0]
+            %>
+            <%= schedule.matricula.pessoa.primeiro_nome %> <%= ultimo_nome %>.<br/>
             <% end %>
-          </tr>
+            </span>
+          </td>
         <% end %>
-      </tbody>
-  <% end %>
-    </table>
-</div>
+        <% end %>
+          <% break %>
+        <% end %>
+        <% end %>
+          <% if not achou %>
+            <td class="horario_disponivel">Disponível</td>
+        <% end %>
+        <% end %>
+        </tr>
+      <% end %>
+        </tbody>
+      <% end %>
+      </table>
+    </div>
 <script type="text/javascript">
-  function displayNames() {
-    $("#quadro_de_horarios").find(".alunos").toggleClass('exibir');
-    $("#quadro_de_horarios").find(".tabela-de-horarios").toggleClass("tabela-de-horarios-nomes");
-    $("#quadro_de_horarios").find(".status").toggleClass('exibir');
-  }
+function displayNames() {
+  $("#quadro_de_horarios").find(".alunos").toggleClass('exibir');
+  $("#quadro_de_horarios").find(".tabela-de-horarios").toggleClass("tabela-de-horarios-nomes");
+  $("#quadro_de_horarios").find(".status").toggleClass('exibir');
+}
 </script>

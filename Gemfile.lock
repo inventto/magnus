@@ -197,6 +197,9 @@ GEM
       raindrops (~> 0.7)
     warden (1.2.3)
       rack (>= 1.0)
+    wicked_pdf (0.11.0)
+      rails
+    wkhtmltopdf-binary (0.9.9.3)
 
 PLATFORMS
   ruby
@@ -229,3 +232,5 @@ DEPENDENCIES
   twitter-bootstrap-rails
   uglifier (>= 1.0.3)
   unicorn
+  wicked_pdf
+  wkhtmltopdf-binary
