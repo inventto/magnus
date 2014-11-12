@@ -9,13 +9,15 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_falta, -> { where(presenca: false) }
 
-  scope :com_direito_a_reposicao, -> { where(tem_direito_a_reposicao: true)}
+  scope :eh_presenca, -> { where(presenca: true) } 
+
+  scope :com_direito_a_reposicao, -> { where(tem_direito_a_reposicao: true) }
 
   scope :eh_realocacao, -> { where(realocacao: true) }
 
   scope :eh_realocacao_na_data?, ->(data, horario, pessoa_id) { where("pessoa_id = ? and realocacao = true and horario = ? and data = ? and (tem_direito_a_reposicao = false or tem_direito_a_reposicao is null)", pessoa_id, horario, data)}
 
-  scope :presencas_vinda, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
+  scope :presencas_vinda, -> { where(aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
 
   scope :presencas_extras, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: true, presenca: true) }
 
@@ -41,6 +43,8 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_abatimento, -> { where("conciliamento_condition_type = 'Abatimento'")}
 
+  scope :eh_reposicao, -> { where("conciliamento_condition_type = 'Reposicao'") }
+  
   scope :eh_adiantamento_na_data?, ->(data) { 
     joins(:justificativa_de_falta).
     where(presenca: false, data: data, tem_direito_a_reposicao: true).

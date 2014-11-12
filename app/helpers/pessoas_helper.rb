@@ -74,27 +74,22 @@ module PessoasHelper
     if matricula = get_consulta_matricula_valida(record)
       if record.instance_of?(Pessoa)
         return if record.presencas.blank?
+        pessoa = Pessoa.find record.id
 
         @count_presencas = 0
         @count_aulas_extras = 0
 
         presencas = record.presencas.where("data >= ?", matricula.data_inicio)
 
-        @count_presencas = Presenca.presencas_vinda(record.id).count
-        @count_aulas_extras = Presenca.presencas_extras(record.id).count
+        @count_presencas = pessoa.presencas.presencas_vinda.count 
+        @count_aulas_extras = pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.count
 
-        @count_faltas_com_direito_a_reposicao = Presenca.faltas_com_direito_a_reposicao(record.id).count
+        @count_faltas_com_direito_a_reposicao = pessoa.presencas.com_conciliamentos_em_aberto.eh_reposicao.count
         @count_faltas_sem_direito_a_reposicao = Presenca.faltas_sem_direito_a_reposicao(record.id).count
 
         @count_aulas_realocadas = Presenca.presencas_realocadas(record.id).count
-        saldo_realocacao = (@count_faltas_com_direito_a_reposicao - @count_aulas_realocadas)
+        @count_saldo_realocacao = (@count_faltas_com_direito_a_reposicao - @count_aulas_realocadas)
 
-        if saldo_realocacao < 0
-          @count_aulas_extras -= saldo_realocacao
-          @count_saldo_realocacao = 0
-        else
-          @count_saldo_realocacao = saldo_realocacao
-        end
 
         count_aulas_expiradas_por_mes_e_ano(record.id)
 
