@@ -74,32 +74,34 @@ module PessoasHelper
     if matricula = get_consulta_matricula_valida(record)
       if record.instance_of?(Pessoa)
         return if record.presencas.blank?
-        pessoa = Pessoa.find record.id
+        pessoa = record
+        data_inicio_das_presencas = pessoa.matriculas.valida.first.data_inicio
+        total_de_presencas_da_matricula_atual = pessoa.presencas.da_matricula_atual(data_inicio_das_presencas)
 
         @count_presencas = 0
         @count_aulas_extras = 0
 
-        presencas = record.presencas.where("data >= ?", matricula.data_inicio)
+        @count_presencas = total_de_presencas_da_matricula_atual.presencas_vinda.count 
+        @count_aulas_extras = total_de_presencas_da_matricula_atual.eh_aula_extra.count
 
-        @count_presencas = pessoa.presencas.presencas_vinda.count 
-        @count_aulas_extras = pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.count
+        @count_faltas_com_direito_a_reposicao = total_de_presencas_da_matricula_atual.com_direito_a_reposicao.count
+        @count_faltas_sem_direito_a_reposicao = total_de_presencas_da_matricula_atual.eh_falta.faltas_sem_direito_a_reposicao.count
 
-        @count_faltas_com_direito_a_reposicao = pessoa.presencas.com_conciliamentos_em_aberto.eh_reposicao.count
-        @count_faltas_sem_direito_a_reposicao = Presenca.faltas_sem_direito_a_reposicao(record.id).count
+        @count_aulas_realocadas = total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.count
 
-        @count_aulas_realocadas = Presenca.presencas_realocadas(record.id).count
-        @count_saldo_realocacao = (@count_faltas_com_direito_a_reposicao - @count_aulas_realocadas)
+        count_aulas_expiradas_por_mes_e_ano(total_de_presencas_da_matricula_atual)
 
+        @count_presencas_expiradas = total_de_presencas_da_matricula_atual.com_conciliamento.eh_expirada.count
+         @presencas_erroneas = total_de_presencas_da_matricula_atual.eh_presenca.com_direito_a_reposicao | 
+          total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.com_direito_a_reposicao 
 
-        count_aulas_expiradas_por_mes_e_ano(record.id)
-
-        @presencas_erroneas = Presenca.presencas_erroneas(record.id)
-
-        @count_presencas_expiradas = Presenca.presencas_expiradas(record.id).count
         @count_presencas_erroneas = @presencas_erroneas.count
 
-        @total_de_aulas = presencas.size
-        @total_geral = @count_presencas + @count_aulas_realocadas + @count_aulas_extras + @count_saldo_realocacao + @count_faltas_sem_direito_a_reposicao
+        @count_saldo_para_realocacao = total_de_presencas_da_matricula_atual.com_conciliamentos_em_aberto.eh_reposicao.count
+        @count_presencas_ja_repostas = total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_reposicao.count | total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_adiantamento.count
+        @count_abatimento_das_presencas_extras = total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_abatimento.count 
+
+        @total_geral = @count_presencas + @count_aulas_realocadas + @count_aulas_extras + @count_faltas_sem_direito_a_reposicao + @count_faltas_com_direito_a_reposicao
 
         if column
           render :partial => 'estatistica'
@@ -110,11 +112,11 @@ module PessoasHelper
     end
   end
 
-  def count_aulas_expiradas_por_mes_e_ano pessoa_id
+  def count_aulas_expiradas_por_mes_e_ano presencas
       @meses = %w(Janeiro Fevereiro Março Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro)
       @count_expiradas_meses = Hash.new
       (1..12).each do |mes|
-          @count_expiradas_meses[mes] = Presenca.presencas_expiradas_por_mes_e_ano(pessoa_id,  mes, Time.now.year).count
+          @count_expiradas_meses[mes] = presencas.com_conciliamento.por_mes_e_ano(mes, Time.now.year).eh_expirada.count
       end
   end
 

@@ -19,31 +19,38 @@ class Presenca < ActiveRecord::Base
 
   scope :presencas_vinda, -> { where(aula_extra: false, presenca: true).where("(realocacao = false or realocacao is null)") }
 
-  scope :presencas_extras, ->(pessoa_id) { where(pessoa_id: pessoa_id, aula_extra: true, presenca: true) }
+  scope :faltas_sem_direito_a_reposicao, -> { where("tem_direito_a_reposicao is null or tem_direito_a_reposicao = false")}
 
-  scope :faltas_sem_direito_a_reposicao, ->(pessoa_id) { where("pessoa_id = ? and presenca = false and (tem_direito_a_reposicao is null or tem_direito_a_reposicao = false)", pessoa_id)}
+  scope :por_mes_e_ano, ->(mes, ano) { where("Extract('Month' from data) = ? and Extract('Year'from data) = ?", mes, ano)  }
 
-  scope :faltas_com_direito_a_reposicao, ->(pessoa_id) { where(pessoa_id: pessoa_id, tem_direito_a_reposicao: true, presenca: false) }
-
-  scope :presencas_realocadas, ->(pessoa_id) { where(pessoa_id: pessoa_id, realocacao: true, presenca: true) }
-
-  scope :presencas_erroneas, ->(pessoa_id) { where("pessoa_id = ? and ((presenca = true and tem_direito_a_reposicao = true) or (presenca = true and realocacao = true and tem_direito_a_reposicao = true))", pessoa_id)  }
-
-  scope :presencas_expiradas, ->(pessoa_id) { where(pessoa_id: pessoa_id, expirada: true) }
-
-  scope :presencas_expiradas_por_mes_e_ano, ->(pessoa_id, mes, ano) { where("pessoa_id = ? and expirada = true and Extract('Month' from data) = ? and Extract('Year'from data) = ?", pessoa_id, mes, ano)  }
-
-  scope :pessoa_com_faltas_justificadas, ->(pessoa_id) { joins(:justificativa_de_falta).where(:pessoa_id => pessoa_id, :presenca => false, :tem_direito_a_reposicao => true).where("justificativas_de_falta.descricao is not null") }
+  scope :com_justificativa, -> { joins(:justificativa_de_falta) }
 
   scope :com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null").order(:id)}
 
-  scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).where("para_id is null and conciliamento_condition_type <> 'Expirada' and conciliamento_condition_type <> 'Abatimento'").order(:id) }
+  scope :com_conciliamento, -> { joins(:conciliamento_de) }
+
+  scope :em_aberto, -> { where(conciliamentos: {para_id: nil}) }
+
+  scope :e_fechado, -> { where("para_id is not null") }
+
+  scope :reposicao_ou_adiantamento_com_conciliamentos_em_aberto, -> { joins(:conciliamento_de).
+    where("para_id is null and conciliamento_condition_type <> 'Expirada' and conciliamento_condition_type <> 'Abatimento'").
+    order(:id) 
+  }
+
+  scope :com_conciliamento_fechado, ->{ joins(:conciliamento_para) }
 
   scope :eh_aula_extra, -> { where(aula_extra: true).order(:id) }
 
   scope :eh_abatimento, -> { where("conciliamento_condition_type = 'Abatimento'")}
 
   scope :eh_reposicao, -> { where("conciliamento_condition_type = 'Reposicao'") }
+
+  scope :eh_adiantamento, -> { where("conciliamento_condition_type = 'Adiantamento'") }
+
+  scope :eh_expirada, -> { where("conciliamento_condition_type = 'Expirada'")}
+
+  scope :da_matricula_atual, ->(data_inicio) { where("data >= ?", data_inicio)}
   
   scope :eh_adiantamento_na_data?, ->(data) { 
     joins(:justificativa_de_falta).
@@ -123,21 +130,27 @@ class Presenca < ActiveRecord::Base
     end
   end
 
+  def eh_adiantamento?
+    !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
+  end
+
+  def possui_abatimento_em_aberto?
+    !pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.blank?
+  end
+
   def conciliamento_de_presencas
-    eh_adiantamento = !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
-    possui_abatimento_em_aberto = !pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.blank?
 
     if self.tem_direito_a_reposicao and not self.conciliamento_de and not self.realocacao 
-      if eh_adiantamento
+      if eh_adiantamento?
         save_adiantamento
-      elsif possui_abatimento_em_aberto
+      elsif possui_abatimento_em_aberto?
         atualizar_abatimento
       else
         save_reposicao
       end
-    elsif self.realocacao and not self.conciliamento_para 
+    elsif self.realocacao? and not self.conciliamento_para 
       atualizar_conciliamento_para_id
-    elsif self.aula_extra and not self.conciliamento_de
+    elsif self.aula_extra? and not self.conciliamento_de
       save_abatimento
     end
   end

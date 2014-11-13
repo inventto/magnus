@@ -12,7 +12,7 @@ $(document).ready ->
     canvas.height = size
     radius = Math.min(size, size) * 0.5
     canvas.style.float = "left"
-    canvas.style.margin = "2px"
+    canvas.style.margin = "5px"
     canvas.title = professor.attr("title")
     context = canvas.getContext("2d")
     context.font = "bold 12pt Courier"

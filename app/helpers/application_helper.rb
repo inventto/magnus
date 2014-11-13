@@ -217,7 +217,7 @@ module ApplicationHelper
   end
 
   def mostrar_nome_para aluno, horario, data
-    img = status_presenca(horario, data)[/(src=\"[^"]+")/]
+    img = status_presenca(horario, data)
 
     _class = "nome_do_aluno"
     if img =~ /falta_justif/
@@ -228,7 +228,9 @@ module ApplicationHelper
     _class += " eh-realocacao" if aluno.eh_realocacao?(data, horario.horario, aluno.id)
 
     _space = "  "
-    text_link = aluno.primeiro_nome + _space + content_tag(:span, aluno.segundo_nome) + _space + content_tag(:span, aluno.segundo_nome[0], :id => "segundo_nome_hidden")+ content_tag(:span,  status_presenca(horario, data),  :class =>'status_presenca')
+    text_link = aluno.primeiro_nome + _space + content_tag(:span, aluno.segundo_nome) + _space + 
+    content_tag(:span, aluno.segundo_nome[0], :id => "segundo_nome_hidden") + 
+    content_tag(:span, img, :class =>'status_presenca')
     content_tag(:div, text_link.html_safe, :onclick => "window.location='#{pessoa_path(aluno)}'", :class => _class)
   end
 
@@ -242,6 +244,7 @@ module ApplicationHelper
       hora_final = ("%02d" % (h.to_i + 1 ))+":"+m
       ms = ("%02d" % (m.to_i + 05 ))
       hora_t = h
+
       professores = @pontos_do_dia.select{|registro|
         h,m = registro.hora_de_chegada.split(":")
         registro.data == today && arredonda_hora(hora) >=  arredonda_hora(registro.hora_de_chegada) &&
