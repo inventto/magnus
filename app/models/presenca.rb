@@ -58,7 +58,7 @@ class Presenca < ActiveRecord::Base
     where("justificativas_de_falta.descricao ilike '%adiantado%'")
   }
 
-  after_save :expira_reposicoes, :conciliamento_de_presencas
+  after_save :expira_reposicoes, :conciliamento_de_presencas 
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
@@ -105,6 +105,7 @@ class Presenca < ActiveRecord::Base
 
     # todas as faltas do aluno com direito a reposição e com conciliamento
     presenca_com_conciliamento = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto
+
     count_presenca_com_conciliamento = presenca_com_conciliamento.count
 
     presenca_com_conciliamento.order(:data)[-count_presenca_com_conciliamento ... -count_maximo_reposicoes].each  do |falta|
@@ -139,8 +140,7 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamento_de_presencas
-
-    if self.tem_direito_a_reposicao and not self.conciliamento_de and not self.realocacao 
+    if self.tem_direito_a_reposicao? and not self.conciliamento_de and not self.realocacao? and not self.presenca? 
       if eh_adiantamento?
         save_adiantamento
       elsif possui_abatimento_em_aberto?
@@ -156,11 +156,18 @@ class Presenca < ActiveRecord::Base
   end
 
   def atualizar_conciliamento_para_id
-    presenca = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto.first
-    if presenca
-      _conciliamento = presenca.conciliamento_de
-      if _conciliamento
-        _conciliamento.update_attributes(para_id: self.id)
+    falta_de_adiantamento = pessoa.presencas.com_conciliamento.eh_adiantamento.em_aberto.first
+    falta_de_reposicao = pessoa.presencas.com_conciliamento.eh_reposicao.em_aberto.first
+
+    if falta_de_adiantamento
+      conciliamento_de_adiantamento = falta_de_adiantamento.conciliamento_de
+      if conciliamento_de_adiantamento
+        conciliamento_de_adiantamento.update_attributes(para_id: self.id)
+      end
+    elsif falta_de_reposicao
+      conciliamento_de_reposicao = falta_de_reposicao.conciliamento_de
+      if conciliamento_de_reposicao
+        conciliamento_de_reposicao.update_attributes(para_id: self.id)
       end
     else
       self.errors.add(:presenca, ": Aluno não possui mais direito a Realocação, pois não possui mais nenhuma falta com direito a reposição.")

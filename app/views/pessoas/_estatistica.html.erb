@@ -52,6 +52,7 @@
       <th>Faltas com direito<br/>à realocação</th>
       <th>Aulas já repostas</th>
       <th title="Presenças do tipo aula extra que são abatidas com faltas com direito a reposição.">Aulas extras abatidas</th>
+      <th title="A presença é expirada quando o número de faltas com direito a reposição excede o número de horários de aula * 4"> Aulas expiradas</th>
       <th>Saldo para realocação</th>
     </tr>
     <tr>
@@ -65,6 +66,10 @@
 
       <td class='tip_trigger' style='background-color: green;'>
         <%= "- #{@count_abatimento_das_presencas_extras}" %>
+      </td>
+
+      <td class='tip_trigger' style='background-color: #f5e9e9;'>
+        <%= "- #{@count_presencas_expiradas}"%>
       </td>
 
       <td class='tip_trigger' style='background-color: #f5e9e9;'>
