@@ -98,7 +98,7 @@ module PessoasHelper
         @count_presencas_erroneas = @presencas_erroneas.count
 
         @count_saldo_para_realocacao = total_de_presencas_da_matricula_atual.com_conciliamentos_em_aberto.eh_reposicao.count
-        @count_presencas_ja_repostas = total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_reposicao.count | total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_adiantamento.count
+        @count_presencas_ja_repostas = total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_reposicao.count + total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_adiantamento.count
         @count_abatimento_das_presencas_extras = total_de_presencas_da_matricula_atual.com_conciliamento_fechado.eh_abatimento.count 
 
         @total_geral = @count_presencas + @count_aulas_realocadas + @count_aulas_extras + @count_faltas_sem_direito_a_reposicao + @count_faltas_com_direito_a_reposicao
