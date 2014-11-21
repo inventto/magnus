@@ -1,103 +1,108 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Pragma" content="no-cache">
-    <title>Controle De Presenca Magnus</title>
-    <%= csrf_meta_tag %>
-    <%= stylesheet_link_tag    "application", :media => "all" %>
-    <%= javascript_include_tag "application" %>
-    <%= csrf_meta_tags %>
-    <script src="http://code.highcharts.com/highcharts.js"></script>
-    <script src="http://code.highcharts.com/modules/data.js"></script>
-    <script src="http://code.highcharts.com/modules/exporting.js"></script>
-    <script src='http://code.highcharts.com/stock/modules/exporting.js'></script>
-    <script type='text/javascript' src='/assets/jscolor.js'></script>
+<head>
+<meta http-equiv="Pragma" content="no-cache">
+<title>Controle De Presenca Magnus</title>
+<%= csrf_meta_tag %>
+<%= stylesheet_link_tag    "application", :media => "all" %>
+<%= javascript_include_tag "application" %>
+<%= csrf_meta_tags %>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/data.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+<script src='http://code.highcharts.com/stock/modules/exporting.js'></script>
+<script type='text/javascript' src='/assets/jscolor.js'></script>
 
-    <%= javascript_tag do %>
-      jQuery(document).ajaxSend(function(e, xhr, options) {
-             var token = jQuery("meta[name='csrf-token']").attr("content");
-                     xhr.setRequestHeader("X-CSRF-Token", token);
-                           });
+<%= javascript_tag do %>
+  jQuery(document).ajaxSend(function(e, xhr, options) {
+var token = jQuery("meta[name='csrf-token']").attr("content");
+xhr.setRequestHeader("X-CSRF-Token", token);
+});
     <% end %>
 
-    <script type="text/javascript">
-      function verificaUltimaPaginaAcessada() {
-        $.ajax({
-          url: "/verifica_ultima_pagina_acessada"
-        });
-      }
-      $(document).ready(function() { // Ao redirecionar para a pg de edição de alguma presença pelo ícone da agenda do dia os campos perdiam a máscara
-          $(".data-input").mask("99/99/9999");
-          $(".data_de_realocacao-input").mask("99/99/9999");
-          $(".horario-input").mask("99:99");
-          $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
-      });
-      $(document).ajaxComplete(function(){
-          $(".cpf-input").mask("999.999.999-99");
-          $(".data_nascimento-input").mask("99/99/9999");
-          $(".data_matricula-input").mask("99/99/9999");
-          $(".data_de_realocacao-input").mask("99/99/9999");
-          $(".data_inicio-input").mask("99/99/9999");
-          $(".data_fim-input").mask("99/99/9999");
-          $(".data-input").mask("99/99/9999");
-          $(".horario-input").mask("99:99");
-          $(".hora_de_chegada-input").mask("99:99");
-          $(".hora_de_saida-input").mask("99:99");
-          $(".cep-input").mask("99.999-999");
-          $('.motivo_da_interrupcao-input').css('width', '500px');
-          $('.nome-input').css('width', '350px');
-          $('.email-input').css('width', '350px');
-          $('.logradouro-input').css('width', '300px');
-          $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
-       });
-    </script>
-  </head>
-  <body>
-    <% if user_signed_in? %>
-    <div id="top">
-      <% if user_signed_in? %>
-        <strong><div id="login">Usuário: </strong><%= current_user.email %>, <%= link_to 'Sair', destroy_user_session_path, :method => :delete %></div>
-      <% end %>
-      <div id="logo">
-        <%= link_to (image_tag("/assets/logo.png", :alt => "Magnus Personal", :title=> "Magnus Personal")) ,agenda_do_dia_path() %>
-      </div>
-      <div class="menu">
+<script type="text/javascript">
+function verificaUltimaPaginaAcessada() {
+  $.ajax({
+url: "/verifica_ultima_pagina_acessada"
+});
+}
+$(document).ready(function() { // Ao redirecionar para a pg de edição de alguma presença pelo ícone da agenda do dia os campos perdiam a máscara
+    $(".data-input").mask("99/99/9999");
+    $(".data_de_realocacao-input").mask("99/99/9999");
+    $(".horario-input").mask("99:99");
+    $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
+    });
+$(document).ajaxComplete(function(){
+    $(".cpf-input").mask("999.999.999-99");
+    $(".data_nascimento-input").mask("99/99/9999");
+    $(".data_matricula-input").mask("99/99/9999");
+    $(".data_de_realocacao-input").mask("99/99/9999");
+    $(".data_inicio-input").mask("99/99/9999");
+    $(".data_fim-input").mask("99/99/9999");
+    $(".data-input").mask("99/99/9999");
+    $(".horario-input").mask("99:99");
+    $(".hora_de_chegada-input").mask("99:99");
+    $(".hora_de_saida-input").mask("99:99");
+    $(".cep-input").mask("99.999-999");
+    $('.motivo_da_interrupcao-input').css('width', '500px');
+    $('.nome-input').css('width', '350px');
+    $('.email-input').css('width', '350px');
+    $('.logradouro-input').css('width', '300px');
+    $('[name=\"record[justificativa_de_falta][descricao]\"]').css('width', '300px');
+    });
+</script>
+</head>
+<body>
+<% if user_signed_in? %>
+  <div id="top">
+  <% if user_signed_in? %>
+    <strong><div id="login">Usuário: </strong><%= current_user.email %>, <%= link_to 'Sair', destroy_user_session_path, :method => :delete %></div>
+<% end %>
+  <div id="logo">
+    <%= link_to (image_tag("/assets/logo.png", :alt => "Magnus Personal", :title=> "Magnus Personal")) ,agenda_do_dia_path() %>
+  </div>
+  <div class="menu">
+    <ul>
+      <li><%= link_to "Agenda do Dia", root_path %></li>
+      <li><a href="#">Administrativo</a>
         <ul>
-          <li><%= link_to "Agenda do Dia", root_path %></li>
-          <li><a href="#">Administrativo</a>
-            <ul>
-              <li><%= link_to "Pessoas", pessoas_path %></li>
-              <li><%= link_to "Matrículas", matriculas_path %></li>
-              <li><%= link_to "Presenças", presencas_path, :onclick => "verificaUltimaPaginaAcessada();" %></li>
-              <li><%= link_to "Registros de Ponto", registros_de_ponto_path %></li>
-              <li><%= link_to "Feriados", feriados_path %></li>
-              <li><%= link_to "Registrar", "/registro_presenca", target: "_blank" %></li>
-              <li><%= link_to "Dados do Aluno", "/dados_do_aluno/index", target: "_blank" %></li>
-              <hr/>
-              <li><%= link_to "Gerar Backup", gerar_bkp_path %></li>
-            </ul>
-          </li>
-            <li><a href="#">Relatórios</a>
-              <ul>
-                <li><%= link_to "Aniversariantes do Mês", aniversariantes_path %></li>
-                <li><%= link_to "Clientes Inativos", clientes_inativos_path %></li>
-                <li><%= link_to "Clientes que Perdemos", clientes_que_perdemos_path %></li>
-                <li><%= link_to "Clientes que ganhamos e perdemos", "/clientes_que_ganhamos_e_perdemos" %></li>
-                <li><%= link_to "Quadro de Horários", quadro_de_horarios_path %></li>
-                <li><%= link_to "Quadro de Interessados nos horários", interesse_no_horario_index_path() %></li>
-                <li><%= link_to "Gráficos", graficos_path %></li>
-                <li><%= link_to "Personalizados", relatorios_path %></li>
-                <li><%= link_to "Lista de Ativos e Inativos", lista_de_alunos_ativos_inativos_path %></li>
-                <li><%= link_to "Histórico de contatos", "/historico_contatos" %></li>
-              </ul>
-            </li>
-            <li><a href="https://www.google.com/calendar?hl=pt_BR">Calendar</a></li>
-          </ul>
-        </div>
-      <% end %>
-    </div>
-    <div id="content">
-      <%= yield %>
-    </div>
-  </body>
+          <li><%= link_to "Calendar", "https://www.google.com/calendar?hl=pt_BR", target: "_blank" %>
+          <li><%= link_to "Dados do Aluno", "/dados_do_aluno/index", target: "_blank" %></li>
+          <li><%= link_to "Feriados", feriados_path %></li>
+          <li><%= link_to "Registros de Ponto", registros_de_ponto_path %></li>
+          <li><%= link_to "Registrar Presença", "/registro_presenca", target: "_blank" %></li>
+          <hr/>
+          <li><%= link_to "Gerar Backup", gerar_bkp_path %></li>
+        </ul>
+      </li>
+      <li><a href="#">Cadastrar</a>
+      <ul>
+        <li><%= link_to "Clientes", pessoas_path %></li>
+        <li><%= link_to "Matrículas", matriculas_path %></li>
+        <li><%= link_to "Presenças", presencas_path, :onclick => "verificaUltimaPaginaAcessada();" %></li>
+      </ul>
+      </li>
+
+      <li><a href="#">Relatórios</a>
+        <ul>
+          <li><%= link_to "Aniversariantes do Mês", aniversariantes_path %></li>
+          <li><%= link_to "Clientes Inativos", clientes_inativos_path %></li>
+          <li><%= link_to "Clientes que Perdemos", clientes_que_perdemos_path %></li>
+          <li><%= link_to "Clientes que ganhamos e perdemos", "/clientes_que_ganhamos_e_perdemos" %></li>
+          <li><%= link_to "Gráficos", graficos_path %></li>
+          <li><%= link_to "Histórico de contatos", "/historico_contatos" %></li>
+          <li><%= link_to "Lista de Ativos e Inativos", lista_de_alunos_ativos_inativos_path %></li>
+          <li><%= link_to "Personalizados", relatorios_path %></li>
+          <li><%= link_to "Quadro de Horários", quadro_de_horarios_path %></li>
+          <li><%= link_to "Quadro de Interessados nos horários", interesse_no_horario_index_path() %></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+<% end %>
+</div>
+<div id="content">
+  <%= yield %>
+</div>
+</body>
 </html>
