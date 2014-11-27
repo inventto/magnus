@@ -15,10 +15,10 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: stage_controle_de_presenca_magnus_production
+  database: controle_de_presenca_magnus_production
   pool: 5
   username: inventto
-  password: password
+  password: 
 
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
@@ -41,15 +41,14 @@ development:
 test:
   adapter: postgresql
   encoding: unicode
-  database: stage_controle_de_presenca_magnus_test
+  database: controle_de_presenca_magnus_test
   pool: 5
-  username: inventto
-  password: password
+  username: 
 
 production:
   adapter: postgresql
   encoding: unicode
-  database: stage_controle_de_presenca_magnus_production
+  database: controle_de_presenca_magnus_production
   pool: 5
   username: inventto
-  password: password
+  password: 
