@@ -38,8 +38,6 @@ class Presenca < ActiveRecord::Base
     order(:id) 
   }
 
-  scope :com_conciliamento_fechado, ->{ joins(:conciliamento_para) }
-
   scope :eh_aula_extra, -> { where(aula_extra: true).order(:id) }
 
   scope :eh_abatimento, -> { where("conciliamento_condition_type = 'Abatimento'")}
