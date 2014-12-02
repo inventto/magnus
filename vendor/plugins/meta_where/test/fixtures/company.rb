@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Company < ActiveRecord::Base
   has_many :developers
   has_many :developer_notes, :through => :developers, :source => :notes

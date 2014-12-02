@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateHorariosDeAula < ActiveRecord::Migration
   def change
     create_table :horarios_de_aula do |t|

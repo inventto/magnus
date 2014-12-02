@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class RemoveCepFromEnderecos < ActiveRecord::Migration
   def up
     remove_column :enderecos, :cep

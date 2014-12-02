@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 alunos = Pessoa.order(:id).all
 alunos.each do |aluno|

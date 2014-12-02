@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class ClientesQuePerdemosController < ApplicationController
   def index
     @anos = {}

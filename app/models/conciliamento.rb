@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Conciliamento < ActiveRecord::Base
   belongs_to :de, class_name: "Presenca"
   belongs_to :para, class_name: "Presenca"

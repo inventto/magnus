@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddDataDeRealocacaoToPresencas < ActiveRecord::Migration
   def self.up
     add_column :presencas, :data_de_realocacao, :date

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Abatimento < ActiveRecord::Base
   after_initialize :initialize_attributes
 

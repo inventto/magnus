@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateBairros < ActiveRecord::Migration
   def change
     create_table :bairros do |t|

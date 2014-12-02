@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class HorarioDeAula < ActiveRecord::Base
   attr_accessible :dia_da_semana, :horario, :matricula_id

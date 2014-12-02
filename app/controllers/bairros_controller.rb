@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class BairrosController < ApplicationController
   active_scaffold :bairro do |conf|
       conf.columns[:cidade].form_ui = :select

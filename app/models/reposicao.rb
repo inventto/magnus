@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Reposicao < ActiveRecord::Base
   after_initialize :initialize_attributes
 

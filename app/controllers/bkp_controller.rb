@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class BkpController < ApplicationController
   def gerar
     system 'sh', '/var/bkp/scripts/gera_bkp_magnus.sh'

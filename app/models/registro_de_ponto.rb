@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class RegistroDePonto < ActiveRecord::Base
   attr_accessible :data, :hora_de_chegada, :hora_de_saida, :pessoa, :pessoa_id
 

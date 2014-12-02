@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateConciliamentos < ActiveRecord::Migration
   def change
     create_table :conciliamentos do |t|

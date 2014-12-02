@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AniversariantesDoMesController < ApplicationController
   def aniversariantes
     @aniversariantes = Pessoa.de_aniversario_no_mes(Time.now.month)

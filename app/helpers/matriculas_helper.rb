@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module MatriculasHelper
 
    def horario_de_aula_column(record, column)

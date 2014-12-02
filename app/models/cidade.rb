@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Cidade < ActiveRecord::Base
   attr_accessible :estado_id, :nome, :bairros, :estado
 

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module MigrationHelpers
   def foreign_key(from_table, from_column, to_table)
     constraint_name = "fk_#{from_table}_#{from_column}"

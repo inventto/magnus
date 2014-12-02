@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateReposicoes < ActiveRecord::Migration
   def change
     create_table :reposicoes do |t|

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class ClientesGanhamosEPerdemosController < ApplicationController
   def index
     @total_alunos_que_entraram = Hash.new{0}

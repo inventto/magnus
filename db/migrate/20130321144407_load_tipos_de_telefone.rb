@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class LoadTiposDeTelefone < ActiveRecord::Migration
   def up
     TipoTelefone.create(:descricao => "Residencial")

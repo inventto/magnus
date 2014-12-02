@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddCheckboxToMatricula < ActiveRecord::Migration
   def self.up
     add_column :matriculas, :standby, :boolean, :default => false

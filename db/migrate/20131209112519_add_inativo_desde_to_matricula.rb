@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddInativoDesdeToMatricula < ActiveRecord::Migration
   def self.up
     add_column :matriculas, :inativo_desde, :Date

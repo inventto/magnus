@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 require 'time'
 class Pessoa < ActiveRecord::Base

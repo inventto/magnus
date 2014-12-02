@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class JustificativaDeFalta < ActiveRecord::Base
   attr_accessible :descricao, :data, :hora

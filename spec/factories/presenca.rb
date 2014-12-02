@@ -1,3 +1,5 @@
+# -*- encoding : utf-8 -*-
+#encoding: utf-8
 FactoryGirl.define do
   factory :presenca do
     horario "08:00"

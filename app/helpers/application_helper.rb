@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 module ApplicationHelper
   def status_presenca horario_da_aula, dia_atual

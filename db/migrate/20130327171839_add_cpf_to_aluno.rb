@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddCpfToAluno < ActiveRecord::Migration
   def self.up
     add_column :alunos, :cpf, :string

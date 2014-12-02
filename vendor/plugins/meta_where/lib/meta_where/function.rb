@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module MetaWhere
   class Function
     attr_reader :name, :args

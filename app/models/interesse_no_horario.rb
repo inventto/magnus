@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class InteresseNoHorario < ActiveRecord::Base
   belongs_to :matricula

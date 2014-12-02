@@ -1,4 +1,4 @@
-# encoding: utf-8
+# -*- encoding : utf-8 -*-
 
 class FotoUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick

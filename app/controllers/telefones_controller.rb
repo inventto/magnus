@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 class TelefonesController < ApplicationController
   active_scaffold :telefone do |conf|

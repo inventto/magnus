@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Estado < ActiveRecord::Base
   attr_accessible :nome, :sigla
 

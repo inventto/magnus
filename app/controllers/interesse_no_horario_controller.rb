@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class InteresseNoHorarioController < ApplicationController
   active_scaffold :interesse_no_horario do |conf|

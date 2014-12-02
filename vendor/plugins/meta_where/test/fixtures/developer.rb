@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Developer < ActiveRecord::Base
   belongs_to :company
   has_and_belongs_to_many :projects

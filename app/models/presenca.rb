@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class Presenca < ActiveRecord::Base
   attr_accessible :pessoa_id, :pessoa, :data, :horario, :justificativa_de_falta, :data, :presenca, :realocacao, :pontualidade, :tem_direito_a_reposicao, :data_de_realocacao, :aula_extra
@@ -29,6 +30,8 @@ class Presenca < ActiveRecord::Base
 
   scope :com_conciliamento, -> { joins(:conciliamento_de) }
 
+  scope :com_conciliamento_para, -> { joins(:conciliamento_para) }
+
   scope :em_aberto, -> { where(conciliamentos: {para_id: nil}) }
 
   scope :e_fechado, -> { where("para_id is not null") }
@@ -56,7 +59,7 @@ class Presenca < ActiveRecord::Base
     where("justificativas_de_falta.descricao ilike '%adiantado%'")
   }
 
-  after_save :expira_reposicoes, :conciliamento_de_presencas 
+  after_save :expira_reposicoes, :conciliamento_de_presencas
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
@@ -138,7 +141,7 @@ class Presenca < ActiveRecord::Base
   end
 
   def conciliamento_de_presencas
-    if self.tem_direito_a_reposicao? and not self.conciliamento_de and not self.realocacao? and not self.presenca? 
+    if ((self.tem_direito_a_reposicao?)  and not self.conciliamento_de and not self.conciliamento_para and not self.realocacao? and not self.presenca?) 
       if eh_adiantamento?
         save_adiantamento
       elsif possui_abatimento_em_aberto?

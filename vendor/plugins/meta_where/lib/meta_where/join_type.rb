@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module MetaWhere
   class JoinType
     attr_reader :name, :join_type, :klass

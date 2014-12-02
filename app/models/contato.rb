@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Contato < ActiveRecord::Base
   belongs_to :pessoa
   validates_presence_of :data_contato, :descricao, :on => :create

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddHoraToJustificativaDeFalta < ActiveRecord::Migration
   def self.up
     add_column :justificativas_de_falta, :hora, :string

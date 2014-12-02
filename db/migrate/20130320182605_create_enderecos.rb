@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateEnderecos < ActiveRecord::Migration
   def change
     create_table :enderecos do |t|

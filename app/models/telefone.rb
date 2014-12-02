@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 class Telefone < ActiveRecord::Base
   attr_accessible :pessoa_id, :ddd, :descricao, :numero, :ramal, :tipo_telefone_id, :tipo_telefone

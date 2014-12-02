@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreatePresencas < ActiveRecord::Migration
   def change
     create_table :presencas do |t|

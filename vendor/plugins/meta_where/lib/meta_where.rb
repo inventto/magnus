@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 module MetaWhere
   METHOD_ALIASES = {
     'ne' => :not_eq,

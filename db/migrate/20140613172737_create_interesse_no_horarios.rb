@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateInteresseNoHorarios < ActiveRecord::Migration
   def change
     create_table :interesse_no_horarios do |t|

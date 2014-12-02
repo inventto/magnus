@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddDataToJustificativaDeFalta < ActiveRecord::Migration
   def self.up
     add_column :justificativas_de_falta, :data, :date

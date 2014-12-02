@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateRegistrosDePonto < ActiveRecord::Migration
   def change
     create_table :registros_de_ponto do |t|

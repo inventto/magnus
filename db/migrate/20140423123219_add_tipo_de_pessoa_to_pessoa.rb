@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddTipoDePessoaToPessoa < ActiveRecord::Migration
   def self.up
     add_column :pessoas, :tipo_de_pessoa, :integer, :default => 0

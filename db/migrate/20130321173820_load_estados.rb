@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: UTF-8
 class LoadEstados < ActiveRecord::Migration
   def self.up

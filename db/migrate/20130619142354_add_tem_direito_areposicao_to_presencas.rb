@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddTemDireitoAreposicaoToPresencas < ActiveRecord::Migration
   def self.up
     add_column :presencas, :tem_direito_a_reposicao, :boolean

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Symbol
   MetaWhere::PREDICATES.each do |predication|
     define_method(predication) do

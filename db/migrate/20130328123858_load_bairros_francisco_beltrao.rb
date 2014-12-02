@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class LoadBairrosFranciscoBeltrao < ActiveRecord::Migration
   def self.up
     bairros = File.open("db/migrate/bairros_francisco_beltrao.txt")

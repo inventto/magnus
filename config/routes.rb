@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 ControleDePresencaMagnus::Application.routes.draw do
 
   get "quadro_de_interesses_nos_horarios/index"

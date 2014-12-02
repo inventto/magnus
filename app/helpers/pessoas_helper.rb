@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 module PessoasHelper
 
@@ -81,25 +82,29 @@ module PessoasHelper
         @count_presencas = 0
         @count_aulas_extras = 0
 
-        @count_presencas = total_de_presencas_da_matricula_atual.presencas_vinda.count 
+        @count_presencas = total_de_presencas_da_matricula_atual.presencas_vinda.count
         @count_aulas_extras = total_de_presencas_da_matricula_atual.eh_aula_extra.count
 
-        @count_faltas_com_direito_a_reposicao = total_de_presencas_da_matricula_atual.com_direito_a_reposicao.count
+        @presencas_erroneas = total_de_presencas_da_matricula_atual.eh_presenca.com_direito_a_reposicao + 
+        total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.com_direito_a_reposicao +
+        total_de_presencas_da_matricula_atual.eh_falta.eh_realocacao.com_direito_a_reposicao 
+
+        @count_presencas_erroneas = @presencas_erroneas.count
+
+        @count_faltas_com_direito_a_reposicao = total_de_presencas_da_matricula_atual.eh_falta.com_direito_a_reposicao.com_conciliamento.count + 
+        total_de_presencas_da_matricula_atual.eh_falta.com_direito_a_reposicao.com_conciliamento_para.eh_abatimento.count
+
         @count_faltas_sem_direito_a_reposicao = total_de_presencas_da_matricula_atual.eh_falta.faltas_sem_direito_a_reposicao.count
 
-        @count_aulas_realocadas = total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.count
+        @count_aulas_realocadas = total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.count - total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.com_direito_a_reposicao.count
 
         count_aulas_expiradas_por_mes_e_ano(total_de_presencas_da_matricula_atual)
 
         @count_presencas_expiradas = total_de_presencas_da_matricula_atual.com_conciliamento.eh_expirada.count
-        @presencas_erroneas = total_de_presencas_da_matricula_atual.eh_presenca.com_direito_a_reposicao + 
-          total_de_presencas_da_matricula_atual.eh_presenca.eh_realocacao.com_direito_a_reposicao 
-
-        @count_presencas_erroneas = @presencas_erroneas.count
-
-        @count_saldo_para_realocacao = total_de_presencas_da_matricula_atual.com_conciliamentos_em_aberto.eh_reposicao.count
-        @count_presencas_ja_repostas = total_de_presencas_da_matricula_atual.com_conciliamento.e_fechado.eh_reposicao.count + 
-          total_de_presencas_da_matricula_atual.com_conciliamento.e_fechado.eh_adiantamento.count
+        
+        @count_saldo_para_realocacao = total_de_presencas_da_matricula_atual.com_conciliamento.em_aberto.eh_reposicao.count +
+        total_de_presencas_da_matricula_atual.com_conciliamento.em_aberto.eh_adiantamento.count
+        @count_presencas_ja_repostas = total_de_presencas_da_matricula_atual.com_conciliamento.e_fechado.eh_reposicao.count + total_de_presencas_da_matricula_atual.com_conciliamento.e_fechado.eh_adiantamento.count
         @count_abatimento_das_presencas_extras = total_de_presencas_da_matricula_atual.com_conciliamento.e_fechado.eh_abatimento.count 
 
         @total_geral = @count_presencas + @count_aulas_realocadas + 

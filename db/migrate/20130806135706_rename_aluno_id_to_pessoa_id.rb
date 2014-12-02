@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class RenameAlunoIdToPessoaId < ActiveRecord::Migration
   def up
     rename_column :matriculas, :aluno_id, :pessoa_id

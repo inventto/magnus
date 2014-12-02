@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Symbol
   def [](*values)
     MetaWhere::Function.new(self, *values)

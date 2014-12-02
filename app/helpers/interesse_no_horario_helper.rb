@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 module InteresseNoHorarioHelper
   def get_nomes_nos(horarios)

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class TipoTelefone < ActiveRecord::Base
   attr_accessible :descricao
 

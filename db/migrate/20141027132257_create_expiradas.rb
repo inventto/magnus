@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateExpiradas < ActiveRecord::Migration
   def change
     create_table :expiradas do |t|

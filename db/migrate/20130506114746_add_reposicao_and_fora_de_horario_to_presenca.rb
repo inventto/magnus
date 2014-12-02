@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddReposicaoAndForaDeHorarioToPresenca < ActiveRecord::Migration
   def self.up
     add_column :presencas, :reposicao, :boolean

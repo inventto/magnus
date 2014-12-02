@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddExpiradaToPresenca < ActiveRecord::Migration
   def self.up
     add_column :presencas, :expirada, :boolean, default: false

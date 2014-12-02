@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class RelatoriosController < ApplicationController
   active_scaffold :relatorio do |conf|

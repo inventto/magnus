@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddCodigoDeAcessoToAlunos < ActiveRecord::Migration
   def self.up
     add_column :alunos, :codigo_de_acesso, :string

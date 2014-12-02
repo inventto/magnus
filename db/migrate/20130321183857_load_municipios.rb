@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 class LoadMunicipios < ActiveRecord::Migration
   def self.up

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 require "migration_helpers"
 include MigrationHelpers
 

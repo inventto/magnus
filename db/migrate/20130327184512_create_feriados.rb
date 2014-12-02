@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class CreateFeriados < ActiveRecord::Migration
   def change
     create_table :feriados do |t|

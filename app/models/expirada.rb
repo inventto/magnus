@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Expirada < ActiveRecord::Base
   has_one :conciliamento, as: :conciliamento_condition
 

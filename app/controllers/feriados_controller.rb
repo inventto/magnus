@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 class FeriadosController < ApplicationController
   active_scaffold :feriado do |conf|

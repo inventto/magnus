@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 class RegistrosDePontoController < ApplicationController
    begin before_filter :is_admin

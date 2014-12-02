@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class CpfValidator < ActiveModel::EachValidator
   def validate_each(record, attr, value)

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddMotivoDaInterrupcaoToMatriculas < ActiveRecord::Migration
   def self.up
     add_column :matriculas, :motivo_da_interrupcao, :string

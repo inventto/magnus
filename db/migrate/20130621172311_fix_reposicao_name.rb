@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class FixReposicaoName < ActiveRecord::Migration
   def up
     rename_column :presencas, :reposicao, :realocacao

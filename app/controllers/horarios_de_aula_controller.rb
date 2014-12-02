@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #coding: utf-8
 class HorariosDeAulaController < ApplicationController
   active_scaffold :horario_de_aula do |conf|

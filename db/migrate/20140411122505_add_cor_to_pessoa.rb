@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddCorToPessoa < ActiveRecord::Migration
   def self.up
     add_column :pessoas, :cor, :string

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddAulaExtraToPresencas < ActiveRecord::Migration
   def self.up
     add_column :presencas, :aula_extra, :boolean, :default => false

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class PessoasController < ApplicationController
   skip_before_filter :authenticate_user!, only: [:alunos_xml, :export_xml_data]

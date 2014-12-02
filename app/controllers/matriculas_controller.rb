@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 #encoding: utf-8
 class MatriculasController < ApplicationController
   active_scaffold :matricula do |conf|

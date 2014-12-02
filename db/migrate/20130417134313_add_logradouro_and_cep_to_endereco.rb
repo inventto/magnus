@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class AddLogradouroAndCepToEndereco < ActiveRecord::Migration
   def self.up
     add_column :enderecos, :logradouro, :string

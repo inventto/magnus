@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 class Endereco < ActiveRecord::Base
    attr_accessible :cep, :logradouro, :numero, :complemento, :bairro_id, :cidade_id
   has_one :pessoa
