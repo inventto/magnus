@@ -66,11 +66,11 @@ $(document).ajaxComplete(function(){
       <li><%= link_to "Agenda do Dia", root_path %></li>
       <li><a href="#">Administrativo</a>
         <ul>
-          <li><%= link_to "Calendar", "https://www.google.com/calendar?hl=pt_BR", target: "_blank" %>
           <li><%= link_to "Dados do Aluno", "/dados_do_aluno/index", target: "_blank" %></li>
-          <li><%= link_to "Feriados", feriados_path %></li>
           <li><%= link_to "Registros de Ponto", registros_de_ponto_path %></li>
           <li><%= link_to "Registrar Presença", "/registro_presenca", target: "_blank" %></li>
+          <li><%= link_to "Calendar", "https://www.google.com/calendar?hl=pt_BR", target: "_blank" %></li>
+          <li><%= link_to "Feriados", feriados_path %></li>
           <hr/>
           <li><%= link_to "Gerar Backup", gerar_bkp_path %></li>
         </ul>
