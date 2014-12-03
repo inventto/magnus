@@ -14,9 +14,9 @@
     </form>
 </div>
 <div id="aniversariantes">
-    <div id="title-aniversariantes">
-        ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i].upcase %>
-</div>
+  <div id="title-aniversariantes">
+      ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i].upcase %>
+  </div>
 <ul>
     <% if @aniversariantes %>
         <% @aniversariantes.each do |aniversariante| %>

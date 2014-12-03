@@ -152,6 +152,10 @@ module PresencasHelper
     raw(nome + fones)
   end
 
+  def pessoa_column(record, column)
+    link_to(h(record.pessoa.nome), :action => :show, :controller => 'pessoas', :id => record.pessoa.id)
+  end 
+
   def justificativa_de_falta_search_column(record, html_options)
     selected = html_options.delete :value
 
