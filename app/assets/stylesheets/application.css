@@ -270,7 +270,7 @@ i{
   background-color: #DAFFCD;
 }
 .horario_disponivel, .horario_ocupado, .vip, #estatisticas_table {
-  text-align: center;
+  text-align: center !important;
 }
 #pontualidade_table th,
 #pontualidade_table td,
