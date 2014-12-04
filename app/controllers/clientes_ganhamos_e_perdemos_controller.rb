@@ -13,9 +13,14 @@ class ClientesGanhamosEPerdemosController < ApplicationController
       end
     end
     clientes_que_ganhamos()
+    clientes_ativos
   end
 
   def clientes_que_ganhamos()
     @clientes_que_entraram = Matricula.where("data_inicio <= ?", Time.now).group_by{|data| [data.data_inicio.month, data.data_inicio.year]}
+  end
+
+  def clientes_ativos
+    @clientes_ativos = Pessoa.com_matricula_valida
   end
 end

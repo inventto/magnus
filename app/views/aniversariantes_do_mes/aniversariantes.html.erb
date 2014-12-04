@@ -15,7 +15,7 @@
 </div>
 <div id="aniversariantes">
   <div id="title-aniversariantes">
-      ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i].upcase %>
+      ANIVERSARIANTES DO MÊS DE <%= Date::MONTHNAMES[@mes.to_i % 12].upcase %>
   </div>
 <ul>
     <% if @aniversariantes %>
