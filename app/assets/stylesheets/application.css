@@ -528,3 +528,10 @@ i{
 .filtros-periodos-agenda form {
     height: 70px;
 }
+.consulta-column, .titulos-column {
+  visibility: collapse;
+}
+
+.active-scaffold .record {
+ text-align: center !important;
+}
