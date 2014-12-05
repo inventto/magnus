@@ -51,11 +51,11 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_expirada, -> { where("conciliamento_condition_type = 'Expirada'")}
 
-  scope :da_matricula_atual, ->(data_inicio) { where("data >= ?", data_inicio)}
+  scope :da_matricula_atual, ->(data_inicio) { where("presencas.data >= ?", data_inicio)}
   
   scope :eh_adiantamento_na_data?, ->(data) { 
     joins(:justificativa_de_falta).
-    where(presenca: false, data: data, tem_direito_a_reposicao: true).
+    where(presenca: false, presencas: {data: data}, tem_direito_a_reposicao: true).
     where("justificativas_de_falta.descricao ilike '%adiantado%'")
   }
 
@@ -82,6 +82,12 @@ class Presenca < ActiveRecord::Base
   end
 
   private
+
+  def presencas_da_matricula_valida
+    data_inicio_das_presencas = pessoa.matriculas.valida.first.data_inicio
+    pessoa.presencas.da_matricula_atual(data_inicio_das_presencas)
+  end
+
   def save_adiantamento
     adiantamento = Adiantamento.new
     adiantamento.de_id = self.id
@@ -96,6 +102,21 @@ class Presenca < ActiveRecord::Base
     reposicao.save
     self.conciliamento_de = reposicao.conciliamento
     self.save
+    busca_e_atualiza_realocacoes
+  end
+
+  def busca_e_atualiza_realocacoes
+    presencas_da_matricula_valida.eh_presenca.eh_realocacao.each do |presenca|
+      if not presenca.conciliamento_para
+        falta_de_reposicao = presencas_da_matricula_valida.com_conciliamento.eh_reposicao.em_aberto.first
+        if falta_de_reposicao
+          conciliamento_de_reposicao = falta_de_reposicao.conciliamento_de
+          if conciliamento_de_reposicao
+            conciliamento_de_reposicao.update_attributes(para_id: presenca.id)
+          end
+        end
+      end
+    end
   end
 
   def expira_reposicoes
@@ -105,7 +126,7 @@ class Presenca < ActiveRecord::Base
     count_maximo_reposicoes = matricula.count_maximo_reposicoes
 
     # todas as faltas do aluno com direito a reposição e com conciliamento
-    presenca_com_conciliamento = pessoa.presencas.reposicao_ou_adiantamento_com_conciliamentos_em_aberto
+    presenca_com_conciliamento = presencas_da_matricula_valida.reposicao_ou_adiantamento_com_conciliamentos_em_aberto
 
     count_presenca_com_conciliamento = presenca_com_conciliamento.count
 
@@ -123,7 +144,7 @@ class Presenca < ActiveRecord::Base
   end
 
   def atualizar_abatimento
-    abatimento_em_aberto = pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.first
+    abatimento_em_aberto = presencas_da_matricula_valida.com_conciliamentos_em_aberto.eh_abatimento.first
     if abatimento_em_aberto
       conciliamento_de_abatimento = abatimento_em_aberto.conciliamento_de
       if conciliamento_de_abatimento
@@ -133,14 +154,17 @@ class Presenca < ActiveRecord::Base
   end
 
   def eh_adiantamento?
-    !pessoa.presencas.eh_adiantamento_na_data?(self.data).blank?
+    !presencas_da_matricula_valida.eh_adiantamento_na_data?(self.data).blank?
   end
 
   def possui_abatimento_em_aberto?
-    !pessoa.presencas.com_conciliamentos_em_aberto.eh_abatimento.blank?
+    !presencas_da_matricula_valida.com_conciliamentos_em_aberto.eh_abatimento.blank?
   end
 
   def conciliamento_de_presencas
+    matricula = pessoa.matriculas.valida.first
+    return unless matricula
+
     if ((self.tem_direito_a_reposicao?)  and not self.conciliamento_de and not self.conciliamento_para and not self.realocacao? and not self.presenca?) 
       if eh_adiantamento?
         save_adiantamento
@@ -149,7 +173,7 @@ class Presenca < ActiveRecord::Base
       else
         save_reposicao
       end
-    elsif self.realocacao? and not self.conciliamento_para 
+    elsif self.realocacao? and not self.conciliamento_para and not self.tem_direito_a_reposicao?
       atualizar_conciliamento_para_id
     elsif self.aula_extra? and not self.conciliamento_de
       save_abatimento
@@ -157,8 +181,8 @@ class Presenca < ActiveRecord::Base
   end
 
   def atualizar_conciliamento_para_id
-    falta_de_adiantamento = pessoa.presencas.com_conciliamento.eh_adiantamento.em_aberto.first
-    falta_de_reposicao = pessoa.presencas.com_conciliamento.eh_reposicao.em_aberto.first
+    falta_de_adiantamento = presencas_da_matricula_valida.com_conciliamento.eh_adiantamento.em_aberto.first
+    falta_de_reposicao = presencas_da_matricula_valida.com_conciliamento.eh_reposicao.em_aberto.first
 
     if falta_de_adiantamento
       conciliamento_de_adiantamento = falta_de_adiantamento.conciliamento_de
