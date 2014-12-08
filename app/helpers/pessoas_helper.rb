@@ -140,6 +140,7 @@ module PessoasHelper
 
   def count_aulas_realocadas presencas
     @count_aulas_realocadas = presencas.eh_presenca.eh_realocacao.count - 
+      presencas.eh_presenca.eh_realocacao.com_direito_a_reposicao.count -
       presencas.eh_presenca.eh_realocacao.com_direito_a_reposicao.count
   end
 

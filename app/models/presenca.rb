@@ -106,8 +106,8 @@ class Presenca < ActiveRecord::Base
   end
 
   def busca_e_atualiza_realocacoes
-    presencas_da_matricula_valida.eh_presenca.eh_realocacao.each do |presenca|
-      if not presenca.conciliamento_para
+    presencas_da_matricula_valida.eh_realocacao.each do |presenca|
+      if not presenca.conciliamento_para and not presenca.tem_direito_a_reposicao?
         falta_de_reposicao = presencas_da_matricula_valida.com_conciliamento.eh_reposicao.em_aberto.first
         if falta_de_reposicao
           conciliamento_de_reposicao = falta_de_reposicao.conciliamento_de
