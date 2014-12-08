@@ -13,6 +13,7 @@ RSpec.describe Abatimento, :type => :model do
 
   describe "Vinculos do abatimento" do
     it "Cria o Conciliamento do tipo abatimento" do
+      p presenca_com_aula_extra.conciliamento_de.inspect
       expect(presenca_com_aula_extra.conciliamento_de.conciliamento_condition).to be_a(Abatimento)
     end
     
