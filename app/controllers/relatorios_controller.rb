@@ -52,6 +52,13 @@ class RelatoriosController < ApplicationController
       retorno << "<div id='graficos'>"
       retorno << "</div>"
     end
+    retorno << 
+    "<style>
+    .active-scaffold .record {
+         text-align: center !important;
+    }
+    </style>"
+
     retorno <<
     "<script>
     ignorar_primeiras_x_colunas = 2;
