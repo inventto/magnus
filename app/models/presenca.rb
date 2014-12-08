@@ -165,7 +165,7 @@ class Presenca < ActiveRecord::Base
     matricula = pessoa.matriculas.valida.first
     return unless matricula
 
-    if ((self.tem_direito_a_reposicao?)  and not self.conciliamento_de and not self.conciliamento_para and not self.realocacao? and not self.presenca?) 
+    if self.tem_direito_a_reposicao?  and not self.conciliamento_de and not self.conciliamento_para and not self.realocacao? and not self.presenca? 
       if eh_adiantamento?
         save_adiantamento
       elsif possui_abatimento_em_aberto?
