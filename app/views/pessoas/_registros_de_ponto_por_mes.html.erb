@@ -1,6 +1,6 @@
 <script type='text/javascript'>
   function gerarTabelaDePontos() {
-    url = '/registros_de_ponto_por_mes?funcionario_id='+$('.id-view').text().trim()+'&mes='+$('#mes').val();
+    url = '/registros_de_ponto_por_mes?funcionario_id='+$('.id-view').text().trim()+'&mes='+$('#mes').val()+'&ano='+$('#ano').val();
     $("#registros_de_ponto").load(url + " #registros_de_ponto ");
   }
 </script>
@@ -9,15 +9,15 @@
   <select name='mes' id='mes'>
     <% for i in 0..(Date::MONTHNAMES.length - 1) %>
       <% if i == Date.today.month %>
-        <option selected value='<%= i %>'><%= Date::MONTHNAMES[i] %></option>
-      <% else %>
-        <option value='<%= i %>'><%= Date::MONTHNAMES[i] %></option>
-      <% end %>
-    <% end %>
+      <option selected value='<%= i %>'><%= Date::MONTHNAMES[i] %></option>
+  <% else %>
+      <option value='<%= i %>'><%= Date::MONTHNAMES[i] %></option>
+  <% end %>
+  <% end %>
   </select>
   <label for='ano'>Ano:</label>
-  <input type='text' name='ano' value='<%= params[:ano] || Time.now.year %>'/>
-  <input type='submit' value='Filtrar' onclick='gerarTabelaDePontos();'/>
+  <input type='number' id='ano' name='ano' value='<%= params[:ano] || Time.now.year %>'/>
+  <input type='submit' value='Filtrar' onclick="gerarTabelaDePontos();" />
 </div>
 <div id='registros_de_ponto'>
   <% if @registros_de_ponto.blank? %>
