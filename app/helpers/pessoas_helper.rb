@@ -238,8 +238,12 @@ module PessoasHelper
   def pontualidade_column(record, column)
     if record.instance_of?(Pessoa) # se não ocorre erro ao carregar a página de Presenças
       return if record.tipo_de_pessoa > 0
-      presencas = record.presencas.where(:presenca => true)
-      total_de_presencas = presencas.count
+      pessoa = record
+      data_inicio_das_presencas = pessoa.matriculas.valida.first.data_inicio
+      total_de_presencas_da_matricula_atual = pessoa.presencas.da_matricula_atual(data_inicio_das_presencas)
+
+      total_de_presencas = total_de_presencas_da_matricula_atual.count
+      presencas = total_de_presencas_da_matricula_atual.eh_presenca 
 
       count_maior_que_quinze = 0
       count_maior_que_cinco = 0
