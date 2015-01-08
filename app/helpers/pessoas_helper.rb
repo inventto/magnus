@@ -239,7 +239,7 @@ module PessoasHelper
     if record.instance_of?(Pessoa) # se não ocorre erro ao carregar a página de Presenças
       return if record.tipo_de_pessoa > 0
       pessoa = record
-      data_inicio_das_presencas = pessoa.matriculas.valida.first.data_inicio
+      data_inicio_das_presencas = pessoa.matriculas.valida.first.data_inicio if pessoa.matriculas.valida.first
       total_de_presencas_da_matricula_atual = pessoa.presencas.da_matricula_atual(data_inicio_das_presencas)
 
       total_de_presencas = total_de_presencas_da_matricula_atual.count
