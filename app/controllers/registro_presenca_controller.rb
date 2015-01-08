@@ -202,7 +202,7 @@ class RegistroPresencaController < ApplicationController
       render :text => [flash[:error], "codigo_invalido"].join("|") and return
     end
 
-    time_millis = (not params[:tim_millis]) ? nil : params[:time_millis]
+    time_millis = (not params[:time_millis]) ? nil : params[:time_millis]
     if not aluno.registrar_presenca(time_millis)
       flash[:error] = "Aluno já possui Presença Registrada!"
       render :text => [flash[:error], "aluno_possui_presenca"].join("|") and return
@@ -266,7 +266,6 @@ class RegistroPresencaController < ApplicationController
 
     flash[:notice] = notice.join("<br/><br/>").html_safe
     flash[:error] = error.join("<br/><br/>").html_safe unless error.blank?
-
 
     render :text => [saudacao, aluno.nome, aluno.foto, flash[:notice], flash[:error], chegada, mensagem_sonora].join(";") and return
   end
