@@ -76,7 +76,8 @@ module PessoasHelper
       if record.instance_of?(Pessoa)
         return if record.presencas.blank?
         pessoa = record
-        data_inicio_das_presencas = pessoa.matriculas.valida.first.data_inicio
+
+        data_inicio_das_presencas = matricula.data_inicio
         total_de_presencas_da_matricula_atual = pessoa.presencas.da_matricula_atual(data_inicio_das_presencas)
 
         count_presencas_vindas(total_de_presencas_da_matricula_atual)
@@ -625,7 +626,7 @@ module PessoasHelper
   end
 
   private
-  def get_consulta_matricula_valida record
-    record.matricula_valida
+  def get_consulta_matricula_valida pessoa
+    pessoa.matriculas.valida.first
   end
 end
