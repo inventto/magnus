@@ -156,7 +156,7 @@ class RegistroPresencaController < ApplicationController
     @msg_sonora_for_employee = ""
     notice = []
 
-    time_millis = (not params[:tim_millis]) ? nil : params[:time_millis]
+    time_millis = (not params[:time_millis]) ? nil : params[:time_millis]
 
     registros = RegistroDePonto.where("pessoa_id = #{employee.id}").order(:id)
     ultimo_ponto = registros.last
