@@ -145,18 +145,17 @@ class RegistroPresencaController < ApplicationController
   end
 
   def registrar_ponto_android
-      employee = Pessoa.where(tipo_de_pessoa: 1..3, codigo_de_acesso: params[:codigo]).first
-      if not employee
-        message = "Código do Funcionário Inválido: #{params[:codigo]}"
+    employee = Pessoa.where(tipo_de_pessoa: 1..3, codigo_de_acesso: params[:codigo]).first
+    if not employee
+      message = "Código do Funcionário Inválido: #{params[:codigo]}"
       flash[:error] = message
-      render :text => [flash[:error], "codigo_funcionario_invalido"].join("|")
-      return
+      render :text => [flash[:error], "codigo_funcionario_invalido"].join("|") and return
     end
 
     @msg_sonora_for_employee = ""
     notice = []
 
-    time_millis = (not params[:time_millis]) ? nil : params[:time_millis]
+    time_millis = params[:time_millis]
 
     registros = RegistroDePonto.where("pessoa_id = #{employee.id}").order(:id)
     ultimo_ponto = registros.last
@@ -170,8 +169,6 @@ class RegistroPresencaController < ApplicationController
       flash[:error] = "" # verificar
       render :text => [flash[:error], "funcionario_possui_presenca"].join("|") and return
     end
-
-    return if not time_millis.nil?
 
     if employee.esta_de_aniversario_essa_semana?
       @msg_sonora_for_employee << "parabens_semana|"
@@ -202,12 +199,11 @@ class RegistroPresencaController < ApplicationController
       render :text => [flash[:error], "codigo_invalido"].join("|") and return
     end
 
-    time_millis = (not params[:time_millis]) ? nil : params[:time_millis]
+    time_millis = params[:time_millis]
     if not aluno.registrar_presenca(time_millis)
       flash[:error] = "Aluno já possui Presença Registrada!"
       render :text => [flash[:error], "aluno_possui_presenca"].join("|") and return
     end
-    return if not time_millis.nil? # caso venha o time_millis significa que nada será exibido ao usuário, logo não havendo necessidade de executar os códigos abaixo
 
     saudacao = saudacao_ao aluno
     mensagem_sonora = ""
