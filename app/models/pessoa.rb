@@ -149,13 +149,9 @@ class Pessoa < ActiveRecord::Base
       @data_atual = @hora_certa.to_date
     else
       data_hora = Time.at(time_millis.to_i / 1000)
+      @hora_certa = data_hora
       @hora_atual = data_hora.strftime("%H:%M")
       @data_atual = data_hora.to_date
-    end
-    if Rails.env.development?#--> variáveis para teste local
-      @hora_certa = Time.now
-      @hora_atual = @hora_certa.strftime("%H:%M")
-      @data_atual = Date.today
     end
   end
 
@@ -372,8 +368,9 @@ class Pessoa < ActiveRecord::Base
     return false
   end
   def esta_fora_de_horario?
-    @hora_registrada = @data_atual
-    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @data_atual.wday).matricula_ativa[0]
+    @hora_registrada = @hora_certa
+    puts @hora_certa
+    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday).matricula_ativa[0]
 
     if not @presenca.nil? and @presenca.realocacao# se for reposição, adiantamento
       hora_da_aula = @presenca.horario
