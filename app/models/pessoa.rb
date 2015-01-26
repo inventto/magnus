@@ -372,11 +372,8 @@ class Pessoa < ActiveRecord::Base
     return false
   end
   def esta_fora_de_horario?
-    if @hora_certa
-      @hora_certa = Time.now
-    end
-    @hora_registrada = @hora_certa
-    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @hora_certa.wday).matricula_ativa[0]
+    @hora_registrada = @data_atual
+    @horario_de_aula = HorarioDeAula.do_aluno_pelo_dia_da_semana(self.id, @data_atual.wday).matricula_ativa[0]
 
     if not @presenca.nil? and @presenca.realocacao# se for reposição, adiantamento
       hora_da_aula = @presenca.horario
