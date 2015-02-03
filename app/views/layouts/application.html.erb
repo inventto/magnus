@@ -32,7 +32,7 @@ function marcarFalta(){
   });
 }
 $(document).ready(function() { 
-    setInterval(marcarFalta, 1200000); // A cada 20min
+    setInterval(marcarFalta, 3600000); // A cada 1h
   // Ao redirecionar para a pg de edição de alguma presença pelo ícone da agenda do dia os campos perdiam a máscara
     $(".data-input").mask("99/99/9999");
     $(".data_de_realocacao-input").mask("99/99/9999");
