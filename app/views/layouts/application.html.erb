@@ -21,18 +21,18 @@ xhr.setRequestHeader("X-CSRF-Token", token);
     <% end %>
 
 <script type="text/javascript">
-function verificaUltimaPaginaAcessada() {
-  $.ajax({
-url: "/verifica_ultima_pagina_acessada"
-});
-}
-function marcarFalta(){
-  $.ajax({
-    url: "/registro_presenca/marcar_falta"
-  });
-}
+  function verificaUltimaPaginaAcessada() {
+    $.ajax({
+      url: "/verifica_ultima_pagina_acessada"
+    });
+  }
+  function marcarFalta(){
+    $.ajax({
+      url: "/registro_presenca/marcar_falta"
+    });
+  }
+  setInterval(marcarFalta, 3600000); // A cada 1h
 $(document).ready(function() { 
-    setInterval(marcarFalta, 3600000); // A cada 1h
   // Ao redirecionar para a pg de edição de alguma presença pelo ícone da agenda do dia os campos perdiam a máscara
     $(".data-input").mask("99/99/9999");
     $(".data_de_realocacao-input").mask("99/99/9999");
