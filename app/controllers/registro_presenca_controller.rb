@@ -157,7 +157,7 @@ class RegistroPresencaController < ApplicationController
 
     time_millis = params[:time_millis]
 
-    registros = RegistroDePonto.where("pessoa_id = #{employee.id}").order(:id)
+    registros = RegistroDePonto.where(pessoa_id: employee.id).order(:id)
     ultimo_ponto = registros.last
 
     if ultimo_ponto and ultimo_ponto.hora_de_saida.nil? and ultimo_ponto.data.to_date != Time.now.to_date
