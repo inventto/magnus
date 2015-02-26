@@ -15,7 +15,7 @@ class SendData
     require 'net/http'
     require 'uri'
 
-    url = 'http://academi.as/service'
+    url = 'http://sistema.academi.as/service'
     url = URI.parse(url)
 
     request = Net::HTTP::Post.new(url.path)
