@@ -29,6 +29,8 @@ class RelatoriosController < ApplicationController
     retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
     if relatorio.id == 2
     retorno << "<table id='tabela_porcentagem_presencas'><tr>"
+    elsif relatorio.id == 6
+    retorno << "<table id='tabela_quantidade_de_horarios'><tr>"
     else
     retorno << "<table><tr>"
     end
@@ -51,6 +53,11 @@ class RelatoriosController < ApplicationController
     if relatorio.id == 2
       retorno << "<div id='graficos'>"
       retorno << "</div>"
+      retorno << grafico_colunas
+    elsif relatorio.id == 6
+      retorno << "<div id='graficos'>"
+      retorno << "</div>"
+      retorno << grafico_pizza
     end
     retorno << 
     "<style>
@@ -59,7 +66,80 @@ class RelatoriosController < ApplicationController
     }
     </style>"
 
-    retorno <<
+    render :inline => retorno.html_safe, :layout => true
+  end
+
+  def grafico_pizza
+    "<script>
+    titulos = $('#tabela_quantidade_de_horarios tr th a')
+  $(document).ready(function(){
+      tooltips();
+      quatidadeDeHorariosGraph();
+    });
+    $(document).ajaxComplete(function(){
+      quatidadeDeHorariosGraph();
+    });
+    function quatidadeDeHorariosGraph() {
+       colors= [
+         '#F00C0C', // vermelho
+         '#FFF200', // amarelo
+         '#11C900', // verde
+         '#fc8aeb', // lilás (roxo whatever)
+         '#2134ff'  // azul
+       ];
+       Highcharts.getOptions().colors = Highcharts.map(colors,
+       function(color) {
+         return {
+           radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+           stops: [
+             [0, color],
+             [1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+           ]
+         };
+       });
+      new Highcharts.Chart({
+        chart: {
+          renderTo: 'graficos',
+          type: 'pizza'
+        },
+        title: {
+          text: 'Gráfico da quantidade de horários por período'
+        },
+        tooltip: {
+          pointFormat: '{point.y}%'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              color: '#000',
+              formatter: function() {
+                return this.point.name + ': ' + this.point.y + '%';
+              }
+            },
+            showInLegend: false
+          }
+        },
+        series: [{
+          type: 'pie',
+          name: 'Estatísticas',
+          data: [
+            [titulos[0].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(2)').text())],
+            [titulos[2].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(4)').text())],
+            [titulos[4].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(6)').text())],
+            [titulos[6].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(8)').text())],
+            [titulos[8].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(10)').text())]
+          ]
+        }]
+      });
+    }
+</script>
+   "
+  end
+
+  def grafico_colunas
     "<script>
     ignorar_primeiras_x_colunas = 2;
     Highcharts.visualize = function(table, options) {
@@ -86,10 +166,8 @@ class RelatoriosController < ApplicationController
           }
         });
       });
-
       var chart = new Highcharts.Chart(options);
     };
-
     $(document).ready(function() {
       var table = document.getElementById('tabela_porcentagem_presencas'),
       options = {
@@ -102,7 +180,6 @@ class RelatoriosController < ApplicationController
           text: 'Estatisticas de Faltas por dia da semana'
         },
         xAxis: {
-
         },
         yAxis: {
           title: {
@@ -119,6 +196,5 @@ class RelatoriosController < ApplicationController
       Highcharts.visualize(table, options);
     });
     </script>"
-    render :inline => retorno.html_safe, :layout => true
   end
 end
