@@ -58,10 +58,11 @@ class RelatoriosController < ApplicationController
       retorno << "<div id='graficos'>"
       retorno << "</div>"
       retorno << grafico_colunas
-    elsif relatorio.id == 6
-      retorno << "<div id='graficos'>"
-      retorno << "</div>"
-      retorno << grafico_pizza
+    elsif relatorio.id == 6 
+      retorno << "<div id='grafico_porcentagem_de_horario'></div>"
+      retorno << grafico_pizza_porcentagem_por_horario
+      retorno << "<div id='grafico_de_pizza_horas'></div>"
+      retorno << grafico_pizza_horas
     end
     retorno << 
     "<style>
@@ -73,7 +74,77 @@ class RelatoriosController < ApplicationController
     render :inline => retorno.html_safe, :layout => true
   end
 
-  def grafico_pizza
+  def grafico_pizza_horas
+    "<script>
+    titulos = $('#tabela_quantidade_de_horarios tr th a')
+  $(document).ready(function(){
+      tooltips();
+      quatidadeDeHorasGraph();
+    });
+    $(document).ajaxComplete(function(){
+      quatidadeDeHorasGraph();
+    });
+    function quatidadeDeHorasGraph() {
+       colors= [
+         '#F00C0C', // vermelho
+         '#FFF200', // amarelo
+         '#11C900', // verde
+         '#fc8aeb', // lilás (roxo whatever)
+         '#2134ff'  // azul
+       ];
+       Highcharts.getOptions().colors = Highcharts.map(colors,
+       function(color) {
+         return {
+           radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+           stops: [
+             [0, color],
+             [1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+           ]
+         };
+       });
+      new Highcharts.Chart({
+        chart: {
+          renderTo: 'grafico_de_pizza_horas',
+          type: 'pizza'
+        },
+        title: {
+          text: 'Gráfico da quantidade de horas'
+        },
+        tooltip: {
+          pointFormat: '{point.y}hr'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              color: '#000',
+              formatter: function() {
+                return this.point.name + ': ' + this.point.y + 'hr';
+              }
+            },
+            showInLegend: false
+          }
+        },
+        series: [{
+          type: 'pie',
+          name: 'Estatísticas',
+          data: [
+            [titulos[0].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(2)').text())],
+            [titulos[3].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(5)').text())],
+            [titulos[6].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(8)').text())],
+            [titulos[9].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(11)').text())],
+            [titulos[12].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(14)').text())]
+          ]
+        }]
+      });
+    }
+</script>
+   "
+  end
+
+  def grafico_pizza_porcentagem_por_horario
     "<script>
     titulos = $('#tabela_quantidade_de_horarios tr th a')
   $(document).ready(function(){
@@ -103,7 +174,7 @@ class RelatoriosController < ApplicationController
        });
       new Highcharts.Chart({
         chart: {
-          renderTo: 'graficos',
+          renderTo: 'grafico_porcentagem_de_horario',
           type: 'pizza'
         },
         title: {
@@ -130,11 +201,11 @@ class RelatoriosController < ApplicationController
           type: 'pie',
           name: 'Estatísticas',
           data: [
-            [titulos[0].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(2)').text())],
-            [titulos[2].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(4)').text())],
-            [titulos[4].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(6)').text())],
-            [titulos[6].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(8)').text())],
-            [titulos[8].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(10)').text())]
+            [titulos[0].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(3)').text())],
+            [titulos[3].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(6)').text())],
+            [titulos[6].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(9)').text())],
+            [titulos[10].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(12)').text())],
+            [titulos[12].text, parseInt($('#tabela_quantidade_de_horarios tr td:nth-child(15)').text())]
           ]
         }]
       });
