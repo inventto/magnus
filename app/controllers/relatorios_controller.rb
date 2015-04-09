@@ -26,7 +26,11 @@ class RelatoriosController < ApplicationController
     end
     resultado = ActiveRecord::Base.connection.select_rows(consulta)
     retorno = "<div class='active-scaffold'>"
-    retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
+    if params[":data_inicial"] and params[":data_final"]
+      retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome} #{params[":data_inicial"]} à #{params[":data_final"]}</h2></div>"
+    else
+      retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
+    end
     if relatorio.id == 2
     retorno << "<table id='tabela_porcentagem_presencas'><tr>"
     elsif relatorio.id == 6
