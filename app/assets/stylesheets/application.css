@@ -531,3 +531,6 @@ i{
 .titulos-column_heading, .consulta-column_heading, .consulta-column, .titulos-column {
   display: none;
 }
+#grafico_de_colunas_de_horas {
+  max-width: 100%;
+}
