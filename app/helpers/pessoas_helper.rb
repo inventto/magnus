@@ -606,6 +606,9 @@ module PessoasHelper
   end
 
   def seconds_to_txt seconds
+   if seconds < 0
+     seconds = (seconds * -1)
+   end
    hours = seconds / 3600
    min = (seconds % 3600) / 60
    "#{hours.to_i.to_s.rjust(2, '0')}:#{min.to_i.to_s.rjust(2, '0')}"
@@ -619,7 +622,7 @@ module PessoasHelper
     end
     m = 0
     "#{hour.to_i.to_s.rjust(2, '0')}:#{m.to_i.to_s.rjust(2, '0')}"
-  end
+ end
 
   def contem_contato pessoa
     @count_contatos = Contato.joins(:pessoa).where(pessoa_id: pessoa).count
