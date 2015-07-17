@@ -4,16 +4,26 @@
   <legend>Filtro: </legend>
   <form class="form form-horizontal form_ativos_inativos" method="get"/>
     <div class="control-group">
-      <input type="checkbox" id="ativos_matriculados" name="ativos_matriculados" <%= params[:ativos_matriculados] ? "checked='checked'" : '' %> />
-      <label class="checkbox" for="ativos_matriculados">Alunos Ativos</label>
-      &nbsp;
-      &nbsp;
-      <input type="checkbox" id="inativos" name="inativos" <%= params[:inativos] ? "checked='checked'" : '' %> />
-      <label class="checkbox" for="inativos">Alunos Inativos</label>
-      &nbsp;
-      &nbsp;
-      <input type="checkbox" id="interrompidos" name="interrompidos" <%= params[:interrompidos] ? "checked='checked'" : '' %> />
-      <label class="checkbox" for="interrompidos">Alunos Interrompidos</label>
+      <div class="checkbox">
+        <label for="ativos_matriculados">
+          <input type="checkbox" id="ativos_matriculados" name="ativos_matriculados" <%= params[:ativos_matriculados] ? "checked='checked'" : '' %> /> Alunos Ativos
+        </label>
+      </div>
+      <div class="checkbox">
+        <label for="inativos">
+          <input type="checkbox" id="inativos" name="inativos" <%= params[:inativos] ? "checked='checked'" : '' %> /> Alunos Inativos
+        </label>
+      </div>
+      <div class="checkbox">
+        <label for="interrompidos">
+          <input type="checkbox" id="interrompidos" name="interrompidos" <%= params[:interrompidos] ? "checked='checked'" : '' %> /> Alunos Interrompidos
+        </label>
+      </div>
+      <div class="col-md-2">
+        <label for="anos">Ano: 
+          <%= select_tag :anos, options_for_select((2000..2100)), prompt: "Selecione o ano"%>
+        </label>
+      </div>
     </div>
     <input type="submit" value="Filtrar"/>
   </form>
