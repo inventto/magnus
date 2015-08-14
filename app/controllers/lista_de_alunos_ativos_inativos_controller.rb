@@ -16,7 +16,7 @@ class ListaDeAlunosAtivosInativosController < ApplicationController
         where (inativo_desde is null or not 
         (now() between inativo_desde and 
         coalesce(inativo_ate, now()))) and 
-        pessoa_id = pessoas.id and data_fim is null)"
+        pessoa_id = pessoas.id and (data_fim is null or data_fim >= now()))"
       end
     end
     if params[:inativos] == "on"

@@ -349,6 +349,11 @@ i{
 .tabela-ativos-inativos{
   border-collapse: separate;
 }
+
+.tabela-ativos-inativos #posicao {
+  width: 10px;
+}
+
 .table.tabela-ativos-inativos td,
 .table.tabela-ativos-inativos th{
   padding: 0 3px;

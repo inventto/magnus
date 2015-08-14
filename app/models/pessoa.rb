@@ -8,7 +8,7 @@ class Pessoa < ActiveRecord::Base
   TIPOS.each_with_index do |tipo, i|
     scope tipo.downcase.to_sym, lambda { where(tipo_de_pessoa: i) }
   end
-  scope :com_matricula_valida, -> { joins(:matriculas).where("(matriculas.data_fim >= ? or matriculas.data_fim is null)", Time.now) }
+  scope :com_matricula_valida, -> { joins(:matriculas).where("(inativo_desde is null or not (now() between inativo_desde and coalesce(inativo_ate, now()))) and (matriculas.data_fim >= ? or matriculas.data_fim is null)", Time.now) }
 
   def self.de_aniversario_no_mes mes
     pessoas = Pessoa.where("extract(month from data_nascimento) = ?", mes).group(:data_nascimento, :"pessoas.id").order("extract(day from data_nascimento)")
