@@ -266,6 +266,10 @@ i{
 .vip, .horario_ocupado {
   background-color: #D99694;
 }
+.horario_indisponivel {
+  text-align: center !important;
+  background-color: #faa732;
+}
 .horario_disponivel {
   background-color: #DAFFCD;
 }
@@ -358,7 +362,14 @@ i{
 .table.tabela-ativos-inativos th{
   padding: 0 3px;
 }
-
+.filtro-quadro-horarios {
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+.filtro-quadro-horarios .btn-danger { 
+  margin-left: 55px;
+}
+.filtro-quadro-horarios,
 .filtro-ativo-inativo {
   width: 40%;
   background: rgba(237, 247, 247, 0.5);
