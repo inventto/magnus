@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20141208152330) do
+ActiveRecord::Schema.define(:version => 20150824121325) do
 
   create_table "abatimentos", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -129,7 +129,7 @@ ActiveRecord::Schema.define(:version => 20141208152330) do
 
   create_table "matriculas", :force => true do |t|
     t.integer  "pessoa_id"
-    t.string   "objetivo"
+    t.string   "objetivo_secundario"
     t.date     "data_matricula"
     t.date     "data_inicio"
     t.date     "data_fim"
@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(:version => 20141208152330) do
     t.string   "motivo_da_interrupcao"
     t.date     "inativo_ate"
     t.date     "inativo_desde"
+    t.string   "objetivo_primario"
   end
 
   create_table "pessoas", :force => true do |t|

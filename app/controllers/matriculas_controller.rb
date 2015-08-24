@@ -13,9 +13,13 @@ class MatriculasController < ApplicationController
     conf.columns[:motivo_da_interrupcao].label = "Motivo da Interrupção"
     conf.columns[:interesse_no_horario].label = "Interesse no horário"
     conf.columns[:pessoa].label = "Aluno"
+    conf.columns[:objetivo_primario].label = "Objetivo Primário"
+    conf.columns[:objetivo_secundario].label = "Objetivo Secundário"
     conf.columns[:interesse_no_horario]
-    conf.list.columns = [:pessoa, :vip, :data_matricula, :data_inicio, :data_fim, :motivo_da_interrupcao, :numero_de_aulas_previstas, :objetivo, :horario_de_aula, :interesse_no_horario]
-    conf.columns = [:pessoa, :vip, :data_matricula, :data_inicio, :inativo_desde, :inativo_ate, :data_fim, :motivo_da_interrupcao, :numero_de_aulas_previstas, :objetivo, :horario_de_aula, :interesse_no_horario]
+    conf.list.columns = [:pessoa, :vip, :data_matricula, :data_inicio, :data_fim, :motivo_da_interrupcao, :numero_de_aulas_previstas, :objetivo_primario, :objetivo_secundario, :horario_de_aula, :interesse_no_horario]
+    conf.columns = [:pessoa, :vip, :data_matricula, :data_inicio, :inativo_desde, :inativo_ate, :data_fim, :motivo_da_interrupcao, :numero_de_aulas_previstas, :objetivo_primario,:objetivo_secundario, :horario_de_aula, :interesse_no_horario]
+    conf.columns[:objetivo_primario].form_ui = :select
+    conf.columns[:objetivo_primario].options = {:options => Matricula.objetivos_primarios_select}
     conf.columns[:horario_de_aula].show_blank_record = false
     conf.columns[:interesse_no_horario].show_blank_record = false
     conf.columns[:pessoa].form_ui = :select

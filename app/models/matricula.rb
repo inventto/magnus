@@ -1,9 +1,11 @@
 # -*- encoding : utf-8 -*-
 #encoding: utf-8
 class Matricula < ActiveRecord::Base
-  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate, :inativo_desde
+  attr_accessible :pessoa_id, :data_fim, :data_inicio, :data_matricula, :numero_de_aulas_previstas, :objetivo_primario, :objetivo_secundario, :pessoa, :horario_de_aula, :vip, :motivo_da_interrupcao, :inativo_ate, :inativo_desde
 
   attr_accessor :falta_em_percentual
+
+  OBJETIVOS_PRIMARIOS = ['Hipertrofia', 'Qualidade de vida', 'Definição Muscular', 'Perda de Peso', 'Tonicidade', 'Condicionamento Físico']
 
   belongs_to :pessoa
   before_save :validar_numero_de_aulas_previstas
@@ -64,6 +66,14 @@ class Matricula < ActiveRecord::Base
   def validar_matricula
     if not Matricula.where("data_fim is null and pessoa_id=?", pessoa_id).blank?
       self.errors.add(:pessoa, "já possui matrícula ativa.")
+    end
+  end
+
+  def self.objetivos_primarios_select
+    return @@objetivos_primarios if defined? @@objetivos_primarios
+    @@objetivos_primarios = []
+    OBJETIVOS_PRIMARIOS.each_with_index do |objetivo_primario, i|
+      @@objetivos_primarios << [objetivo_primario, i]
     end
   end
 
