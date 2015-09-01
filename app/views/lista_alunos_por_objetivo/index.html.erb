@@ -1,4 +1,4 @@
-<h1 class="text-center">Lista de alunos agrupados por objetivo</h1>
+<h1 class="text-center" id="titulo_lista_alunos_por_objetivo">Lista de alunos agrupados por objetivo</h1>
 
 <div id="tabela_com_hipertrofia">
   <h3 class="text-center">Hipertrofia</h3>
@@ -36,3 +36,6 @@
   <%= render partial: "tabela_objetivos", locals: {pessoas: @sem_objetivos_primarios}%>
 </div>
 <% end %>
+<div class="grafico">
+  <%= render partial: "grafico" %>
+</div>

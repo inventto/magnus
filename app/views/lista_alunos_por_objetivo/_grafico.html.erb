@@ -1,0 +1,63 @@
+<div id='grafico_dos_alunos_agrupados_por_objetivos' style='height: 400px; min-width: 600px'></div>
+<script type='text/javascript'>
+  $(document).ready(function() {graph();});
+  $(document).ajaxComplete(function(){graph();});
+  function graph() {
+    colors= [
+        '#21E1FF',  // Azul claro
+        '#F00C0C', // amarelo
+        '#11C900', // verde
+        '#FFF200', // vermelho
+        '#fc8aeb', // lilás (roxo whatever)
+        '#2134ff'  // azul
+        ];
+    Highcharts.getOptions().colors = Highcharts.map(colors,
+        function(color) {
+        return {
+radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+stops: [
+[0, color],
+[1, Highcharts.Color(color).brighten(-0.3).get('rgb')]
+]
+};
+});
+new Highcharts.Chart({
+chart: {
+renderTo: 'grafico_dos_alunos_agrupados_por_objetivos',
+type: 'pizza'
+},
+title: {
+text: 'Gráfico de Estatística do objetivo primário'
+},
+tooltip: {
+pointFormat: '{point.y}%'
+},
+plotOptions: {
+pie: {
+allowPointSelect: true,
+cursor: 'pointer',
+dataLabels: {
+enabled: true,
+color: '#000',
+formatter: function() {
+return this.point.name + ': ' + this.point.y + '%';
+}
+},
+showInLegend: false
+}
+},
+series: [{
+type: 'pie',
+      name: 'Estatísticas',
+      data: [
+      ['Hipertrofia', <%= calcula_porcentagem(@objetivos_com_hipertrofia.length) %>],
+      ['Perda de peso', <%= calcula_porcentagem(@objetivos_perda_de_peso.length) %>],
+      ['Qualidade de vida', <%= calcula_porcentagem(@objetivos_com_qualidade_de_vida.length) %>],
+      ['Condicionamento físico', <%= calcula_porcentagem(@objetivos_com_condicionamento_fisico.length) %>],
+      ['Definição Muscular', <%= calcula_porcentagem(@objetivos_com_deifinicao_muscular.length) %>],
+      ['Tonicidade', <%= calcula_porcentagem(@objetivos_com_tonicidade.length) %>]
+      ]
+        }]
+});
+}
+</script>
