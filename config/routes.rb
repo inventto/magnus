@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 ControleDePresencaMagnus::Application.routes.draw do
 
+
   get "quadro_de_interesses_nos_horarios/index"
 
   get "interesse_no_horario/index"
@@ -33,6 +34,8 @@ ControleDePresencaMagnus::Application.routes.draw do
   resources :pessoas do
     resources :contatos
   end
+
+  match "lista_alunos_por_objetivo", to: "lista_alunos_por_objetivo#index"
 
   match "/relatorios/visualizar/:id", to: "relatorios#visualizar"
 

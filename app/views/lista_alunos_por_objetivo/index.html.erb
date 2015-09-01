@@ -1,0 +1,38 @@
+<h1 class="text-center">Lista de alunos agrupados por objetivo</h1>
+
+<div id="tabela_com_hipertrofia">
+  <h3 class="text-center">Hipertrofia</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @objetivos_com_hipertrofia}%>
+</div>
+
+<div id="tabela_com_tonicidade">
+  <h3 class="text-center">Tonicidade</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @objetivos_com_tonicidade}%>
+</div>
+
+<div id="tabela_com_definicao_muscular">
+  <h3 class="text-center">Definição Muscular</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @objetivos_com_deifinicao_muscular}%>
+</div>
+
+<div id="tabela_com_condicionamento_fisico">
+  <h3 class="text-center">Condicionamento físico</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @objetivos_com_condicionamento_fisico}%>
+</div>
+
+<div id="tabela_perda_de_peso">
+  <h3 class="text-center">Perda de Peso</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @objetivos_perda_de_peso}%>
+</div>
+
+<div id="tabela_qualidade_de_vida">
+  <h3 class="text-center">Qualidade de vida</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @objetivos_com_qualidade_de_vida}%>
+</div>
+
+<% if !@sem_objetivos_primarios.empty? %>
+<div id="tabela_sem_objetivos">
+  <h3 class="text-center">Sem objetivos primários</h3>
+  <%= render partial: "tabela_objetivos", locals: {pessoas: @sem_objetivos_primarios}%>
+</div>
+<% end %>

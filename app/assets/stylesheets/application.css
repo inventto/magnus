@@ -551,5 +551,27 @@ i{
   max-width: 100%;
 }
 .form_ativos_inativos{
-  margin-left: 10px
+  margin-left: 10px;
+}
+#tabela_sem_objetivos,
+#tabela_com_definicao_muscular,
+#tabela_com_hipertrofia,
+#tabela_perda_de_peso {
+  float: left;
+}
+#tabela_com_condicionamento_fisico,
+#tabela_com_tonicidade,
+#tabela_qualidade_de_vida {
+  float: right;
+}
+#tabela_sem_objetivos,
+#tabela_com_definicao_muscular,
+#tabela_com_condicionamento_fisico,
+#tabela_com_tonicidade,
+#tabela_com_hipertrofia,
+#tabela_qualidade_de_vida,
+#tabela_perda_de_peso {
+  margin-top: 20px;
+  width: 45% !important;
+  border: solid 2px; 
 }

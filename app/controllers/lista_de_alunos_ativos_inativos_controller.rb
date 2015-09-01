@@ -40,19 +40,7 @@ class ListaDeAlunosAtivosInativosController < ApplicationController
       end
     end
 
-    if params[:objetivo_primario] == "on"
-      conditions[0] << "exists(select nome, objetivo_primario from matriculas 
-      where(matriculas.objetivo_primario in 
-      (select matriculas.objetivo_primario from matriculas group by matriculas.objetivo_primario)) and pessoa_id = pessoas.id and 
-      (data_fim is null or data_fim >= now())order by 2, 1)"
-    end
-     
     conditions[0] = conditions[0].join(" or ")
     @alunos = Pessoa.where(conditions).order(:nome)
-    @alunos.sort! {|p1, p2|  valida_objetivo_primario(p1).to_s.downcase <=> valida_objetivo_primario(p2).to_s.downcase}
-  end
-
-  def valida_objetivo_primario(pessoa)
-    pessoa.matriculas.valida.first.nil? ? "" : pessoa.matriculas.valida.first.objetivo_primario
   end
 end

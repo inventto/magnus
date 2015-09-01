@@ -19,11 +19,6 @@
           <input type="checkbox" id="interrompidos" name="interrompidos" <%= params[:interrompidos] ? "checked='checked'" : '' %> /> Alunos Interrompidos
         </label>
       </div>
-      <div class="checkbox">
-        <label for="objetivo_primario">
-          <input type="checkbox" id="objetivo_primario" name="objetivo_primario" <%= params[:objetivo_primario] ? "checked='checked'" : '' %> /> Alunos Agrupados por objetivo primário
-        </label>
-      </div>
       <div class="col-md-2">
         <label for="anos">Ano: 
           <%= select_tag :anos, options_for_select((2000..2100)), prompt: "Selecione o ano"%>
@@ -37,24 +32,14 @@
     <table class="table table-striped table-bordered tabela-ativos-inativos">
       <thead>
         <tr>
-          <th>Count</th>
           <th>Nomes</th>
-          <th>Objetivo primário</th>
           <th>Anotações</th>
         </tr>
       </thead>
       <tbody>
-        <% count = 0%>
         <% @alunos.each do |pessoa| %>
-          <tr>
-            <td id="posicao">
-              <%= count += 1 %> 
-            </td>
             <td>
               <span><%= pessoa.nome %></span>
-            </td>
-            <td>
-              <span><%= com_objetivo_primario(pessoa) %></span>
             </td>
             <td class="tabela_colunas_brancas">
             </td>

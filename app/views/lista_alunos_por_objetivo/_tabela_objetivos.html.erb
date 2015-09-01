@@ -1,0 +1,24 @@
+<table class="table">
+  <thead>
+    <tr> 
+      <th>Nome</th>
+      <th>Objetivo secundário</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% pessoas.each do |pessoa| %>
+      <tr> 
+        <td><%= pessoa.nome %></td>
+        <td><%= valida_objetivo(pessoa) %><td>
+      </tr>
+    <% end %>
+      <tr>
+        <td> 
+          <h4>Total: <%= pessoas.length %></h4>
+        </td>
+        <td>
+          <h4>Percentual: <%= calcula_porcentagem(pessoas.length) %>%</h4>
+        </td>
+      </tr>
+  </tbody>
+</table>
