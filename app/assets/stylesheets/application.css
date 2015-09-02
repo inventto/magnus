@@ -553,3 +553,7 @@ i{
 .form_ativos_inativos{
   margin-left: 10px;
 }
+#grafico_dos_alunos_agrupados_por_objetivos .highcharts-title tspan {
+  font-weight: bold;
+  font-size: 23px;
+}
