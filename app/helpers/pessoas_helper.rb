@@ -96,15 +96,17 @@ module PessoasHelper
 
         count_aulas_expiradas(total_de_presencas_da_matricula_atual)
 
-        count_saldo_de_aulas_para_repor(total_de_presencas_da_matricula_atual)
+        count_abatimento_das_presencas(total_de_presencas_da_matricula_atual)
 
         count_aulas_ja_repostas(total_de_presencas_da_matricula_atual)
 
-        count_abatimento_das_presencas(total_de_presencas_da_matricula_atual)
+        faltas_com_realocacao(total_de_presencas_da_matricula_atual)
+
+        count_saldo_de_aulas_para_repor(total_de_presencas_da_matricula_atual)
 
         @total_geral = @count_presencas + @count_aulas_realocadas + 
           @count_aulas_extras + @count_faltas_sem_direito_a_reposicao + 
-          @count_faltas_com_direito_a_reposicao
+          @count_faltas_com_direito_a_reposicao + @count_faltas_com_realocao
 
         if column
           render :partial => 'estatistica'
@@ -130,19 +132,27 @@ module PessoasHelper
     @count_presencas_erroneas = @presencas_erroneas.count
   end
 
+  def faltas_com_realocacao presencas
+    @faltas_com_realocacao = presencas.eh_falta.eh_realocacao
+    @count_faltas_com_realocao = @faltas_com_realocacao.count
+  end
+
   def count_faltas_com_direito_a_reposicao presencas
-    @count_faltas_com_direito_a_reposicao = presencas.eh_falta.com_direito_a_reposicao.com_conciliamento.count + 
-      presencas.eh_falta.com_direito_a_reposicao.com_conciliamento_para.eh_abatimento.count
+    @count_faltas_com_direito_a_reposicao = presencas.eh_falta.com_direito_a_reposicao.count
+    #@count_faltas_com_direito_a_reposicao = presencas.eh_falta.com_direito_a_reposicao.com_conciliamento.count + 
+    #presencas.eh_falta.com_direito_a_reposicao.com_conciliamento_para.eh_abatimento.count
   end
 
   def count_faltas_sem_direito_a_reposicao presencas
-    @count_faltas_sem_direito_a_reposicao = presencas.eh_falta.faltas_sem_direito_a_reposicao.count
+    @count_faltas_sem_direito_a_reposicao = presencas.eh_falta.faltas_sem_direito_a_reposicao.count -
+      presencas.eh_falta.eh_realocacao.count
   end
 
   def count_aulas_realocadas presencas
     @count_aulas_realocadas = presencas.eh_realocacao.count - 
       presencas.eh_presenca.eh_realocacao.com_direito_a_reposicao.count -
-      presencas.eh_realocacao.com_direito_a_reposicao.count
+      presencas.eh_realocacao.com_direito_a_reposicao.count -
+      presencas.eh_falta.eh_realocacao.count
   end
 
   def count_aulas_expiradas presencas
@@ -150,16 +160,18 @@ module PessoasHelper
   end
 
   def count_saldo_de_aulas_para_repor presencas
-    @count_saldo_para_realocacao = presencas.com_conciliamento.em_aberto.eh_reposicao.count +
-      presencas.com_conciliamento.em_aberto.eh_adiantamento.count
+    @count_saldo_para_realocacao = @count_faltas_com_direito_a_reposicao - (@count_presencas_ja_repostas + @count_abatimento_das_presencas_extras + @count_presencas_expiradas)
+    #@count_saldo_para_realocacao = presencas.com_conciliamento.em_aberto.eh_reposicao.count +
+    #  presencas.com_conciliamento.em_aberto.eh_adiantamento.count
   end
 
   def count_aulas_ja_repostas presencas
-    @count_presencas_ja_repostas = presencas.com_conciliamento.e_fechado.eh_reposicao.count + 
+    @count_presencas_ja_repostas = presencas.com_conciliamento.e_fechado.eh_reposicao.count +
       presencas.com_conciliamento.e_fechado.eh_adiantamento.count
   end
 
   def count_abatimento_das_presencas presencas
+    #@count_abatimento_das_presencas_extras = presencas.eh_aula_extra.com_conciliamento.e_fechado.eh_abatimento.count 
     @count_abatimento_das_presencas_extras = presencas.com_conciliamento.e_fechado.eh_abatimento.count 
   end
 

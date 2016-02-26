@@ -63,6 +63,8 @@ class Presenca < ActiveRecord::Base
 
   regex_horario =/(^\d{2})+([:])(\d{2}$)/
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
+  validate :validar_alteracao_presenca
+  validate :validar_feriado
   validates_presence_of :pessoa
   validates_presence_of :data
   validates_presence_of :horario
@@ -77,6 +79,28 @@ class Presenca < ActiveRecord::Base
 
   QUANTIDADES_DE_REGISTROS = %w(10 20 30 40 50 60 70 80 90 100)
 
+  def validar_feriado
+    feriado = Feriado.where(dia: self.data.day, mes: self.data.month).first
+    if !feriado.nil? and self.tem_direito_a_reposicao == true
+      self.errors.add("Data", ": Existe um feriado nesta data e não pode ser gerado falta com direito.")
+    end
+    if !feriado.nil? and self.presenca == true
+      self.errors.add("Presença", ": Não pode ser gerado a presença em dia de feriado.")
+    end
+  end
+
+  def validar_alteracao_presenca
+    if !self.id.nil?
+      presenca = Presenca.find(self.id)
+      conciliamento = Conciliamento.where("de_id = ? or para_id = ?", self.id, self.id)
+      if !conciliamento.empty?
+        if presenca.tem_direito_a_reposicao != self.tem_direito_a_reposicao or presenca.realocacao != self.realocacao or presenca.aula_extra != self.aula_extra
+          self.errors.add("Conciliamento", ": Está presença não pode ser alterada, pois possui outra atrelada a mesma.")
+        end
+      end
+    end
+  end
+
   def label
     "presença de " << pessoa.nome
   end
@@ -89,8 +113,13 @@ class Presenca < ActiveRecord::Base
   end
 
   def save_adiantamento
-    adiantamento = Adiantamento.new
+    presenca_adiantada = presencas_da_matricula_valida.com_conciliamento_para.where("data < ? and realocacao and conciliamentos.de_id is null", self.data).order(:data).first
+    if presenca_adiantada
+      presenca_adiantada.conciliamento_para.destroy
+    end
+    adiantamento = Adiantamento.new 
     adiantamento.de_id = self.id
+    adiantamento.para_id = presenca_adiantada.id if presenca_adiantada
     adiantamento.save
     self.conciliamento_de = adiantamento.conciliamento
     self.save
@@ -136,19 +165,25 @@ class Presenca < ActiveRecord::Base
   end
 
   def save_abatimento
+    falta_com_direito_a_repor = presencas_da_matricula_valida.com_conciliamento.where("data < ? and tem_direito_a_reposicao and conciliamentos.para_id is null", self.data).order(:data).first
+    
+    if falta_com_direito_a_repor
+      falta_com_direito_a_repor.conciliamento_de.destroy
+    end
     abatimento = Abatimento.new
-    abatimento.de_id = self.id
+    abatimento.de_id = falta_com_direito_a_repor.id if falta_com_direito_a_repor
+    abatimento.para_id = self.id
     abatimento.save
-    self.conciliamento_de = abatimento.conciliamento
+    self.conciliamento_para = abatimento.conciliamento
     self.save
   end
 
   def atualizar_abatimento
-    abatimento_em_aberto = presencas_da_matricula_valida.com_conciliamentos_em_aberto.eh_abatimento.first
+    abatimento_em_aberto = presencas_da_matricula_valida.com_conciliamento_para.where("de_id is null").eh_abatimento.first
     if abatimento_em_aberto
-      conciliamento_de_abatimento = abatimento_em_aberto.conciliamento_de
+      conciliamento_de_abatimento = abatimento_em_aberto.conciliamento_para
       if conciliamento_de_abatimento
-        conciliamento_de_abatimento.update_attributes(para_id: self.id)
+        conciliamento_de_abatimento.update_attributes(de_id: self.id)
       end
     end
   end
@@ -158,14 +193,15 @@ class Presenca < ActiveRecord::Base
   end
 
   def possui_abatimento_em_aberto?
-    !presencas_da_matricula_valida.com_conciliamentos_em_aberto.eh_abatimento.blank?
+    !presencas_da_matricula_valida.com_conciliamento_para.where("de_id is null").eh_abatimento.blank?
   end
 
   def conciliamento_de_presencas
     matricula = pessoa.matriculas.valida.first
     return unless matricula
+    return if self.conciliamento_de or self.conciliamento_para
 
-    if self.tem_direito_a_reposicao?  and not self.conciliamento_de and not self.conciliamento_para and not self.realocacao? and not self.presenca? 
+    if self.tem_direito_a_reposicao? and not self.realocacao? and not self.presenca? 
       if eh_adiantamento?
         save_adiantamento
       elsif possui_abatimento_em_aberto?
@@ -173,9 +209,9 @@ class Presenca < ActiveRecord::Base
       else
         save_reposicao
       end
-    elsif self.realocacao? and not self.conciliamento_para and not self.tem_direito_a_reposicao?
+    elsif self.realocacao? and not self.tem_direito_a_reposicao?
       atualizar_conciliamento_para_id
-    elsif self.aula_extra? and not self.conciliamento_de
+    elsif self.aula_extra?
       save_abatimento
     end
   end

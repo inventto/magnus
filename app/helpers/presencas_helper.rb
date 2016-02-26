@@ -67,7 +67,18 @@ module PresencasHelper
       hint << "ST"
     end
     hint = "<div class='hint'>#{hint.uniq.join('')}</div>"
-    (retorno << hint).html_safe
+    data_de = ""
+    if presenca.conciliamento_de
+      data_de << ",de:"<< presenca.conciliamento_de.para.data.strftime("%d/%m/%Y") if presenca.conciliamento_de.para
+      data_de << "(" << presenca.conciliamento_de.conciliamento_condition_type << ")" if presenca.conciliamento_de.para
+    end
+
+    if presenca.conciliamento_para
+      data_de << ",para:" << presenca.conciliamento_para.de.data.strftime("%d/%m/%Y")
+      data_de << "(" << presenca.conciliamento_para.conciliamento_condition_type << ")"
+    end
+    
+    (retorno << hint << data_de).html_safe #(retorno << hint).html_safe
   end
 
   def is_holiday? dia_atual

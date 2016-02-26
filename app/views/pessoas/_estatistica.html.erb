@@ -7,6 +7,7 @@
       <th>Aulas extras</th>
       <th>Faltas com direito <br /> á realocação</th>
       <th title='Não avisadas com antecedência ou Ultrapassaram o limite'>Faltas sem direito<br/>à realocação</th>
+      <th title='Faltas em aulas que foram realocadas'>Faltas nas aulas<br/>de realocações</th>
       <th>Total de aulas</th>
       <% if current_user %>
         <th>Presenças errôneas</th>
@@ -33,6 +34,10 @@
       <td class='tip_trigger' style='background-color: red; color: black;'>
         <%= "+ #{@count_faltas_sem_direito_a_reposicao}" %>
         <span class='tip'><%= @perc_faltas_sem_direito_a_reposicao = calcular_percentual(@count_faltas_sem_direito_a_reposicao, @total_geral) %>%</span>
+      </td>
+      <td class='tip_trigger' style='background-color: orange; color: black;'>
+        <%= "+ #{@count_faltas_com_realocao}" %>
+        <span class='tip'><%= @perc_faltas_em_realocacoes = calcular_percentual(@count_faltas_com_realocao, @total_geral) %>%</span>
       </td>
       <td> <%= "= #{@total_geral}" %></td>
       <% if current_user %>
@@ -137,7 +142,8 @@
       'lightblue', // azul claro
       '#8fee90', // verde claro
       '#f5e9e9', // branco
-      '#F00C0C'  // vermelho
+      '#F00C0C',  // vermelho
+      'orange'
         ];
     Highcharts.getOptions().colors = Highcharts.map(colors,
         function(color) {
@@ -183,6 +189,7 @@ type: 'pie',
       ['Aulas Realocadas', <%= @perc_de_aulas_realocadas %>],
       ['Faltas com direito<br />a reposição', <%= @perc_faltas_com_direito_a_reposicao %>],
       ['Faltas sem direito<br/>a reposição', <%= @perc_faltas_sem_direito_a_reposicao %>],
+      ['Faltas nas aulas<br/>de realocações', <%= @perc_faltas_em_realocacoes %>],
       ]
         }]
 });
