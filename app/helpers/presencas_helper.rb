@@ -73,7 +73,7 @@ module PresencasHelper
       data_de << "(" << presenca.conciliamento_de.conciliamento_condition_type << ")" if presenca.conciliamento_de.para
     end
 
-    if presenca.conciliamento_para
+    if presenca.conciliamento_para && !presenca.conciliamento_para.de.nil?
       data_de << ",para:" << presenca.conciliamento_para.de.data.strftime("%d/%m/%Y")
       data_de << "(" << presenca.conciliamento_para.conciliamento_condition_type << ")"
     end

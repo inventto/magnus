@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150824121325) do
+ActiveRecord::Schema.define(:version => 20160229140709) do
 
   create_table "abatimentos", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -39,7 +39,7 @@ ActiveRecord::Schema.define(:version => 20150824121325) do
 
   create_table "conciliamentos", :force => true do |t|
     t.string   "tipo"
-    t.integer  "de_id",                        :null => false
+    t.integer  "de_id"
     t.integer  "para_id"
     t.datetime "created_at",                   :null => false
     t.datetime "updated_at",                   :null => false
