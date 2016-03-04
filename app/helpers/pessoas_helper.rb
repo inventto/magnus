@@ -102,6 +102,10 @@ module PessoasHelper
 
         faltas_com_realocacao(total_de_presencas_da_matricula_atual)
 
+        count_abatimento_em_aberto(total_de_presencas_da_matricula_atual)
+
+        count_reposicoes_sem_conciliamento(total_de_presencas_da_matricula_atual)
+
         count_saldo_de_aulas_para_repor(total_de_presencas_da_matricula_atual)
 
         @total_geral = @count_presencas + @count_aulas_realocadas + 
@@ -160,19 +164,27 @@ module PessoasHelper
   end
 
   def count_saldo_de_aulas_para_repor presencas
-    @count_saldo_para_realocacao = @count_faltas_com_direito_a_reposicao - (@count_presencas_ja_repostas + @count_abatimento_das_presencas_extras + @count_presencas_expiradas)
-    #@count_saldo_para_realocacao = presencas.com_conciliamento.em_aberto.eh_reposicao.count +
-    #  presencas.com_conciliamento.em_aberto.eh_adiantamento.count
+    #@count_saldo_para_realocacao = @count_faltas_com_direito_a_reposicao - (@count_presencas_ja_repostas + @count_abatimento_das_presencas_extras + @count_presencas_expiradas)
+    @count_saldo_para_realocacao = presencas.com_conciliamento.em_aberto.eh_reposicao.count +
+     presencas.com_conciliamento.em_aberto.eh_adiantamento.count - presencas.com_conciliamento.where("de_id is null").eh_abatimento.count
+  end
+
+  def count_reposicoes_sem_conciliamento presencas
+    @count_reposicoes_sem_conciliamento = presencas.joins("left join conciliamentos as c1 on c1.para_id = presencas.id").where("realocacao = true and c1.id is null").count
   end
 
   def count_aulas_ja_repostas presencas
     @count_presencas_ja_repostas = presencas.com_conciliamento.e_fechado.eh_reposicao.count +
-      presencas.com_conciliamento.e_fechado.eh_adiantamento.count
+      presencas.com_conciliamento.e_fechado.eh_adiantamento.count 
   end
 
   def count_abatimento_das_presencas presencas
     #@count_abatimento_das_presencas_extras = presencas.eh_aula_extra.com_conciliamento.e_fechado.eh_abatimento.count 
-    @count_abatimento_das_presencas_extras = presencas.com_conciliamento.e_fechado.eh_abatimento.count 
+    @count_abatimento_das_presencas_extras = presencas.com_conciliamento.where("de_id is not null").eh_abatimento.count 
+  end
+
+  def count_abatimento_em_aberto presencas
+    @count_abatimento_em_aberto = presencas.com_conciliamento_para.where("de_id is null").eh_abatimento.count 
   end
 
   def count_aulas_expiradas_por_mes_e_ano presencas

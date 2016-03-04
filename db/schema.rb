@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160229140709) do
+ActiveRecord::Schema.define(:version => 20160303184922) do
 
   create_table "abatimentos", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -156,6 +156,7 @@ ActiveRecord::Schema.define(:version => 20160229140709) do
     t.string   "codigo_de_acesso"
     t.string   "cor"
     t.integer  "tipo_de_pessoa",   :default => 0
+    t.integer  "codigo_interno"
   end
 
   add_index "pessoas", ["id"], :name => "index_pessoas_on_id", :unique => true

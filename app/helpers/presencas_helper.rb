@@ -14,10 +14,18 @@ module PresencasHelper
       retorno = "<img src='/assets/presenca.png' title='Presença Registrada' />"
       hint << "P"
       if presenca.realocacao
-        retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+        if presenca.conciliamento_para.nil?
+          retorno << "<img class='realocacao' src='/assets/aula_realocacao_em_aberto.png' title='Aula de realocação em aberto' />"
+        else
+          retorno << "<img class='realocacao' src='/assets/realocacao.png' title='#{get_title_realocacao(aluno_id, dia_atual, presenca)}' />"
+        end
         hint << "R"
       elsif presenca.aula_extra
-        retorno << "<img class='realocacao' src='/assets/aula_extra.png' title='Aula Extra' />"
+        if (presenca.conciliamento_para.de_id.nil?)
+          retorno << "<img class='realocacao' src='/assets/aula_extra_em_aberto.png' title='Aula Extra em Aberto' />"
+        else
+          retorno << "<img class='realocacao' src='/assets/aula_extra.png' title='Aula Extra' />"
+        end
         hint << "E"
       end
       if presenca.fora_de_horario

@@ -8,7 +8,8 @@ class PessoasController < ApplicationController
     conf.columns[:cpf].label = "CPF"
     conf.columns[:telefones].label = "Telefone"
     conf.columns[:codigo_de_acesso].label = "Código de Acesso"
-    conf.columns = [:id, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :tipo_de_pessoa, :cor, :codigo_de_acesso, :foto, :endereco, :telefones]
+    conf.columns[:codigo_interno].label = "Código Interno"
+    conf.columns = [:id, :codigo_interno, :foto, :nome, :cpf, :email, :sexo, :data_nascimento, :tipo_de_pessoa, :cor, :codigo_de_acesso, :foto, :endereco, :telefones]
     conf.show.columns << :presencas
     conf.show.columns << :aulas
     conf.show.columns << :pontualidade

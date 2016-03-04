@@ -6,7 +6,7 @@ class Presenca < ActiveRecord::Base
   belongs_to :pessoa
   has_one :justificativa_de_falta, :dependent => :destroy
   has_one :conciliamento_de, foreign_key: "de_id", class_name: Conciliamento, dependent: :destroy
-  has_one :conciliamento_para, foreign_key: "para_id", class_name: Conciliamento
+  has_one :conciliamento_para, foreign_key: "para_id", class_name: Conciliamento, dependent: :destroy
 
   scope :eh_falta, -> { where(presenca: false) }
 
@@ -65,6 +65,7 @@ class Presenca < ActiveRecord::Base
   validates_format_of :horario, :with => regex_horario, :message => 'Inválido!'
   validate :validar_alteracao_presenca
   validate :validar_feriado
+  validate :validar_presenca_erronea
   validates_presence_of :pessoa
   validates_presence_of :data
   validates_presence_of :horario
@@ -78,6 +79,12 @@ class Presenca < ActiveRecord::Base
   end
 
   QUANTIDADES_DE_REGISTROS = %w(10 20 30 40 50 60 70 80 90 100)
+
+  def validar_presenca_erronea
+    if self.presenca and self.tem_direito_a_reposicao and self.realocacao or self.presenca and self.tem_direito_a_reposicao or self.tem_direito_a_reposicao and self.realocacao
+      self.errors.add("Presença", ": Não pode ser gerada com esses status.")
+    end
+  end
 
   def validar_feriado
     feriado = Feriado.where(dia: self.data.day, mes: self.data.month).first
@@ -105,6 +112,10 @@ class Presenca < ActiveRecord::Base
     "presença de " << pessoa.nome
   end
 
+  def dia_da_semana
+    Date::DAYNAMES[data.wday]
+  end
+
   private
 
   def presencas_da_matricula_valida
@@ -126,8 +137,13 @@ class Presenca < ActiveRecord::Base
   end
 
   def save_reposicao
+    presenca_realocacao = presencas_da_matricula_valida.com_conciliamento_para.where("data > ? and realocacao and conciliamentos.de_id is null", self.data).order(:data).first
+    if presenca_realocacao
+      presenca_realocacao.conciliamento_para.destroy
+    end
     reposicao = Reposicao.new
     reposicao.de_id = self.id
+    reposicao.para_id = presenca_realocacao.id if presenca_realocacao
     reposicao.save
     self.conciliamento_de = reposicao.conciliamento
     self.save
@@ -144,7 +160,7 @@ class Presenca < ActiveRecord::Base
             conciliamento_de_reposicao.update_attributes(para_id: presenca.id)
           end
         end
-      end
+      end 
     end
   end
 
@@ -156,9 +172,9 @@ class Presenca < ActiveRecord::Base
 
     # todas as faltas do aluno com direito a reposição e com conciliamento
     presenca_com_conciliamento = presencas_da_matricula_valida.reposicao_ou_adiantamento_com_conciliamentos_em_aberto
-
+    #presenca_com_conciliamento = presencas_da_matricula_valida.com_conciliamento.eh_reposicao.where("conciliamento_condition_type <> 'Expirada' or conciliamento_condition_type = 'Abatimento'")
     count_presenca_com_conciliamento = presenca_com_conciliamento.count
-
+    
     presenca_com_conciliamento.order(:data)[-count_presenca_com_conciliamento ... -count_maximo_reposicoes].each  do |falta|
       falta.conciliamento_de.expirar!
     end
@@ -202,16 +218,16 @@ class Presenca < ActiveRecord::Base
     return if self.conciliamento_de or self.conciliamento_para
 
     if self.tem_direito_a_reposicao? and not self.realocacao? and not self.presenca? 
-      if eh_adiantamento?
+      if eh_adiantamento? 
         save_adiantamento
       elsif possui_abatimento_em_aberto?
         atualizar_abatimento
       else
         save_reposicao
       end
-    elsif self.realocacao? and not self.tem_direito_a_reposicao?
+    elsif self.realocacao? and not self.tem_direito_a_reposicao? and not self.aula_extra?
       atualizar_conciliamento_para_id
-    elsif self.aula_extra?
+    elsif self.aula_extra? and not self.tem_direito_a_reposicao? and not self.realocacao?
       save_abatimento
     end
   end
