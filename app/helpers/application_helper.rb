@@ -1,6 +1,13 @@
 # -*- encoding : utf-8 -*-
 #coding: utf-8
 module ApplicationHelper
+  def horario_com_registro_de_presenca horario_da_aula, dia_atual
+    presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
+    aluno_id = horario_da_aula.matricula.pessoa.id
+    presenca = presenca.where(:pessoa_id => aluno_id)
+    presenca.size > 0
+  end  
+
   def status_presenca horario_da_aula, dia_atual
     @hora_certa = (Time.now)
 
@@ -21,7 +28,7 @@ module ApplicationHelper
       inativo_ate = horario_da_aula.matricula.inativo_ate
       matricula_standby = !(Matricula.where('pessoa_id = ? and ? between inativo_desde and inativo_ate',  aluno_id, dia_atual).empty?)
     end
-
+    
     if not presenca.blank?
       presenca = presenca[0]
 
@@ -165,6 +172,7 @@ module ApplicationHelper
     presenca = Presenca.joins("LEFT JOIN justificativas_de_falta ON presencas.id=presenca_id").where(:data => dia_atual)
 
     presenca = presenca.where(:pessoa_id => aluno_id)
+    #p "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< presenca repetido: #{presenca.inspect}" if aluno_id == 304
 
     if not presenca.blank?
       presenca = presenca.first

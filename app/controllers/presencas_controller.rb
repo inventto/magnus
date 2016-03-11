@@ -15,7 +15,7 @@ class PresencasController < ApplicationController
     conf.columns[:tem_direito_a_reposicao].label = "Tem Direito à Reposição?"
     conf.columns[:data_de_realocacao].label = "Realocado de"
     conf.columns[:pessoa].label = "Aluno"
-    conf.list.columns = [:pessoa, :data, :dia_da_semana, :horario, :status, :justificativa_de_falta]
+    conf.list.columns = [:pessoa, :data, :dia_semana, :horario, :status, :justificativa_de_falta]
     conf.columns = [:pessoa, :data, :horario, :pontualidade, :presenca, :realocacao, :data_de_realocacao, :tem_direito_a_reposicao, :aula_extra, :justificativa_de_falta]
     conf.columns[:pessoa].form_ui = :select
     conf.columns[:quantidade_de_registros].form_ui = :select

@@ -246,4 +246,62 @@ class RelatoriosController < ApplicationController
     });
     </script>"
   end
+   
+  def grafico_colunas2
+    "<script>
+    ignorar_primeiras_x_colunas = 1;
+    Highcharts.visualize = function(table, options) {
+      options.xAxis.categories = new Array();
+      options.series = [];
+      $('tbody th', table).each( function(i) {
+          options.series[i] = {
+                // Legenda
+                name: this.innerHTML,
+                data: []
+              };
+      });
+      $('tr', table).each( function(i) {
+        var tr = this;
+        $('td', tr).each( function(j) {
+          if (j == 0) {
+            // valores eixo X
+            options.xAxis.categories.push(this.innerHTML);
+          }
+          if (j >= ignorar_primeiras_x_colunas) {
+            options.series[j - ignorar_primeiras_x_colunas].data.push(parseFloat(this.innerHTML));
+          }
+        });
+      });
+      var chart = new Highcharts.Chart(options);
+    };
+    $(document).ready(function() {
+      var table = document.getElementById('tabela_porcentagem_presencas'),
+      options = {
+        chart: {
+          renderTo: 'graficos',
+          type: 'column',
+          defaultSeriesType: 'column'
+        },
+        title: {
+          text: 'Dia da semana'
+        },
+        xAxis: {
+        },
+        yAxis: {
+          title: {
+            text: '%'
+          }
+        },
+        tooltip: {
+          formatter: function() {
+            return '<b>'+ this.series.name +'</b><br/>'+
+            this.y +' '+ this.x.toLowerCase();
+          }
+        }
+      };
+      Highcharts.visualize(table, options);
+    });
+    </script>"
+  end
+
 end

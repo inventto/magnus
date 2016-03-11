@@ -65,7 +65,7 @@ body{
   display: block;
 }
 #agenda {
-  width:420px;
+  width: 33%;
 }
 #aniversariantes {
   width:400px;
@@ -393,9 +393,6 @@ i{
 }
 .falta_justificada {
   text-decoration: line-through;
-}
-.nome_do_aluno {
-  height: 20px;
 }
 .nome_do_aluno > a {
   text-decoration: none;

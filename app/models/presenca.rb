@@ -10,6 +10,8 @@ class Presenca < ActiveRecord::Base
 
   scope :eh_falta, -> { where(presenca: false) }
 
+  scope :com_matricula_ativa, -> {joins(:pessoa).joins("inner join matriculas on matriculas.pessoa_id = pessoas.id").where("matriculas.data_fim is null or matriculas.data_fim >= now()")}
+
   scope :eh_presenca, -> { where(presenca: true) } 
 
   scope :com_direito_a_reposicao, -> { where(tem_direito_a_reposicao: true) }
@@ -112,7 +114,7 @@ class Presenca < ActiveRecord::Base
     "presença de " << pessoa.nome
   end
 
-  def dia_da_semana
+  def dia_semana
     Date::DAYNAMES[data.wday]
   end
 

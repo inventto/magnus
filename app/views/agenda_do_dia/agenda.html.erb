@@ -70,7 +70,9 @@
                       <% if aluno_com_matricula_e_hora_de_aula_validos?(aluno_id, dia_atual, horario) %> <!-- Se o aluno é válido, ou seja, se a matricula dele é válida e se o horario de aula também for. -->
                         <% aluno = horario.matricula.pessoa rescue aluno = horario.pessoa %>
                         <% if not horario.instance_of? HorarioDeAula or not nao_mostrar_repetido?(horario, dia_atual) %>
-                          <%= mostrar_nome_para(aluno, horario, dia_atual) %>
+                          <% if not horario.instance_of? HorarioDeAula or not horario_com_registro_de_presenca(horario, dia_atual) %>
+                            <%= mostrar_nome_para(aluno, horario, dia_atual) %>
+                          <% end %>
                         <% end %>
                       <% end %>
                     <% end %>

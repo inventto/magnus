@@ -22,16 +22,9 @@ class AgendaDoDiaController < ApplicationController
 
   def load_agenda
     agenda = consultar_agenda
-
     presencas = consultar_presencas_passe_livre
 
-    realocacao_do_dia = presencas.where(:realocacao => true)
-
-    fora_de_horario = presencas.where(:fora_de_horario => true)
-
-    aula_extra = presencas.where(:aula_extra => true)
-
-    unir_horarios(agenda, presencas, realocacao_do_dia, fora_de_horario, aula_extra)
+    unir_horarios(agenda, presencas)
 
     agrupa_e_ordena
   end
@@ -47,26 +40,14 @@ class AgendaDoDiaController < ApplicationController
   end
 
   def consultar_presencas_passe_livre
-    presencas = Presenca.select("presencas.*, EXTRACT( DOW FROM data ) AS dia_da_semana").joins(:pessoa)
-
-    if @data_inicial == @data_final
-      presencas = presencas.where(:data => @data_inicial)
-    else
-      presencas = presencas.where("data >= '#{@data_inicial}' and data <= '#{@data_final}'")
-    end
-
-    presencas.delete_if { |p| not p.pessoa.passe_livre? }
-    presencas
+    Presenca.select("presencas.*, EXTRACT( DOW FROM data ) AS dia_da_semana").where("data >= '#{@data_inicial}' and data <= '#{@data_final}'").com_matricula_ativa
   end
 
-  def unir_horarios agenda, presencas, realocacao, fora_de_horario, aula_extra
+  def unir_horarios agenda, presencas
     @agenda_do_dia = []
 
     @agenda_do_dia += agenda
     @agenda_do_dia += presencas
-    @agenda_do_dia += realocacao
-    @agenda_do_dia += fora_de_horario
-    @agenda_do_dia += aula_extra
     @agenda_do_dia.uniq!
   end
 

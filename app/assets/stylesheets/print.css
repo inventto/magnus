@@ -49,6 +49,9 @@
         page-break-after: always;
     }
 
+    #agenda {
+      margin:5px;
+    }
 
     #agenda #horarios .hora {
         float: right;
