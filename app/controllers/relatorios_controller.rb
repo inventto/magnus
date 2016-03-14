@@ -35,6 +35,8 @@ class RelatoriosController < ApplicationController
     retorno << "<table id='tabela_porcentagem_presencas'><tr>"
     elsif relatorio.id == 6
     retorno << "<table id='tabela_quantidade_de_horarios'><tr>"
+    elsif relatorio.id == 9
+    retorno << "<table id='tabela_grupo_das_idades'><tr>"
     else
     retorno << "<table><tr>"
     end
@@ -63,6 +65,9 @@ class RelatoriosController < ApplicationController
       retorno << grafico_pizza_porcentagem_por_horario
       retorno << "<div id='grafico_de_colunas_de_horas'></div>"
       retorno << grafico_de_colunas_de_horas
+    elsif relatorio.id == 9 
+      retorno << "<div id='grafico_de_colunas_das_idades'></div>"
+      retorno << grafico_colunas2
     end
     retorno << 
     "<style>
@@ -254,11 +259,13 @@ class RelatoriosController < ApplicationController
       options.xAxis.categories = new Array();
       options.series = [];
       $('tbody th', table).each( function(i) {
-          options.series[i] = {
+         if(i > 0) {
+          options.series[options.series.length] = {
                 // Legenda
                 name: this.innerHTML,
                 data: []
               };
+         }
       });
       $('tr', table).each( function(i) {
         var tr = this;
@@ -266,30 +273,34 @@ class RelatoriosController < ApplicationController
           if (j == 0) {
             // valores eixo X
             options.xAxis.categories.push(this.innerHTML);
-          }
-          if (j >= ignorar_primeiras_x_colunas) {
-            options.series[j - ignorar_primeiras_x_colunas].data.push(parseFloat(this.innerHTML));
+          } else {
+            console.log('inserindo as idades: ', j)
+            options.series[j-1].data.push(parseInt(this.innerHTML));
+            console.log(options.series)
           }
         });
       });
       var chart = new Highcharts.Chart(options);
     };
     $(document).ready(function() {
-      var table = document.getElementById('tabela_porcentagem_presencas'),
+      var table = document.getElementById('tabela_grupo_das_idades'),
       options = {
         chart: {
-          renderTo: 'graficos',
+          renderTo: 'grafico_de_colunas_das_idades',
           type: 'column',
           defaultSeriesType: 'column'
         },
         title: {
-          text: 'Dia da semana'
+          text: 'Grupo das idades'
         },
         xAxis: {
+          title: {
+            text: 'Idade'
+          }
         },
         yAxis: {
           title: {
-            text: '%'
+            text: 'Quantidade'
           }
         },
         tooltip: {
