@@ -32,11 +32,13 @@ class RelatoriosController < ApplicationController
       retorno << "<div class='active-scaffold-header'><h2>#{relatorio.nome}</h2></div>"
     end
     if relatorio.id == 2
-    retorno << "<table id='tabela_porcentagem_presencas'><tr>"
+      retorno << "<table id='tabela_porcentagem_presencas'><tr>"
     elsif relatorio.id == 6
-    retorno << "<table id='tabela_quantidade_de_horarios'><tr>"
+      retorno << "<table id='tabela_quantidade_de_horarios'><tr>"
     elsif relatorio.id == 9
-    retorno << "<table id='tabela_grupo_das_idades'><tr>"
+      retorno << "<table id='tabela_grupo_das_idades'><tr>"
+    elsif relatorio.id == 10
+      retorno << "<table id='tabela_grupo_das_idades_agrupados_por_sexo'><tr>"
     else
     retorno << "<table><tr>"
     end
@@ -67,7 +69,10 @@ class RelatoriosController < ApplicationController
       retorno << grafico_de_colunas_de_horas
     elsif relatorio.id == 9 
       retorno << "<div id='grafico_de_colunas_das_idades'></div>"
-      retorno << grafico_colunas2
+      retorno << grafico_colunas_das_idades
+    elsif relatorio.id == 10
+      retorno << "<div id='grafico_de_colunas_das_idades_agrupado_por_sexo'></div>"
+      retorno << grafico_colunas_de_alunos_agrupados_por_sexo
     end
     retorno << 
     "<style>
@@ -252,7 +257,7 @@ class RelatoriosController < ApplicationController
     </script>"
   end
    
-  def grafico_colunas2
+  def grafico_colunas_das_idades
     "<script>
     ignorar_primeiras_x_colunas = 1;
     Highcharts.visualize = function(table, options) {
@@ -292,6 +297,68 @@ class RelatoriosController < ApplicationController
         },
         title: {
           text: 'Grupo das idades'
+        },
+        xAxis: {
+          title: {
+            text: 'Idade'
+          }
+        },
+        yAxis: {
+          title: {
+            text: 'Quantidade'
+          }
+        },
+        tooltip: {
+          formatter: function() {
+            return '<b>'+ this.series.name +'</b><br/>'+
+            this.y +' '+ this.x.toLowerCase();
+          }
+        }
+      };
+      Highcharts.visualize(table, options);
+    });
+    </script>"
+  end
+
+  def grafico_colunas_de_alunos_agrupados_por_sexo
+    "<script>
+    ignorar_primeiras_x_colunas = 1;
+    Highcharts.visualize = function(table, options) {
+      options.xAxis.categories = new Array();
+      options.series = [];
+      $('tbody th', table).each( function(i) {
+         if(i > 0) {
+          options.series[options.series.length] = {
+                // Legenda
+                name: this.innerHTML,
+                data: []
+              };
+         }
+      });
+      $('tr', table).each( function(i) {
+        var tr = this;
+        $('td', tr).each( function(j) {
+          if (j == 0) {
+            // valores eixo X
+            options.xAxis.categories.push(this.innerHTML);
+          } else {
+            console.log('inserindo as idades: ', j)
+            options.series[j-1].data.push(parseInt(this.innerHTML));
+            console.log(options.series)
+          }
+        });
+      });
+      var chart = new Highcharts.Chart(options);
+    };
+    $(document).ready(function() {
+      var table = document.getElementById('tabela_grupo_das_idades_agrupados_por_sexo'),
+      options = {
+        chart: {
+          renderTo: 'grafico_de_colunas_das_idades_agrupado_por_sexo',
+          type: 'column'
+        },
+        title: {
+          text: 'Grupo das idades agrupados por sexo'
         },
         xAxis: {
           title: {
