@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20160303184922) do
+ActiveRecord::Schema.define(:version => 20160317181931) do
 
   create_table "abatimentos", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -171,7 +171,7 @@ ActiveRecord::Schema.define(:version => 20160303184922) do
     t.boolean  "realocacao"
     t.boolean  "fora_de_horario"
     t.integer  "pontualidade"
-    t.boolean  "tem_direito_a_reposicao"
+    t.boolean  "tem_direito_a_reposicao", :default => false, :null => false
     t.date     "data_de_realocacao"
     t.boolean  "aula_extra",              :default => false
     t.boolean  "expirada",                :default => false

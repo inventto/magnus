@@ -83,9 +83,11 @@ class Presenca < ActiveRecord::Base
   def validar_feriado
     feriado = Feriado.where(dia: self.data.day, mes: self.data.month).first
     if !feriado.nil? and self.tem_direito_a_reposicao == true
+      p "falta em dia de feriado: ", self
       self.errors.add("Data", ": Existe um feriado nesta data e não pode ser gerado falta com direito.")
     end
     if !feriado.nil? and self.presenca == true
+      p "presença em dia de feriado: ", self
       self.errors.add("Presença", ": Não pode ser gerado a presença em dia de feriado.")
     end
   end
@@ -95,7 +97,10 @@ class Presenca < ActiveRecord::Base
       presenca = Presenca.find(self.id)
       conciliamento = Conciliamento.where("de_id = ? or para_id = ?", self.id, self.id)
       if !conciliamento.empty?
+        presenca.tem_direito_a_reposicao = false if self.tem_direito_a_reposicao == false and presenca.tem_direito_a_reposicao == nil
         if presenca.tem_direito_a_reposicao != self.tem_direito_a_reposicao or presenca.realocacao != self.realocacao or presenca.aula_extra != self.aula_extra
+          p "presenca salva: ", presenca
+          p "validando a alteração: ", self
           self.errors.add("Conciliamento", ": Está presença não pode ser alterada, pois possui outra atrelada a mesma.")
         end
       end
