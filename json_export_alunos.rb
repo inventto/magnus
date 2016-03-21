@@ -34,9 +34,10 @@ alunos.each do |aluno|
     "bairro" => (aluno.endereco.nil? or aluno.endereco.bairro.nil?) ? "" : aluno.endereco.bairro.nome.chomp.upcase,
     "complemento" => (aluno.endereco.nil? or aluno.endereco.complemento.nil?) ? "" : aluno.endereco.complemento.upcase,
     "dataCadastro" => aluno.created_at.strftime("%d/%m/%Y"),
-    "tipoCliente" => true,
+    "tipoAluno" => if aluno.eh_aluno?; true else false end,
+    "tipoCliente" => if aluno.eh_aluno?; true else false end,
     "tipoFornecedor" => false,
-    "tipoFuncionario" => false,
+    "tipoFuncionario" => !if aluno.eh_aluno?; true else false end,
     "rgIc" => "",
     "im" => "",
     "cnae" => "",
@@ -48,7 +49,7 @@ alunos.each do |aluno|
   require 'net/http'
   require 'uri'
 
-  url = 'http://sisagil.com/service'
+  url = 'http://sistema.academi.as/service'
   url = URI.parse(url)
   req = Net::HTTP::Post.new(url.path)
   req.basic_auth 'invent.to.magnus', '123'
