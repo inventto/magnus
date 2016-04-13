@@ -2,6 +2,41 @@
 #encoding: utf-8
 module PessoasHelper
 
+  def get_endereco_excel endereco
+    endereco_completo = "";
+    if(endereco.logradouro)
+      endereco_completo << (endereco.logradouro + ", ")
+    end 
+    if(endereco.numero)
+      endereco_completo << (endereco.numero.to_s + ", ")
+    end
+    if(endereco.cep)
+      endereco_completo << (endereco.cep.to_s.chomp + ", ")
+    end
+    if(endereco.bairro)
+      if(endereco.bairro.nome)
+        endereco_completo << (endereco.bairro.nome.chomp + ", ")
+      end
+    end
+    if(endereco.cidade)
+      if(endereco.cidade.nome)
+        endereco_completo << (endereco.cidade.nome.chomp + ", ")
+      end
+      if(endereco.cidade.estado)
+        if(endereco.cidade.estado.sigla)
+          endereco_completo << (endereco.cidade.estado.sigla.chomp + ", ")
+        end
+      end
+    end
+    return endereco_completo
+  end
+
+  def get_telefones_excel telefones
+    telefones.collect do |telefone|
+      telefone.ddd + " " + telefone.numero
+    end.join(", ")
+  end
+
   def foto_column(model, column)
     "<img src='#{model.foto}' height='48'>".html_safe
   end

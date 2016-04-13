@@ -25,6 +25,19 @@ class PessoasController < ApplicationController
     conf.field_search.columns = [:nome, :cpf, :email, :sexo, :data_nascimento, :tipo_de_pessoa]
   end
 
+  def gerar_csv
+    @pessoas_excel = Pessoa.joins(:endereco).
+      joins("left join bairros on bairros.id = enderecos.bairro_id").
+      joins("left join cidades on cidades.id = enderecos.cidade_id").
+      joins("left join estados on estados.id = cidades.estado_id").
+      joins(:telefones).order(:nome).uniq! 
+    respond_to do |format|
+      format.html
+      format.csv { send_data @pessoas_excel.to_csv }
+      format.xls 
+    end
+  end
+
   def after_update_save record
     send_data_to_sisagil(record)
   end

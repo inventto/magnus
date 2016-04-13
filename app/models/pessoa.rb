@@ -40,6 +40,14 @@ class Pessoa < ActiveRecord::Base
 
   SEX = %w(M F)
 
+  def self.to_csv(option = {})
+    CSV.generate(options) do |csv|
+      csv << column_names
+      all.each do |pessoa|
+        csv << pessoa.attributes.values_at(*column_names)
+      end
+    end
+  end
 
   def eh_aluno?
     tipo_de_pessoa == 0
