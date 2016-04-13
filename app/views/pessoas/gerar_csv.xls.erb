@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+xmlns:html="http://www.w3.org/TR/REC-html40">
+<Worksheet ss:Name="Sheet1">
+<Table>
+<Row>
+<Cell><Data ss:Type="String">Interno</Data></Cell>
+<Cell><Data ss:Type="String">Nome</Data></Cell>
+<Cell><Data ss:Type="String">CPF</Data></Cell>
+<Cell><Data ss:Type="String">E-mail</Data></Cell>
+<Cell><Data ss:Type="String">Data nascimento</Data></Cell>
+<Cell><Data ss:Type="String">Endereço</Data></Cell>
+<Cell><Data ss:Type="String">Telefones</Data></Cell>
+</Row>
+<% @pessoas_excel.each do |pessoa| %>
+  <Row>
+  <Cell><Data ss:Type="Number"><%= pessoa.codigo_interno %></Data></Cell>
+  <Cell><Data ss:Type="String"><%= pessoa.nome %></Data></Cell>
+  <Cell><Data ss:Type="String"><%= pessoa.cpf %></Data></Cell>
+  <Cell><Data ss:Type="String"><%= pessoa.email %></Data></Cell>
+  <Cell><Data ss:Type="String"><%= pessoa.data_nascimento.strftime("%d/%m/%Y") %></Data></Cell>
+  <Cell><Data ss:Type="String"><%= get_endereco_excel(pessoa.endereco) %></Data></Cell>
+  <Cell><Data ss:Type="String"><%= get_telefones_excel(pessoa.telefones) %></Data></Cell>
+  </Row>
+<% end %>
+</Table>
+</Worksheet>
+</Workbook>
